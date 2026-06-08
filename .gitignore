@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+mlruns/
+datasets/
+models/
+*.db
+.vscode/
+docs/portfolio_ai_project_plan_ultimate.md
