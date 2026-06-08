@@ -1,11 +1,26 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
+
+# Secrets / environment
 .env
 .env.*
+
+# Local artifacts / large files
 mlruns/
 datasets/
 models/
 *.db
+
+# Editor
 .vscode/
-docs/portfolio_ai_project_plan_ultimate.md
+
+# Private documentation
+docs/*.md
+
+# Keep docs folder structure
+!docs/.gitkeep
+
+# Local setup leftovers
+packages.microsoft.gpg
