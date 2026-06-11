@@ -108,6 +108,27 @@ local run instructions
 first working commit
 ```
 
+## Run the API Gateway locally
+
+```bash
+cd /opt/projects/cosmosai-platform
+source .venv/bin/activate
+cd apps/api-gateway
+uvicorn main:app --reload
+```
+
+Health check:
+
+```text
+http://127.0.0.1:8000/health
+```
+
+Expected response:
+
+```json
+{"status":"ok","service":"api-gateway"}
+```
+
 ## Project goal
 
 The goal is to build more than a simple AI demo.
