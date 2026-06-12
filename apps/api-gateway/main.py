@@ -16,6 +16,10 @@ INFERENCE_ROUTER_URL = "http://inference-router:8000/route"
 class RouteRequest(BaseModel):
     # The kind of input the platform needs to route.
     input_type: str
+    # Optional local/demo identifier for image-based requests.
+    image_id: str | None = None
+    # Optional URI/path for image-based requests.
+    image_uri: str | None = None
 
 
 # Define the JSON body returned by POST /route.
@@ -26,6 +30,8 @@ class RouteResponse(BaseModel):
     selected_service: str | None
     # "stub" means the input is recognized; "unsupported" means no route exists yet.
     status: str
+    # Optional result returned by a downstream classifier service.
+    classification: dict[str, object] | None = None
 
 
 # Create the FastAPI application object.

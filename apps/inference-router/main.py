@@ -4,9 +4,16 @@ from fastapi import FastAPI
 # Import BaseModel to define structured request and response bodies.
 from pydantic import BaseModel
 
+# Import requests so the router can call internal model services over HTTP.
+import requests
+
+
+# Internal Docker Compose URL for the galaxy-classifier-service endpoint.
+GALAXY_CLASSIFIER_URL = "http://galaxy-classifier-service:8000/classify"
+
 
 # Map known input types to the service that will handle them later.
-# This is only a stub for now; it does not call any model service yet.
+# Stellar routing is still stubbed; galaxy routing now calls its service stub.
 SERVICE_BY_INPUT_TYPE = {
     "galaxy_image": "galaxy-classifier-service",
     "stellar_spectrum": "stellar-classifier-service",
@@ -17,6 +24,10 @@ SERVICE_BY_INPUT_TYPE = {
 class RouteRequest(BaseModel):
     # The kind of input the platform needs to route.
     input_type: str
+    # Optional local/demo identifier for image-based requests.
+    image_id: str | None = None
+    # Optional URI/path for image-based requests.
+    image_uri: str | None = None
 
 
 # Define the JSON body returned by POST /route.
@@ -27,6 +38,8 @@ class RouteResponse(BaseModel):
     selected_service: str | None
     # "stub" means the input is recognized; "unsupported" means no route exists yet.
     status: str
+    # Optional result returned by a downstream classifier service.
+    classification: dict[str, object] | None = None
 
 
 # Create the FastAPI application object.
@@ -57,7 +70,29 @@ def route(request: RouteRequest) -> RouteResponse:
             status="unsupported",
         )
 
-    # Return the stub route without calling any real ML service yet.
+    # Call the galaxy classifier stub when the request is for a galaxy image.
+    if request.input_type == "galaxy_image":
+        classifier_response = requests.post(
+            GALAXY_CLASSIFIER_URL,
+            json={
+                "image_id": request.image_id,
+                "image_uri": request.image_uri,
+            },
+            timeout=5,
+        )
+
+        # Raise an error if galaxy-classifier-service returns a non-success status.
+        classifier_response.raise_for_status()
+
+        # Return the selected service plus the classifier stub result.
+        return RouteResponse(
+            input_type=request.input_type,
+            selected_service=selected_service,
+            status="stub",
+            classification=classifier_response.json(),
+        )
+
+    # Return the stub route for services that are not implemented yet.
     return RouteResponse(
         input_type=request.input_type,
         selected_service=selected_service,
