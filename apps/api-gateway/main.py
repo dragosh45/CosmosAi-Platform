@@ -20,6 +20,10 @@ class RouteRequest(BaseModel):
     image_id: str | None = None
     # Optional URI/path for image-based requests.
     image_uri: str | None = None
+    # Optional local/demo identifier for spectrum-based requests.
+    spectrum_id: str | None = None
+    # Optional URI/path for spectrum-based requests.
+    spectrum_uri: str | None = None
 
 
 # Define the JSON body returned by POST /route.
