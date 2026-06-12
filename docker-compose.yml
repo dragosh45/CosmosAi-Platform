@@ -1,0 +1,17 @@
+# Define the services that Docker Compose should manage for this project.
+services:
+  # Run the FastAPI API Gateway service.
+  api-gateway:
+    # Build the Docker image from the api-gateway service folder.
+    build:
+      # Use apps/api-gateway as the Docker build context.
+      context: ./apps/api-gateway
+      # Use the Dockerfile inside apps/api-gateway.
+      dockerfile: Dockerfile
+    # Give the built image a clear local name.
+    image: cosmosai-api-gateway:latest
+    # Give the running container a predictable name.
+    container_name: cosmosai-api-gateway
+    # Map host port 8000 to container port 8000.
+    ports:
+      - "8000:8000"
