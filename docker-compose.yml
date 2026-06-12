@@ -31,3 +31,19 @@ services:
     # Map host port 8001 to container port 8000.
     ports:
       - "8001:8000"
+
+  # Run the FastAPI Galaxy Classifier service.
+  galaxy-classifier-service:
+    # Build the Docker image from the galaxy-classifier-service folder.
+    build:
+      # Use apps/galaxy-classifier-service as the Docker build context.
+      context: ./apps/galaxy-classifier-service
+      # Use the Dockerfile inside apps/galaxy-classifier-service.
+      dockerfile: Dockerfile
+    # Give the built image a clear local name.
+    image: cosmosai-galaxy-classifier-service:latest
+    # Give the running container a predictable name.
+    container_name: cosmosai-galaxy-classifier-service
+    # Map host port 8002 to container port 8000.
+    ports:
+      - "8002:8000"
