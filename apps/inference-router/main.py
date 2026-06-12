@@ -11,9 +11,12 @@ import requests
 # Internal Docker Compose URL for the galaxy-classifier-service endpoint.
 GALAXY_CLASSIFIER_URL = "http://galaxy-classifier-service:8000/classify"
 
+# Internal Docker Compose URL for the stellar-classifier-service endpoint.
+STELLAR_CLASSIFIER_URL = "http://stellar-classifier-service:8000/classify"
+
 
 # Map known input types to the service that will handle them later.
-# Stellar routing is still stubbed; galaxy routing now calls its service stub.
+# Galaxy and stellar routing call service stubs; no real ML runs yet.
 SERVICE_BY_INPUT_TYPE = {
     "galaxy_image": "galaxy-classifier-service",
     "stellar_spectrum": "stellar-classifier-service",
@@ -28,6 +31,10 @@ class RouteRequest(BaseModel):
     image_id: str | None = None
     # Optional URI/path for image-based requests.
     image_uri: str | None = None
+    # Optional local/demo identifier for spectrum-based requests.
+    spectrum_id: str | None = None
+    # Optional URI/path for spectrum-based requests.
+    spectrum_uri: str | None = None
 
 
 # Define the JSON body returned by POST /route.
@@ -92,7 +99,29 @@ def route(request: RouteRequest) -> RouteResponse:
             classification=classifier_response.json(),
         )
 
-    # Return the stub route for services that are not implemented yet.
+    # Call the stellar classifier stub when the request is for a stellar spectrum.
+    if request.input_type == "stellar_spectrum":
+        classifier_response = requests.post(
+            STELLAR_CLASSIFIER_URL,
+            json={
+                "spectrum_id": request.spectrum_id,
+                "spectrum_uri": request.spectrum_uri,
+            },
+            timeout=5,
+        )
+
+        # Raise an error if stellar-classifier-service returns a non-success status.
+        classifier_response.raise_for_status()
+
+        # Return the selected service plus the classifier stub result.
+        return RouteResponse(
+            input_type=request.input_type,
+            selected_service=selected_service,
+            status="stub",
+            classification=classifier_response.json(),
+        )
+
+    # Return the stub route for future supported services that are not wired yet.
     return RouteResponse(
         input_type=request.input_type,
         selected_service=selected_service,
