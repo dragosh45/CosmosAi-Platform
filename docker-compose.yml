@@ -47,3 +47,19 @@ services:
     # Map host port 8002 to container port 8000.
     ports:
       - "8002:8000"
+
+  # Run the FastAPI Stellar Classifier service.
+  stellar-classifier-service:
+    # Build the Docker image from the stellar-classifier-service folder.
+    build:
+      # Use apps/stellar-classifier-service as the Docker build context.
+      context: ./apps/stellar-classifier-service
+      # Use the Dockerfile inside apps/stellar-classifier-service.
+      dockerfile: Dockerfile
+    # Give the built image a clear local name.
+    image: cosmosai-stellar-classifier-service:latest
+    # Give the running container a predictable name.
+    container_name: cosmosai-stellar-classifier-service
+    # Map host port 8003 to container port 8000.
+    ports:
+      - "8003:8000"
