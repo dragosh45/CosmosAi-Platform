@@ -96,16 +96,18 @@ mlops/
 
 ## Current build status
 
-The project is currently in the initial setup phase.
+The project has completed the local service foundation step.
 
-First milestone:
+Current completed foundation:
 
 ```text
 FastAPI API Gateway
-GET /health endpoint
-Dockerfile
-local run instructions
-first working commit
+Inference Router
+Galaxy Classifier Service stub
+Stellar Classifier Service stub
+Docker Compose local service network
+Mocked service-to-service routing
+Basic pytest service contract tests
 ```
 
 ## Run the API Gateway locally
@@ -127,6 +129,30 @@ Expected response:
 
 ```json
 {"status":"ok","service":"api-gateway"}
+```
+
+## Run local tests
+
+Install the lightweight development test dependency:
+
+```bash
+cd /opt/projects/cosmosai-platform
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+```
+
+Run the service contract tests:
+
+```bash
+cd /opt/projects/cosmosai-platform
+source .venv/bin/activate
+pytest
+```
+
+Expected result:
+
+```text
+4 passed
 ```
 
 ## Project goal
