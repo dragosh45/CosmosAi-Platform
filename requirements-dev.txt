@@ -1,0 +1,2 @@
+# Pytest runs the lightweight local contract tests without Docker.
+pytest==8.4.1
