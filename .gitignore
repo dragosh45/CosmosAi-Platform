@@ -17,7 +17,7 @@ models/
 .vscode/
 
 # Private documentation
-docs/*.md
+docs/**
 
 # Keep docs folder structure
 !docs/.gitkeep

@@ -4,12 +4,22 @@ import importlib.util
 # Import Path to build stable file paths from the repository root.
 from pathlib import Path
 
+# Import sys so tests can make local script imports available.
+import sys
+
 # Import pytest so the shared loader can be exposed as a test fixture.
 import pytest
 
 
 # Store the repository root so tests can find app files from any working directory.
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+# Store the scripts folder so modules loaded by path can import sibling scripts.
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+
+# Make scripts/ importable for tests that load standalone script files.
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
 
 # Provide a reusable loader to tests that need to import service main.py files.
