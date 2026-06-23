@@ -1,3 +1,5 @@
+# Docs: docs/architecture.md Step 0 explains this service's routing flow and links to this code.
+
 # Import FastAPI, the web framework used to create HTTP API endpoints.
 from fastapi import FastAPI
 
