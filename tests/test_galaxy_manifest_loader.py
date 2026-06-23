@@ -21,7 +21,7 @@ def test_load_sample_galaxy_manifest(load_service_module):
     # Verify that the first row becomes a structured record.
     assert records[0] == loader.GalaxyManifestRecord(
         image_id="gz2-000001",
-        image_path=Path("processed/images_224/gz2-000001.jpg"),
+        image_path=Path("processed/images_224/gz2-000001.ppm"),
         label="spiral",
         split="train",
         source="galaxy_zoo_2",
@@ -127,7 +127,7 @@ def test_resolved_galaxy_image_paths_by_id(load_service_module):
 
     # Verify one known sample record resolves predictably.
     assert paths_by_id["gz2-000001"] == Path(
-        "/tmp/cosmosai-data/galaxy/processed/images_224/gz2-000001.jpg"
+        "/tmp/cosmosai-data/galaxy/processed/images_224/gz2-000001.ppm"
     )
 
 
@@ -172,7 +172,7 @@ def test_missing_galaxy_image_paths_ignores_existing_file(
 
     # Create one fake image file matching the first sample manifest row.
     existing_image_path = (
-        tmp_path / "processed" / "images_224" / "gz2-000001.jpg"
+        tmp_path / "processed" / "images_224" / "gz2-000001.ppm"
     )
     existing_image_path.parent.mkdir(parents=True)
     existing_image_path.write_text("fake image placeholder", encoding="utf-8")

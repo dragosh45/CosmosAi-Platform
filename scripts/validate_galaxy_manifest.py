@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Docs: docs/architecture.md Step 1 and docs/excalidraw/manifest_tooling_code_flow.excalidraw explain this validator.
+
 # Import argparse to support validating any manifest path from the command line.
 import argparse
 

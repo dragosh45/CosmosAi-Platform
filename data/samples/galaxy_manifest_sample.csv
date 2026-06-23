@@ -1,5 +1,5 @@
 image_id,image_path,label,split,source,label_confidence,original_filename,width,height,notes
-gz2-000001,processed/images_224/gz2-000001.jpg,spiral,train,galaxy_zoo_2,0.92,12345.jpg,224,224,sample spiral training row
+gz2-000001,processed/images_224/gz2-000001.ppm,spiral,train,galaxy_zoo_2,0.92,12345.ppm,3,3,sample spiral training row with tiny local image
 gz2-000002,processed/images_224/gz2-000002.jpg,elliptical,val,galaxy_zoo_2,0.88,12346.jpg,224,224,sample elliptical validation row
 gz2-000003,processed/images_224/gz2-000003.jpg,irregular,test,galaxy_zoo_2,0.81,12347.jpg,224,224,sample irregular test row
 gz2-000004,processed/images_224/gz2-000004.jpg,lenticular,train,galaxy_zoo_2,0.79,12348.jpg,224,224,sample lenticular training row
