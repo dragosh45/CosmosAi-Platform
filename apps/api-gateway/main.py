@@ -1,4 +1,12 @@
 # Docs: docs/architecture.md Step 0 explains this service's API flow and links to this code.
+#
+# Concepts in this file:
+# - FastAPI app: the HTTP server object that exposes endpoints.
+# - Pydantic models: typed request/response schemas for JSON bodies.
+# - API Gateway: the public entry point that hides internal service details.
+# - Docker Compose hostname: "inference-router" resolves to another container.
+# - HTTP forwarding: the gateway sends the request to inference-router.
+# - Response validation: gateway JSON is converted back into RouteResponse.
 
 # Import FastAPI, the web framework used to create HTTP API endpoints.
 from fastapi import FastAPI
