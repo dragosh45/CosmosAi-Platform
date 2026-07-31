@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Docs: docs/architecture.md Step 2 explains the current model-ready dataset path.
+# Docs: docs/architecture.md Step 3 explains the current training skeleton path.
 
 # Import argparse so the skeleton can run from the command line.
 import argparse
@@ -77,6 +77,37 @@ class CnnSkeletonTrainingSummary:
     first_step: CnnSkeletonTrainingStep | None
 
 
+# Store the temporary fake model behind a model-like interface.
+@dataclass(frozen=True)
+class PlaceholderGalaxyModel:
+    # Number of output classes this placeholder should produce logits for.
+    label_count: int = len(LABEL_TO_ID)
+
+    # Compute fake logits with the same outside shape as a future model forward pass.
+    def forward(self, sample: GalaxyTrainingSample) -> list[float]:
+        # This is a fake feature, standing in for future convolutional feature extraction.
+        mean_value = sum(sample.tensor.values) / len(sample.tensor.values)
+
+        # This shape feature proves the model interface can see tensor dimensions.
+        height, width, channels = sample.tensor.shape
+        shape_value = (height + width + channels) / 100.0
+
+        # Return one score per label; these are not learned weights.
+        logits = [
+            0.10 + mean_value * 0.20,
+            0.15 + mean_value * 0.15,
+            0.05 + shape_value,
+            0.08 + (1.0 - mean_value) * 0.10,
+        ]
+
+        # Keep the placeholder output aligned with the current label mapping.
+        if len(logits) != self.label_count:
+            raise ValueError("Placeholder logits must match the label count")
+
+        # Return fake model output scores.
+        return logits
+
+
 # Load manifest rows and convert them into train, val, and test sample buckets.
 def load_dataset_splits_from_manifest(
     manifest_path: Path,
@@ -96,20 +127,8 @@ def load_dataset_splits_from_manifest(
 
 # Compute tiny placeholder logits from a sample tensor.
 def placeholder_cnn_logits(sample: GalaxyTrainingSample) -> list[float]:
-    # This is a fake feature, standing in for future convolutional feature extraction.
-    mean_value = sum(sample.tensor.values) / len(sample.tensor.values)
-
-    # This shape feature proves the loop can see tensor dimensions.
-    height, width, channels = sample.tensor.shape
-    shape_value = (height + width + channels) / 100.0
-
-    # Return one score per label; these are not learned weights.
-    return [
-        0.10 + mean_value * 0.20,
-        0.15 + mean_value * 0.15,
-        0.05 + shape_value,
-        0.08 + (1.0 - mean_value) * 0.10,
-    ]
+    # Keep this helper for simple concept links while the model interface matures.
+    return PlaceholderGalaxyModel().forward(sample)
 
 
 # Convert logits into probabilities that sum to about 1.0.
@@ -143,13 +162,13 @@ def cross_entropy_loss(probabilities: list[float], label_id: int) -> float:
 # Run one placeholder training step for one sample.
 def run_placeholder_training_step(
     sample: GalaxyTrainingSample,
+    model: PlaceholderGalaxyModel | None = None,
 ) -> CnnSkeletonTrainingStep:
-    # Compute fake CNN-like output scores from tensor values.
-    logits = placeholder_cnn_logits(sample)
+    # Use the provided model or create the default placeholder model.
+    active_model = model if model is not None else PlaceholderGalaxyModel()
 
-    # Keep the placeholder output aligned with the current label mapping.
-    if len(logits) != len(LABEL_TO_ID):
-        raise ValueError("Placeholder logits must match the label count")
+    # Compute fake CNN-like output scores through a model-like forward method.
+    logits = active_model.forward(sample)
 
     # Convert the output scores into probabilities.
     probabilities = softmax(logits)
@@ -178,6 +197,7 @@ def run_placeholder_training_step(
 def run_training_loop(
     dataset_splits: GalaxyDatasetSplits,
     epochs: int = 1,
+    model: PlaceholderGalaxyModel | None = None,
 ) -> CnnSkeletonTrainingSummary:
     # Fail clearly because zero or negative epochs do not make sense.
     if epochs < 1:
@@ -191,11 +211,14 @@ def run_training_loop(
     # Store each placeholder step result.
     steps: list[CnnSkeletonTrainingStep] = []
 
+    # Use one model object for the whole training run, like real training will.
+    active_model = model if model is not None else PlaceholderGalaxyModel()
+
     # Repeat over epochs like a real training loop will do later.
     for _epoch in range(epochs):
         # Iterate over train samples only; validation/test are not trained on.
         for sample in train_samples:
-            steps.append(run_placeholder_training_step(sample))
+            steps.append(run_placeholder_training_step(sample, active_model))
 
     # Calculate average loss, using 0.0 when there are no train samples.
     average_loss = (

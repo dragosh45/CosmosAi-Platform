@@ -43,6 +43,27 @@ def test_training_loop_skeleton_runs_one_step(load_service_module):
     assert abs(sum(summary.first_step.probabilities) - 1.0) < 0.000001
 
 
+# Test that the placeholder model exposes the future model-style forward interface.
+def test_placeholder_model_forward_returns_one_logit_per_label(load_service_module):
+    # Load the training skeleton under test.
+    training_script = load_service_module(
+        "galaxy_cnn_baseline_placeholder_model",
+        "scripts/train_galaxy_cnn_baseline.py",
+    )
+
+    # Load current sample splits using the production helper.
+    dataset_splits = _load_sample_splits(training_script)
+    train_sample = dataset_splits.samples_by_split["train"][0]
+
+    # Create the placeholder model and run a forward pass.
+    model = training_script.PlaceholderGalaxyModel()
+    logits = model.forward(train_sample)
+
+    # Verify the placeholder model produces one raw score per known label.
+    assert len(logits) == len(training_script.LABEL_TO_ID)
+    assert logits == training_script.placeholder_cnn_logits(train_sample)
+
+
 # Test that epochs repeat the training-shaped loop over train samples.
 def test_training_loop_skeleton_repeats_for_epochs(load_service_module):
     # Load the training skeleton under test.
