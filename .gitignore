@@ -15,6 +15,7 @@ models/
 
 # Editor
 .vscode/
+.obsidian/
 
 # Private documentation
 docs/**

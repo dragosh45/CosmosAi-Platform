@@ -96,7 +96,7 @@ mlops/
 
 ## Current build status
 
-The project has completed the local service foundation step.
+The project has completed the local service foundation step and is now building the first galaxy model/inference proof path.
 
 Current completed foundation:
 
@@ -109,6 +109,22 @@ Docker Compose local service network
 Mocked service-to-service routing
 Basic pytest service contract tests
 ```
+
+Current galaxy ML proof path:
+
+```text
+manifest validation/loading
+tiny image loading
+pixel preprocessing
+model-ready samples
+train/validation/test split buckets
+TinyGalaxyCNN PyTorch proof
+training loop / evaluation proof
+checkpoint save/load
+checkpoint inference command
+```
+
+The current galaxy model work is still a tiny local proof, not a useful full Galaxy Zoo-trained model yet.
 
 ## Run the API Gateway locally
 
@@ -149,10 +165,10 @@ source .venv/bin/activate
 pytest
 ```
 
-Expected result:
+Current result:
 
 ```text
-4 passed
+38 passed
 ```
 
 ## Project goal
