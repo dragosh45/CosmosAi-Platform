@@ -269,6 +269,54 @@ def test_tiny_galaxy_cnn_evaluation_is_read_only(load_service_module):
     )
 
 
+# Test that a trained tiny model can be saved and loaded into a fresh model.
+def test_tiny_galaxy_cnn_checkpoint_round_trip(load_service_module, tmp_path):
+    # Load the training skeleton under test.
+    training_script = load_service_module(
+        "galaxy_cnn_baseline_torch_checkpoint",
+        "scripts/train_galaxy_cnn_baseline.py",
+    )
+
+    # Load the current tiny dataset splits.
+    dataset_splits = _load_sample_splits(training_script)
+    train_sample = dataset_splits.samples_by_split["train"][0]
+
+    # Train one tiny model so the checkpoint contains updated weights.
+    model = training_script.create_tiny_galaxy_cnn()
+    training_script.run_torch_training_loop(
+        dataset_splits,
+        epochs=2,
+        model=model,
+    )
+
+    # Save into pytest's temporary folder instead of the repo artifact folder.
+    checkpoint_path = tmp_path / "tiny_galaxy_cnn.pt"
+    result = training_script.run_torch_checkpoint_round_trip(
+        train_sample,
+        model,
+        checkpoint_path,
+    )
+
+    # Verify a real checkpoint file was written.
+    assert result.checkpoint_path == checkpoint_path
+    assert checkpoint_path.exists()
+
+    # Verify the loaded model reproduces the trained model's prediction.
+    assert result.image_id == "gz2-000001"
+    assert result.saved_model_predicted_label_id == 1
+    assert result.loaded_model_predicted_label_id == 1
+    assert result.logits_match is True
+    assert result.probabilities_match is True
+
+    # Verify the lower-level loader can return a usable fresh model too.
+    loaded_model = training_script.load_torch_checkpoint(checkpoint_path)
+    loaded_result = training_script.run_torch_forward_pass(
+        train_sample,
+        model=loaded_model,
+    )
+    assert loaded_result.predicted_label_id == 1
+
+
 # Test that epochs repeat the training-shaped loop over train samples.
 def test_training_loop_skeleton_repeats_for_epochs(load_service_module):
     # Load the training skeleton under test.

@@ -4,6 +4,8 @@
 # Docs: docs/architecture.md Step 4 explains the PyTorch forward-pass proof.
 # Docs: docs/architecture.md Step 5 explains the first real PyTorch weight update.
 # Docs: docs/architecture.md Step 6 explains the tiny real PyTorch training loop.
+# Docs: docs/architecture.md Step 7 explains the read-only evaluation proof.
+# Docs: docs/architecture.md Step 8 explains the tiny checkpoint save/load proof.
 
 # Import argparse so the skeleton can run from the command line.
 import argparse
@@ -224,6 +226,28 @@ class TorchEvaluationSplitResult:
 
     # First sample probability assigned to its correct class.
     first_correct_probability: float | None
+
+
+# Store the result of saving and loading one tiny PyTorch checkpoint.
+@dataclass(frozen=True)
+class TorchCheckpointRoundTripResult:
+    # Filesystem path where the model weights were saved.
+    checkpoint_path: Path
+
+    # Image ID used to compare the trained model and loaded model.
+    image_id: str
+
+    # Predicted class ID before saving the checkpoint.
+    saved_model_predicted_label_id: int
+
+    # Predicted class ID after loading the checkpoint into a fresh model.
+    loaded_model_predicted_label_id: int
+
+    # True when loaded logits match the trained model logits.
+    logits_match: bool
+
+    # True when loaded probabilities match the trained model probabilities.
+    probabilities_match: bool
 
 
 # Store the temporary fake model behind a model-like interface.
@@ -749,6 +773,84 @@ def evaluate_torch_model(
     }
 
 
+# Save the current TinyGalaxyCNN weights to disk.
+def save_torch_checkpoint(
+    model: TinyGalaxyCNN,
+    checkpoint_path: Path,
+) -> Path:
+    # Create the parent folder, for example models/, if it does not exist yet.
+    checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # state_dict is PyTorch's dictionary of learned tensors/weights.
+    # The architecture stays in code; the checkpoint stores the learned numbers.
+    checkpoint = {
+        "model_state_dict": model.state_dict(),
+        "label_to_id": LABEL_TO_ID,
+        "label_count": len(LABEL_TO_ID),
+    }
+
+    # Write the checkpoint file. This is what serving code will load later.
+    torch.save(checkpoint, checkpoint_path)
+
+    # Return the path so callers can print or test it.
+    return checkpoint_path
+
+
+# Load a TinyGalaxyCNN checkpoint into a fresh model object.
+def load_torch_checkpoint(checkpoint_path: Path) -> TinyGalaxyCNN:
+    # Load the checkpoint from CPU so this works on machines without a GPU.
+    checkpoint = torch.load(checkpoint_path, map_location="cpu")
+
+    # Fail clearly if the checkpoint was created for a different label mapping.
+    if checkpoint.get("label_to_id") != LABEL_TO_ID:
+        raise ValueError("Checkpoint label mapping does not match current code")
+
+    # Create a fresh model architecture, then fill it with saved learned weights.
+    model = create_tiny_galaxy_cnn(label_count=checkpoint["label_count"])
+    model.load_state_dict(checkpoint["model_state_dict"])
+
+    # Evaluation mode is the normal mode for a loaded model used for prediction.
+    model.eval()
+
+    # Return the loaded model so caller code can run predictions.
+    return model
+
+
+# Prove a saved checkpoint can load into a fresh model with the same prediction.
+def run_torch_checkpoint_round_trip(
+    sample: GalaxyTrainingSample,
+    trained_model: TinyGalaxyCNN,
+    checkpoint_path: Path,
+) -> TorchCheckpointRoundTripResult:
+    # Save the trained model's current learned weights to disk.
+    saved_path = save_torch_checkpoint(trained_model, checkpoint_path)
+
+    # Load those weights into a fresh TinyGalaxyCNN instance.
+    loaded_model = load_torch_checkpoint(saved_path)
+
+    # Compare both models on the same sample without tracking gradients.
+    trained_result = run_torch_forward_pass(sample, model=trained_model)
+    loaded_result = run_torch_forward_pass(sample, model=loaded_model)
+
+    # allclose allows tiny float differences while still proving practical equality.
+    trained_logits = torch.tensor(trained_result.logits)
+    loaded_logits = torch.tensor(loaded_result.logits)
+    trained_probabilities = torch.tensor(trained_result.probabilities)
+    loaded_probabilities = torch.tensor(loaded_result.probabilities)
+
+    # Return a compact proof for tests and terminal output.
+    return TorchCheckpointRoundTripResult(
+        checkpoint_path=saved_path,
+        image_id=sample.image_id,
+        saved_model_predicted_label_id=trained_result.predicted_label_id,
+        loaded_model_predicted_label_id=loaded_result.predicted_label_id,
+        logits_match=bool(torch.allclose(trained_logits, loaded_logits)),
+        probabilities_match=bool(
+            torch.allclose(trained_probabilities, loaded_probabilities)
+        ),
+    )
+
+
 # Run one placeholder training step for one sample.
 def run_placeholder_training_step(
     sample: GalaxyTrainingSample,
@@ -871,6 +973,13 @@ def parse_args() -> argparse.Namespace:
         "--strict",
         action="store_true",
         help="Fail on missing or unreadable images instead of skipping them.",
+    )
+
+    # Accept a local checkpoint path for the tiny save/load proof.
+    parser.add_argument(
+        "--checkpoint-path",
+        default="models/tiny_galaxy_cnn_baseline.pt",
+        help="Path where the tiny trained PyTorch checkpoint should be saved.",
     )
 
     # Return the parsed arguments.
@@ -1049,6 +1158,32 @@ def print_torch_evaluation_results(
     print("  status: read-only evaluation completed - no weights updated")
 
 
+# Print the checkpoint save/load proof.
+def print_torch_checkpoint_result(
+    result: TorchCheckpointRoundTripResult | None,
+) -> None:
+    # Explain why checkpointing may be skipped when no model was trained.
+    if result is None:
+        print("PyTorch checkpoint proof: skipped because no trained model exists")
+        return
+
+    # Print the checkpoint path and the comparison between saved and loaded models.
+    print("PyTorch checkpoint proof")
+    print(f"  checkpoint_path: {result.checkpoint_path}")
+    print(f"  image_id: {result.image_id}")
+    print(
+        "  saved_model_predicted_label_id: "
+        f"{result.saved_model_predicted_label_id}"
+    )
+    print(
+        "  loaded_model_predicted_label_id: "
+        f"{result.loaded_model_predicted_label_id}"
+    )
+    print(f"  logits_match: {result.logits_match}")
+    print(f"  probabilities_match: {result.probabilities_match}")
+    print("  status: checkpoint saved and loaded into a fresh model")
+
+
 # Run the training-loop skeleton from the command line.
 def main() -> int:
     # Read command-line arguments.
@@ -1100,6 +1235,17 @@ def main() -> int:
             if train_samples
             else None
         )
+
+        # Save and reload the trained weights to prove checkpoint round-tripping.
+        torch_checkpoint_result = (
+            run_torch_checkpoint_round_trip(
+                train_samples[0],
+                loop_model,
+                Path(args.checkpoint_path),
+            )
+            if train_samples
+            else None
+        )
     except (FileNotFoundError, ValueError) as error:
         # Print loading or configuration failures and return a non-zero exit code.
         print(error)
@@ -1119,6 +1265,9 @@ def main() -> int:
 
     # Print read-only evaluation metrics after the tiny training loop.
     print_torch_evaluation_results(torch_evaluation_results)
+
+    # Print the tiny checkpoint save/load proof.
+    print_torch_checkpoint_result(torch_checkpoint_result)
 
     # Return success.
     return 0
