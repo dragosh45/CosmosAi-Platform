@@ -5,9 +5,9 @@ services:
   galaxy-classifier-service:
     # Build a checkpoint-capable image from the repository root.
     build:
-      # Use the repo root so the Dockerfile can copy apps/ and scripts/.
+      # Use the repo root so the Dockerfile can copy apps/ and cosmosai/.
       context: .
-      # Use the optional Dockerfile that includes PyTorch and helper scripts.
+      # Use the optional Dockerfile that includes PyTorch and shared package code.
       dockerfile: apps/galaxy-classifier-service/Dockerfile.checkpoint
     # Give the optional image a clear local name.
     image: cosmosai-galaxy-classifier-service:checkpoint
@@ -19,8 +19,6 @@ services:
       COSMOSAI_GALAXY_MANIFEST_PATH: /app/data/samples/galaxy_manifest_sample.csv
       # Sample image root mounted from ./data/samples.
       COSMOSAI_GALAXY_DATA_ROOT: /app/data/samples/images
-      # Helper scripts copied into the optional checkpoint image.
-      COSMOSAI_SCRIPTS_PATH: /app/scripts
     # Mount local sample data and generated model artifacts read-only.
     volumes:
       # Mount ignored local model artifacts without committing them to git.

@@ -1,0 +1,2 @@
+"""CosmosAI shared application code."""
+

@@ -13,11 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the FastAPI service code into the image.
 COPY apps/galaxy-classifier-service/main.py .
 
-# Copy shared local scripts so the service can reuse checkpoint prediction helpers.
-COPY scripts ./scripts
-
-# Tell the service where copied helper scripts live inside this image.
-ENV COSMOSAI_SCRIPTS_PATH=/app/scripts
+# Copy the shared CosmosAI package used by checkpoint inference.
+COPY cosmosai ./cosmosai
 
 # Document that the container listens on port 8000 internally.
 EXPOSE 8000
