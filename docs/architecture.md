@@ -18,6 +18,7 @@ This file describes what is actually implemented and verified. Future roadmap it
 - [[#Step 9: Tiny Checkpoint Inference Proof|Step 9: Tiny Checkpoint Inference Proof]]
 - [[#Step 10: Optional Galaxy Service Checkpoint Inference|Step 10: Optional Galaxy Service Checkpoint Inference]]
 - [[#Step 11: Optional Docker Checkpoint Compose Path|Step 11: Optional Docker Checkpoint Compose Path]]
+- [[#Step 12: Shared Galaxy Inference Package|Step 12: Shared Galaxy Inference Package]]
 - [[#High-level architecture|High-level architecture]]
 - [[#Main services|Main services]]
 - [[#Infrastructure layer|Infrastructure layer]]
@@ -31,7 +32,7 @@ At this stage, routing works, but the classifiers are still stubs. That means th
 
 ### Step 0 API flow
 
-Code touchpoints: [api-gateway route()](vscode://file/opt/projects/cosmosai-platform/apps/api-gateway/main.py:67) receives the public request, [inference-router route()](vscode://file/opt/projects/cosmosai-platform/apps/inference-router/main.py:70) chooses the downstream service, then either [galaxy classify()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:179) or [stellar classify()](vscode://file/opt/projects/cosmosai-platform/apps/stellar-classifier-service/main.py:48) returns a response.
+Code touchpoints: [api-gateway route()](vscode://file/opt/projects/cosmosai-platform/apps/api-gateway/main.py:67) receives the public request, [inference-router route()](vscode://file/opt/projects/cosmosai-platform/apps/inference-router/main.py:70) chooses the downstream service, then either [galaxy classify()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:160) or [stellar classify()](vscode://file/opt/projects/cosmosai-platform/apps/stellar-classifier-service/main.py:48) returns a response.
 
 ```text
 User or client
@@ -166,8 +167,8 @@ Inference Router:
 Classifier stubs:
 
 - [apps/galaxy-classifier-service/main.py](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:1): galaxy classifier FastAPI stub.
-- [galaxy health()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:171): galaxy `GET /health` endpoint.
-- [galaxy classify()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:179): galaxy `POST /classify` endpoint.
+- [galaxy health()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:152): galaxy `GET /health` endpoint.
+- [galaxy classify()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:160): galaxy `POST /classify` endpoint.
 - [apps/stellar-classifier-service/main.py](vscode://file/opt/projects/cosmosai-platform/apps/stellar-classifier-service/main.py:1): stellar classifier FastAPI stub.
 - [stellar health()](vscode://file/opt/projects/cosmosai-platform/apps/stellar-classifier-service/main.py:40): stellar `GET /health` endpoint.
 - [stellar classify()](vscode://file/opt/projects/cosmosai-platform/apps/stellar-classifier-service/main.py:48): stellar `POST /classify` stub.
@@ -873,7 +874,7 @@ Step 9 covers milestone 38. It extends Step 8 from "checkpoint save/load round-t
 
 This is still not API serving. It is the local command-line shape that the future galaxy classifier service will reuse conceptually.
 
-Code touchpoints: [predict_from_checkpoint()](vscode://file/opt/projects/cosmosai-platform/scripts/predict_galaxy_checkpoint.py:120) loads one sample and checkpoint, [load_sample_for_prediction()](vscode://file/opt/projects/cosmosai-platform/scripts/predict_galaxy_checkpoint.py:66) reuses the existing manifest/image preprocessing path, [predict_sample_from_checkpoint()](vscode://file/opt/projects/cosmosai-platform/scripts/predict_galaxy_checkpoint.py:93) runs the loaded model forward pass, and [GalaxyCheckpointPrediction](vscode://file/opt/projects/cosmosai-platform/scripts/predict_galaxy_checkpoint.py:39) stores the prediction result.
+Code touchpoints: [predict_from_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:99) loads one sample and checkpoint, [load_sample_for_prediction()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:48) reuses the manifest/image preprocessing path, [predict_sample_from_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:72) runs the loaded model forward pass, and [GalaxyCheckpointPrediction](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:21) stores the prediction result. The command wrapper is [scripts/predict_galaxy_checkpoint.py](vscode://file/opt/projects/cosmosai-platform/scripts/predict_galaxy_checkpoint.py:1).
 
 ```text
 saved checkpoint file
@@ -936,7 +937,7 @@ Step 10 covers milestone 39. It extends Step 9 from "checkpoint inference exists
 
 The default service behavior is still safe stub mode. The service only uses checkpoint inference when all required local environment variables are configured.
 
-Code touchpoints: [classify()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:179) keeps the public FastAPI endpoint, [classify_with_optional_checkpoint()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:124) tries the optional checkpoint path, [get_checkpoint_inference_config()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:72) reads the environment config, and [predict_from_checkpoint()](vscode://file/opt/projects/cosmosai-platform/scripts/predict_galaxy_checkpoint.py:120) runs the existing local checkpoint inference path.
+Code touchpoints: [classify()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:160) keeps the public FastAPI endpoint, [classify_with_optional_checkpoint()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:105) tries the optional checkpoint path, [get_checkpoint_inference_config()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:86) reads the environment config, and [predict_from_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:99) runs the shared checkpoint inference path.
 
 ```text
 POST /classify
@@ -1036,7 +1037,7 @@ Step 11 covers milestone 40. It extends Step 10 from "the service can use checkp
 
 The normal [docker-compose.yml](vscode://file/opt/projects/cosmosai-platform/docker-compose.yml:1) stays stub-safe. The checkpoint path is enabled only by adding [docker-compose.checkpoint.yml](vscode://file/opt/projects/cosmosai-platform/docker-compose.checkpoint.yml:1) as an override.
 
-Code touchpoints: [Dockerfile.checkpoint](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/Dockerfile.checkpoint:1) builds a checkpoint-capable galaxy service image, [requirements-checkpoint.txt](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/requirements-checkpoint.txt:1) adds CPU PyTorch, [ensure_scripts_import_path()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:91) makes copied helper scripts importable, and [smoke_test_compose_checkpoint.sh](vscode://file/opt/projects/cosmosai-platform/scripts/smoke_test_compose_checkpoint.sh:1) verifies the full path.
+Code touchpoints: [Dockerfile.checkpoint](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/Dockerfile.checkpoint:1) builds a checkpoint-capable galaxy service image, [requirements-checkpoint.txt](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/requirements-checkpoint.txt:1) adds CPU PyTorch, [docker-compose.checkpoint.yml](vscode://file/opt/projects/cosmosai-platform/docker-compose.checkpoint.yml:1) sets the checkpoint paths, and [smoke_test_compose_checkpoint.sh](vscode://file/opt/projects/cosmosai-platform/scripts/smoke_test_compose_checkpoint.sh:1) verifies the full path.
 
 ```text
 docker-compose.yml
@@ -1045,6 +1046,7 @@ docker-compose.yml
 docker-compose.checkpoint.yml
   -> overrides only galaxy-classifier-service
   -> uses Dockerfile.checkpoint
+  -> copies cosmosai/ shared package into the service image
   -> mounts ./models read-only
   -> mounts ./data/samples read-only
   -> sets checkpoint/manifest/data-root environment variables
@@ -1099,7 +1101,7 @@ Step 11 proves:
 ```text
 the default Docker Compose path stays simple and stub-safe
 an optional Compose override can enable checkpoint inference locally
-the galaxy service container can access copied helper scripts
+the galaxy service container can access the copied cosmosai/ shared package
 the galaxy service container can read mounted sample data and model artifacts
 the full api-gateway -> inference-router -> galaxy-classifier-service path works with checkpoint_inference
 ```
@@ -1114,6 +1116,99 @@ model registry
 cloud deployment
 Kubernetes
 Triton or edge deployment
+```
+
+## Step 12: Shared Galaxy Inference Package
+
+Step 12 covers milestone 41. It refactors the checkpoint inference path so both the CLI command and FastAPI galaxy service use shared package code instead of importing service logic from `scripts/`.
+
+The package is under [cosmosai/galaxy](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/__init__.py:1). This moves reusable runtime code toward normal application modules, while keeping the old command-line scripts available as learning and inspection entrypoints.
+
+### Step 12 Package Flow
+
+```text
+scripts/predict_galaxy_checkpoint.py
+  -> thin CLI wrapper
+  -> cosmosai.galaxy.checkpoint_inference.predict_from_checkpoint()
+
+apps/galaxy-classifier-service/main.py
+  -> FastAPI /classify endpoint
+  -> classify_with_optional_checkpoint()
+  -> cosmosai.galaxy.checkpoint_inference.predict_from_checkpoint()
+
+apps/galaxy-classifier-service/Dockerfile.checkpoint
+  -> copies cosmosai/ into the checkpoint-capable service image
+```
+
+### Step 12 Shared Modules
+
+```text
+cosmosai/galaxy/labels.py
+  shared label IDs and reverse label lookup
+
+cosmosai/galaxy/manifest.py
+  manifest validation, loading, split grouping, and path resolution
+
+cosmosai/galaxy/image_loader.py
+  tiny PPM image loading helpers
+
+cosmosai/galaxy/preprocessing.py
+  raw pixel values -> normalized tensor-like values
+
+cosmosai/galaxy/training_sample.py
+  manifest record + tensor + label_id sample object
+
+cosmosai/galaxy/model.py
+  TinyGalaxyCNN, tensor conversion, checkpoint save/load, forward pass helpers
+
+cosmosai/galaxy/checkpoint_inference.py
+  checkpoint + manifest + image_id -> prediction result
+```
+
+### Step 12 Code Touchpoints
+
+Shared inference:
+
+- [GalaxyCheckpointPrediction](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:21)
+- [load_sample_for_prediction()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:48)
+- [predict_sample_from_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:72)
+- [predict_from_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:99)
+
+Shared model helpers:
+
+- [TinyGalaxyCNN](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:59)
+- [galaxy_tensor_to_torch_image()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:98)
+- [run_torch_forward_pass()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:128)
+- [save_torch_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:167)
+- [load_torch_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:189)
+
+Entrypoints using shared inference:
+
+- [CLI wrapper](vscode://file/opt/projects/cosmosai-platform/scripts/predict_galaxy_checkpoint.py:1)
+- [service checkpoint helper](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:105)
+- [checkpoint Dockerfile](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/Dockerfile.checkpoint:1)
+
+### Step 12 Boundary
+
+Step 12 proves:
+
+```text
+checkpoint inference code can live in a shared importable package
+the CLI prediction script can reuse the package helper
+the galaxy FastAPI service can reuse the same package helper
+the optional checkpoint Docker image no longer needs to copy scripts/
+the checkpoint route still keeps stub fallback behavior
+```
+
+Step 12 does not do:
+
+```text
+full cleanup of all older data CLI scripts
+full deduplication of the large training script
+real dataset download
+real useful Galaxy Zoo-trained model
+production model packaging
+cloud, Kubernetes, Triton, or edge deployment
 ```
 
 ## High-level architecture
@@ -1220,7 +1315,7 @@ Current response shape:
 
 Input:
 
-Code entry points: [health()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:171), [classify()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:179), [classify_with_optional_checkpoint()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:124).
+Code entry points: [health()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:152), [classify()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:160), [classify_with_optional_checkpoint()](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:105).
 
 ```text
 galaxy image

@@ -1515,15 +1515,112 @@ Observed checkpoint route response:
 {"input_type":"galaxy_image","selected_service":"galaxy-classifier-service","status":"stub","classification":{"image_id":"gz2-000001","image_uri":null,"label":"spiral","confidence":0.352059543132782,"status":"checkpoint_inference"}}
 ```
 
-## Next milestone
+## Completed milestone
 
-Build Milestone 41:
+Build Milestone 41 completed:
 
 ```text
-refactor reusable galaxy checkpoint inference code into a shared importable module/package
-keep CLI scripts and FastAPI service using the same shared helper
-remove long-term reliance on copying the scripts/ folder as service internals
-preserve the optional Docker checkpoint override behavior
+added cosmosai/ shared package root
+added cosmosai.galaxy modules for labels, manifest loading, image loading, preprocessing, training samples, tiny model helpers, and checkpoint inference
+refactored scripts/predict_galaxy_checkpoint.py into a thin CLI wrapper around cosmosai.galaxy.checkpoint_inference
+refactored galaxy-classifier-service to call cosmosai.galaxy.checkpoint_inference directly
+removed the service helper that added scripts/ to sys.path
+updated Dockerfile.checkpoint to copy cosmosai/ instead of scripts/
+removed COSMOSAI_SCRIPTS_PATH from docker-compose.checkpoint.yml
+preserved default docker-compose.yml stub-safe behavior
+preserved optional Docker checkpoint override behavior
+kept the current training script working for checkpoint creation
+did not download the full dataset yet
+did not add cloud, Kubernetes, Triton, or edge deployment yet
+```
+
+Implementation files:
+
+```text
+cosmosai/__init__.py
+cosmosai/galaxy/__init__.py
+cosmosai/galaxy/labels.py
+cosmosai/galaxy/manifest.py
+cosmosai/galaxy/image_loader.py
+cosmosai/galaxy/preprocessing.py
+cosmosai/galaxy/training_sample.py
+cosmosai/galaxy/model.py
+cosmosai/galaxy/checkpoint_inference.py
+scripts/predict_galaxy_checkpoint.py
+apps/galaxy-classifier-service/main.py
+apps/galaxy-classifier-service/Dockerfile.checkpoint
+docker-compose.checkpoint.yml
+```
+
+Documentation updated:
+
+```text
+docs/architecture.md
+```
+
+Tested focused checkpoint/service path:
+
+```bash
+cd /opt/projects/cosmosai-platform
+.venv/bin/python -m pytest tests/test_predict_galaxy_checkpoint.py tests/test_service_contracts.py
+```
+
+Result:
+
+```text
+8 passed in 4.07s
+```
+
+Tested full pytest suite:
+
+```bash
+cd /opt/projects/cosmosai-platform
+.venv/bin/python -m pytest
+```
+
+Result:
+
+```text
+40 passed in 3.45s
+```
+
+Tested optional checkpoint Docker Compose smoke test:
+
+```bash
+cd /opt/projects/cosmosai-platform
+scripts/smoke_test_compose_checkpoint.sh
+```
+
+Result:
+
+```text
+PASS: api-gateway health
+PASS: inference-router health
+PASS: galaxy-classifier-service health
+PASS: stellar-classifier-service health
+PASS: api-gateway galaxy checkpoint route
+PASS: api-gateway stellar stub route
+All optional checkpoint Docker Compose smoke tests passed.
+```
+
+Boundary note:
+
+```text
+checkpoint inference is now shared package code
+the prediction CLI and FastAPI service use the same package helper
+the large training script still has its own training-loop implementation
+full deduplication of training code is a future cleanup step
+```
+
+## Next milestone
+
+Build Milestone 42:
+
+```text
+deduplicate the training script by importing shared model/data helpers from cosmosai.galaxy
+keep current training CLI output stable
+keep checkpoint creation compatible with the shared inference package
+update architecture notes if code ownership changes
 run pytest and optional Docker checkpoint smoke tests
 do not download the full dataset yet
 do not add cloud, Kubernetes, Triton, or edge deployment yet

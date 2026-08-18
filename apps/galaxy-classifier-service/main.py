@@ -1,5 +1,6 @@
 # Docs: docs/architecture.md Step 0 explains this service stub and links to this code.
 # Docs: docs/architecture.md Step 10 explains the optional checkpoint inference helper.
+# Docs: docs/architecture.md Step 12 explains the shared package inference helper.
 
 # Import os so the service can read optional local checkpoint configuration.
 import os
@@ -7,7 +8,7 @@ import os
 # Import Path so environment paths can become filesystem paths.
 from pathlib import Path
 
-# Import sys so the local scripts/ folder can be added only when needed.
+# Import sys so local direct service runs can find the shared cosmosai package.
 import sys
 
 # Import dataclass so checkpoint configuration can be passed around clearly.
@@ -29,10 +30,23 @@ MANIFEST_PATH_ENV = "COSMOSAI_GALAXY_MANIFEST_PATH"
 # Name of the environment variable that points to the image data root used locally.
 DATA_ROOT_ENV = "COSMOSAI_GALAXY_DATA_ROOT"
 
-# Name of the optional environment variable that points to shared helper scripts.
-# In Docker checkpoint mode, the service image is separate from the repo checkout,
-# so this tells Python where copied helper files such as predict_galaxy_checkpoint.py live.
-SCRIPTS_PATH_ENV = "COSMOSAI_SCRIPTS_PATH"
+
+# Make the shared cosmosai package importable for local direct service runs.
+def ensure_shared_package_import_path() -> None:
+    # Docker checkpoint mode copies cosmosai/ beside main.py under /app.
+    service_dir = Path(__file__).resolve().parent
+
+    # Source-tree mode has apps/galaxy-classifier-service/main.py under the repo root.
+    candidate_roots = [service_dir]
+    main_file_parents = Path(__file__).resolve().parents
+    if len(main_file_parents) > 2:
+        candidate_roots.append(main_file_parents[2])
+
+    # Add the first folder that contains cosmosai/ so lazy imports can find it.
+    for candidate_root in candidate_roots:
+        if (candidate_root / "cosmosai").exists() and str(candidate_root) not in sys.path:
+            sys.path.insert(0, str(candidate_root))
+            return
 
 
 # Store optional checkpoint paths after reading the environment.
@@ -87,39 +101,6 @@ def get_checkpoint_inference_config() -> CheckpointInferenceConfig | None:
     )
 
 
-# Add the repository scripts folder to sys.path for local optional inference.
-def ensure_scripts_import_path() -> None:
-    # Allow Docker or local shells to provide an explicit scripts path.
-    configured_scripts_path = os.getenv(SCRIPTS_PATH_ENV)
-
-    # Store candidate script folders from most explicit to most automatic.
-    candidate_paths: list[Path] = []
-
-    # In optional Docker checkpoint mode, this usually points to /app/scripts.
-    if configured_scripts_path:
-        candidate_paths.append(Path(configured_scripts_path))
-
-    # In a copied container image, scripts may live next to main.py as /app/scripts.
-    candidate_paths.append(Path(__file__).resolve().parent / "scripts")
-
-    # In the source tree, main.py lives under apps/galaxy-classifier-service/.
-    # A minimal container path like /app/main.py has fewer parents, so guard it.
-    main_file_parents = Path(__file__).resolve().parents
-    if len(main_file_parents) > 2:
-        source_tree_root = main_file_parents[2]
-        candidate_paths.append(source_tree_root / "scripts")
-
-    # Add the first existing path so lazy imports can find prediction helpers.
-    for scripts_dir in candidate_paths:
-        if scripts_dir.exists() and str(scripts_dir) not in sys.path:
-            sys.path.insert(0, str(scripts_dir))
-            return
-
-    # If no candidate exists, add the most explicit value anyway so import errors show it.
-    if candidate_paths and str(candidate_paths[0]) not in sys.path:
-        sys.path.insert(0, str(candidate_paths[0]))
-
-
 # Try to classify with a saved checkpoint; return None when stub mode should stay active.
 def classify_with_optional_checkpoint(
     request: ClassifyRequest,
@@ -133,13 +114,13 @@ def classify_with_optional_checkpoint(
     if request.image_id is None:
         return None
 
-    # Make scripts/predict_galaxy_checkpoint.py importable for this local helper.
-    ensure_scripts_import_path()
+    # Make the shared package importable for both Docker and local direct service runs.
+    ensure_shared_package_import_path()
 
-    # Import lazily so normal stub mode does not require torch or the scripts folder.
-    from predict_galaxy_checkpoint import predict_from_checkpoint
+    # Import lazily so normal stub mode does not require torch or shared ML helpers.
+    from cosmosai.galaxy.checkpoint_inference import predict_from_checkpoint
 
-    # Reuse the existing manifest -> preprocessing -> checkpoint prediction path.
+    # Reuse the shared manifest -> preprocessing -> checkpoint prediction path.
     prediction = predict_from_checkpoint(
         config.manifest_path,
         config.galaxy_data_root,
