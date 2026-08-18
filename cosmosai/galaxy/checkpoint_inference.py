@@ -1,5 +1,8 @@
 """Checkpoint inference helpers shared by the CLI and FastAPI service."""
 
+# Docs: docs/architecture.md Step 12 explains this shared checkpoint inference package.
+# Docs: docs/excalidraw/shared_galaxy_package_oop_flow.excalidraw maps the inference flow.
+
 # Import dataclass so prediction output can be passed around as a clear object.
 from dataclasses import dataclass
 
@@ -111,4 +114,3 @@ def predict_from_checkpoint(
 
     # Run checkpoint inference on that prepared sample.
     return predict_sample_from_checkpoint(checkpoint_path, sample)
-

@@ -1,6 +1,7 @@
 # Docs: docs/architecture.md Step 0 explains this service stub and links to this code.
 # Docs: docs/architecture.md Step 10 explains the optional checkpoint inference helper.
 # Docs: docs/architecture.md Step 12 explains the shared package inference helper.
+# Docs: docs/excalidraw/shared_galaxy_package_oop_flow.excalidraw explains the lazy import path.
 
 # Import os so the service can read optional local checkpoint configuration.
 import os

@@ -1,5 +1,8 @@
 """Tiny PyTorch galaxy CNN helpers shared by training and inference."""
 
+# Docs: docs/architecture.md Step 12 explains why model helpers live in this package.
+# Docs: docs/excalidraw/shared_galaxy_package_oop_flow.excalidraw maps these classes/functions.
+
 # Import dataclass so model outputs can be passed around clearly.
 from dataclasses import dataclass
 
@@ -238,4 +241,3 @@ def run_torch_checkpoint_round_trip(
             torch.allclose(trained_probabilities, loaded_probabilities)
         ),
     )
-
