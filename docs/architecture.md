@@ -1235,7 +1235,9 @@ cloud, Kubernetes, Triton, or edge deployment
 
 Step 13 covers milestone 43. It is a documentation checkpoint after the shared-package/OOP refactor, not a new runtime feature.
 
-The detailed visual map is in [[excalidraw/shared_galaxy_package_oop_flow.excalidraw|shared_galaxy_package_oop_flow.excalidraw]]. It explains the module dependencies, object models, function call graph, sequence flow, and lazy import path with clickable links back to the Python files.
+The detailed visual map is in [[excalidraw/shared_galaxy_package_oop_flow.excalidraw|shared_galaxy_package_oop_flow.excalidraw]]. It explains the module dependencies, object models, function call graph, and lazy import path with clickable links back to the Python files.
+
+The focused checkpoint sequence map is in [[excalidraw/galaxy_checkpoint_api_sequence_flow.excalidraw|galaxy_checkpoint_api_sequence_flow.excalidraw]]. It shows the time order: training creates a checkpoint first, then the optional API path loads that checkpoint for prediction.
 
 ### Step 13 Review Focus
 

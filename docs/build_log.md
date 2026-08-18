@@ -1691,6 +1691,16 @@ run_me_observe_results.md has Milestones 42-43 observe commands
 new Excalidraw diagram: docs/excalidraw/shared_galaxy_package_oop_flow.excalidraw
 ```
 
+Follow-up clarity update:
+
+```text
+added focused sequence diagram: docs/excalidraw/galaxy_checkpoint_api_sequence_flow.excalidraw
+the sequence diagram separates "CLI training creates checkpoint" from "API loads checkpoint for prediction"
+added clickable arrows/boxes for route(), classify(), predict_from_checkpoint(), load_torch_checkpoint(), and run_torch_forward_pass()
+improved shared_galaxy_package_oop_flow.excalidraw module dependency section with clearer boxes around the scripts and shared package
+architecture.md links to both diagrams
+```
+
 Diagram focus:
 
 ```text
