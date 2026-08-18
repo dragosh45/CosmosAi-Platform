@@ -18,7 +18,8 @@ This file describes what is actually implemented and verified. Future roadmap it
 - [[#Step 9: Tiny Checkpoint Inference Proof|Step 9: Tiny Checkpoint Inference Proof]]
 - [[#Step 10: Optional Galaxy Service Checkpoint Inference|Step 10: Optional Galaxy Service Checkpoint Inference]]
 - [[#Step 11: Optional Docker Checkpoint Compose Path|Step 11: Optional Docker Checkpoint Compose Path]]
-- [[#Step 12: Shared Galaxy Inference Package|Step 12: Shared Galaxy Inference Package]]
+- [[#Step 12: Shared Galaxy Runtime Package|Step 12: Shared Galaxy Runtime Package]]
+- [[#Step 13: Shared Galaxy Package Review Checkpoint|Step 13: Shared Galaxy Package Review Checkpoint]]
 - [[#High-level architecture|High-level architecture]]
 - [[#Main services|Main services]]
 - [[#Infrastructure layer|Infrastructure layer]]
@@ -1118,9 +1119,9 @@ Kubernetes
 Triton or edge deployment
 ```
 
-## Step 12: Shared Galaxy Inference Package
+## Step 12: Shared Galaxy Runtime Package
 
-Step 12 covers milestone 41. It refactors the checkpoint inference path so both the CLI command and FastAPI galaxy service use shared package code instead of importing service logic from `scripts/`.
+Step 12 covers milestones 41-42. It refactors the checkpoint inference and training helper path so the CLI commands, training script, and FastAPI galaxy service use shared package code instead of duplicating model/data logic in `scripts/`.
 
 The package is under [cosmosai/galaxy](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/__init__.py:1). This moves reusable runtime code toward normal application modules, while keeping the old command-line scripts available as learning and inspection entrypoints.
 
@@ -1135,6 +1136,10 @@ apps/galaxy-classifier-service/main.py
   -> FastAPI /classify endpoint
   -> classify_with_optional_checkpoint()
   -> cosmosai.galaxy.checkpoint_inference.predict_from_checkpoint()
+
+scripts/train_galaxy_cnn_baseline.py
+  -> training CLI and learning output
+  -> imports shared dataset/model/checkpoint helpers from cosmosai.galaxy
 
 apps/galaxy-classifier-service/Dockerfile.checkpoint
   -> copies cosmosai/ into the checkpoint-capable service image
@@ -1158,6 +1163,9 @@ cosmosai/galaxy/preprocessing.py
 cosmosai/galaxy/training_sample.py
   manifest record + tensor + label_id sample object
 
+cosmosai/galaxy/dataset_splits.py
+  train/val/test sample buckets used by the training script
+
 cosmosai/galaxy/model.py
   TinyGalaxyCNN, tensor conversion, checkpoint save/load, forward pass helpers
 
@@ -1176,17 +1184,27 @@ Shared inference:
 
 Shared model helpers:
 
-- [TinyGalaxyCNN](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:59)
-- [galaxy_tensor_to_torch_image()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:98)
-- [run_torch_forward_pass()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:128)
-- [save_torch_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:167)
-- [load_torch_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:189)
+- [TinyGalaxyCNN](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:62)
+- [galaxy_tensor_to_torch_image()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:101)
+- [run_torch_forward_pass()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:131)
+- [save_torch_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:170)
+- [load_torch_checkpoint()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:192)
+
+Shared dataset helpers:
+
+- [GalaxyDatasetSplits](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/dataset_splits.py:22)
+- [create_dataset_splits()](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/dataset_splits.py:41)
 
 Entrypoints using shared inference:
 
 - [CLI wrapper](vscode://file/opt/projects/cosmosai-platform/scripts/predict_galaxy_checkpoint.py:1)
-- [service checkpoint helper](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:105)
+- [service checkpoint helper](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:106)
 - [checkpoint Dockerfile](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/Dockerfile.checkpoint:1)
+
+Entrypoints using shared training/model helpers:
+
+- [training CLI wrapper](vscode://file/opt/projects/cosmosai-platform/scripts/train_galaxy_cnn_baseline.py:1)
+- [dataset split CLI wrapper](vscode://file/opt/projects/cosmosai-platform/scripts/load_galaxy_dataset_splits.py:1)
 
 ### Step 12 Boundary
 
@@ -1196,6 +1214,8 @@ Step 12 proves:
 checkpoint inference code can live in a shared importable package
 the CLI prediction script can reuse the package helper
 the galaxy FastAPI service can reuse the same package helper
+the training script can reuse shared dataset/model/checkpoint helpers
+the dataset split script can stay runnable while re-exporting package logic
 the optional checkpoint Docker image no longer needs to copy scripts/
 the checkpoint route still keeps stub fallback behavior
 ```
@@ -1203,12 +1223,55 @@ the checkpoint route still keeps stub fallback behavior
 Step 12 does not do:
 
 ```text
-full cleanup of all older data CLI scripts
-full deduplication of the large training script
+full cleanup of all older learning CLI scripts
+moving the whole training loop into package code
 real dataset download
 real useful Galaxy Zoo-trained model
 production model packaging
 cloud, Kubernetes, Triton, or edge deployment
+```
+
+## Step 13: Shared Galaxy Package Review Checkpoint
+
+Step 13 covers milestone 43. It is a documentation checkpoint after the shared-package/OOP refactor, not a new runtime feature.
+
+The detailed visual map is in [[excalidraw/shared_galaxy_package_oop_flow.excalidraw|shared_galaxy_package_oop_flow.excalidraw]]. It explains the module dependencies, object models, function call graph, sequence flow, and lazy import path with clickable links back to the Python files.
+
+### Step 13 Review Focus
+
+```text
+scripts are now mostly command-line entrypoints for humans
+cosmosai.galaxy is where reusable package logic lives
+dataclasses carry structured data between pipeline steps
+TinyGalaxyCNN is the current small PyTorch model class
+the galaxy service imports checkpoint inference lazily only when optional checkpoint config is present
+```
+
+### Step 13 Code Touchpoints
+
+- [training CLI imports shared helpers](vscode://file/opt/projects/cosmosai-platform/scripts/train_galaxy_cnn_baseline.py:36)
+- [shared dataset split object](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/dataset_splits.py:22)
+- [shared tiny CNN model](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/model.py:62)
+- [shared checkpoint prediction object](vscode://file/opt/projects/cosmosai-platform/cosmosai/galaxy/checkpoint_inference.py:24)
+- [lazy checkpoint import in service](vscode://file/opt/projects/cosmosai-platform/apps/galaxy-classifier-service/main.py:106)
+
+### Step 13 Boundary
+
+Step 13 proves:
+
+```text
+the refactored code structure is documented visually
+the documentation links back to concrete files, classes, and functions
+the project has a review point before adding more model complexity
+```
+
+Step 13 does not do:
+
+```text
+new model behavior
+more training data
+accuracy improvement
+production deployment
 ```
 
 ## High-level architecture

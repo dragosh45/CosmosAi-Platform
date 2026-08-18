@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 # Docs: docs/architecture.md Step 9 explains this checkpoint inference command.
+# Docs: docs/architecture.md Step 12 explains why this is now a thin shared-package wrapper.
+# Docs: docs/excalidraw/shared_galaxy_package_oop_flow.excalidraw maps this CLI to cosmosai.galaxy.
 
 # Import argparse so the prediction proof can run from the command line.
 import argparse

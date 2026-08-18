@@ -1612,17 +1612,113 @@ the large training script still has its own training-loop implementation
 full deduplication of training code is a future cleanup step
 ```
 
-## Next milestone
+## Build Milestone 42 completed
 
-Build Milestone 42:
+Goal:
 
 ```text
 deduplicate the training script by importing shared model/data helpers from cosmosai.galaxy
 keep current training CLI output stable
 keep checkpoint creation compatible with the shared inference package
-update architecture notes if code ownership changes
-run pytest and optional Docker checkpoint smoke tests
-do not download the full dataset yet
+```
+
+What changed:
+
+```text
+added cosmosai/galaxy/dataset_splits.py
+training script now imports shared LABEL_TO_ID, GalaxyTrainingSample, GalaxyDatasetSplits, TinyGalaxyCNN, tensor conversion, forward-pass, and checkpoint helpers
+load_galaxy_dataset_splits.py is now a command-line wrapper that re-exports shared split helpers
+predict CLI, training CLI, and FastAPI checkpoint path now depend on the same package-owned model/checkpoint helpers
+```
+
+Main implementation files:
+
+```text
+cosmosai/galaxy/dataset_splits.py
+cosmosai/galaxy/model.py
+cosmosai/galaxy/checkpoint_inference.py
+scripts/train_galaxy_cnn_baseline.py
+scripts/load_galaxy_dataset_splits.py
+scripts/predict_galaxy_checkpoint.py
+apps/galaxy-classifier-service/main.py
+```
+
+Verification:
+
+```bash
+cd /opt/projects/cosmosai-platform
+.venv/bin/python -m pytest
+.venv/bin/python scripts/train_galaxy_cnn_baseline.py data/samples/galaxy_manifest_sample.csv --galaxy-data-root data/samples/images --epochs 2 --checkpoint-path models/tiny_galaxy_cnn_baseline.pt
+.venv/bin/python scripts/predict_galaxy_checkpoint.py data/samples/galaxy_manifest_sample.csv --galaxy-data-root data/samples/images --image-id gz2-000001 --checkpoint-path models/tiny_galaxy_cnn_baseline.pt
+scripts/smoke_test_compose_checkpoint.sh
+```
+
+Result:
+
+```text
+40 passed
+training command completed with same learning output shape
+checkpoint prediction returned predicted_label=spiral for gz2-000001
+optional checkpoint Docker Compose smoke test passed
+```
+
+Boundary note:
+
+```text
+this changed code ownership and imports
+this did not improve model accuracy
+the training loop still lives in the training script
+the dataset is still the tiny local sample, not real Galaxy Zoo data
+```
+
+## Build Milestone 43 completed
+
+Goal:
+
+```text
+document the post-refactor shared package / OOP structure
+show module dependencies, object models, function call graph, sequence flow, and lazy import behavior
+keep architecture.md high-level and put detailed code-flow explanation in Excalidraw
+```
+
+What changed:
+
+```text
+architecture.md now has Step 12: Shared Galaxy Runtime Package
+architecture.md now has Step 13: Shared Galaxy Package Review Checkpoint
+concepts_explanations.md has notes for package vs script, dataclasses/OOP, TinyGalaxyCNN state, and lazy import
+run_me_observe_results.md has Milestones 42-43 observe commands
+new Excalidraw diagram: docs/excalidraw/shared_galaxy_package_oop_flow.excalidraw
+```
+
+Diagram focus:
+
+```text
+scripts are command-line entrypoints
+cosmosai.galaxy owns reusable data/model/checkpoint logic
+dataclasses carry structured objects through the flow
+TinyGalaxyCNN owns model behavior and weights
+galaxy-classifier-service lazily imports checkpoint inference only in optional checkpoint mode
+```
+
+Boundary note:
+
+```text
+Milestone 43 is documentation and understanding work
+no new runtime behavior was added in this milestone
+```
+
+## Next milestone
+
+Build Milestone 44:
+
+```text
+add a slightly larger tiny local galaxy sample set
+make train, val, and test splits each have at least one loadable sample
+keep the images tiny/local so tests stay fast
+update tests so evaluation is no longer only train=1, val=0, test=0
+run pytest and the current training/prediction commands
+do not download the full real dataset yet
 do not add cloud, Kubernetes, Triton, or edge deployment yet
 ```
 
