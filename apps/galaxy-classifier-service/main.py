@@ -29,6 +29,11 @@ MANIFEST_PATH_ENV = "COSMOSAI_GALAXY_MANIFEST_PATH"
 # Name of the environment variable that points to the image data root used locally.
 DATA_ROOT_ENV = "COSMOSAI_GALAXY_DATA_ROOT"
 
+# Name of the optional environment variable that points to shared helper scripts.
+# In Docker checkpoint mode, the service image is separate from the repo checkout,
+# so this tells Python where copied helper files such as predict_galaxy_checkpoint.py live.
+SCRIPTS_PATH_ENV = "COSMOSAI_SCRIPTS_PATH"
+
 
 # Store optional checkpoint paths after reading the environment.
 @dataclass(frozen=True)
@@ -84,14 +89,35 @@ def get_checkpoint_inference_config() -> CheckpointInferenceConfig | None:
 
 # Add the repository scripts folder to sys.path for local optional inference.
 def ensure_scripts_import_path() -> None:
-    # main.py lives in apps/galaxy-classifier-service/, so parents[2] is repo root.
-    repo_root = Path(__file__).resolve().parents[2]
-    scripts_dir = repo_root / "scripts"
+    # Allow Docker or local shells to provide an explicit scripts path.
+    configured_scripts_path = os.getenv(SCRIPTS_PATH_ENV)
 
-    # The Docker image for this service does not copy scripts/ yet.
-    # This helper is only used when local checkpoint config is explicitly enabled.
-    if str(scripts_dir) not in sys.path:
-        sys.path.insert(0, str(scripts_dir))
+    # Store candidate script folders from most explicit to most automatic.
+    candidate_paths: list[Path] = []
+
+    # In optional Docker checkpoint mode, this usually points to /app/scripts.
+    if configured_scripts_path:
+        candidate_paths.append(Path(configured_scripts_path))
+
+    # In a copied container image, scripts may live next to main.py as /app/scripts.
+    candidate_paths.append(Path(__file__).resolve().parent / "scripts")
+
+    # In the source tree, main.py lives under apps/galaxy-classifier-service/.
+    # A minimal container path like /app/main.py has fewer parents, so guard it.
+    main_file_parents = Path(__file__).resolve().parents
+    if len(main_file_parents) > 2:
+        source_tree_root = main_file_parents[2]
+        candidate_paths.append(source_tree_root / "scripts")
+
+    # Add the first existing path so lazy imports can find prediction helpers.
+    for scripts_dir in candidate_paths:
+        if scripts_dir.exists() and str(scripts_dir) not in sys.path:
+            sys.path.insert(0, str(scripts_dir))
+            return
+
+    # If no candidate exists, add the most explicit value anyway so import errors show it.
+    if candidate_paths and str(candidate_paths[0]) not in sys.path:
+        sys.path.insert(0, str(candidate_paths[0]))
 
 
 # Try to classify with a saved checkpoint; return None when stub mode should stay active.

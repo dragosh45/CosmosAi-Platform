@@ -1,0 +1,29 @@
+# Optional Docker Compose override for local checkpoint inference demos.
+# Use with: docker compose -f docker-compose.yml -f docker-compose.checkpoint.yml up --build
+services:
+  # Override only the galaxy classifier service; other services keep default wiring.
+  galaxy-classifier-service:
+    # Build a checkpoint-capable image from the repository root.
+    build:
+      # Use the repo root so the Dockerfile can copy apps/ and scripts/.
+      context: .
+      # Use the optional Dockerfile that includes PyTorch and helper scripts.
+      dockerfile: apps/galaxy-classifier-service/Dockerfile.checkpoint
+    # Give the optional image a clear local name.
+    image: cosmosai-galaxy-classifier-service:checkpoint
+    # Configure local checkpoint inference paths inside the container.
+    environment:
+      # Saved tiny PyTorch checkpoint mounted from ./models.
+      COSMOSAI_GALAXY_CHECKPOINT_PATH: /app/models/tiny_galaxy_cnn_baseline.pt
+      # Sample manifest mounted from ./data/samples.
+      COSMOSAI_GALAXY_MANIFEST_PATH: /app/data/samples/galaxy_manifest_sample.csv
+      # Sample image root mounted from ./data/samples.
+      COSMOSAI_GALAXY_DATA_ROOT: /app/data/samples/images
+      # Helper scripts copied into the optional checkpoint image.
+      COSMOSAI_SCRIPTS_PATH: /app/scripts
+    # Mount local sample data and generated model artifacts read-only.
+    volumes:
+      # Mount ignored local model artifacts without committing them to git.
+      - ./models:/app/models:ro
+      # Mount tiny sample data so the checkpoint helper can load image pixels.
+      - ./data/samples:/app/data/samples:ro
