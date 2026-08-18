@@ -1452,17 +1452,79 @@ Result:
 40 passed in 3.11s
 ```
 
-## Next milestone
+## Completed milestone
 
-Build Milestone 40:
+Build Milestone 40 completed:
 
 ```text
-prepare optional Docker Compose checkpoint inference wiring
-keep default docker-compose.yml stub-safe
-decide the cleanest way for the galaxy service container to access checkpoint inference code
-mount or configure local sample data and models only in an optional/demo path
-test api-gateway -> inference-router -> galaxy-classifier-service with checkpoint_inference enabled
-keep stub fallback tests
+added optional Docker Compose checkpoint inference wiring
+kept default docker-compose.yml stub-safe
+added docker-compose.checkpoint.yml override for local checkpoint demos
+added Dockerfile.checkpoint for the galaxy classifier service
+added checkpoint-specific service requirements with CPU PyTorch
+copied shared scripts into the optional checkpoint image
+added COSMOSAI_SCRIPTS_PATH so the container can import helper scripts
+mounted local models/ and data/samples/ read-only in the optional override
+added an optional checkpoint Docker Compose smoke test
+verified api-gateway -> inference-router -> galaxy-classifier-service with checkpoint_inference enabled
+kept stellar route on stub behavior
+kept service stub fallback tests
+did not download the full dataset
+did not add cloud, Kubernetes, Triton, or edge deployment
+```
+
+Implementation files:
+
+```text
+apps/galaxy-classifier-service/main.py
+apps/galaxy-classifier-service/Dockerfile.checkpoint
+apps/galaxy-classifier-service/requirements-checkpoint.txt
+docker-compose.checkpoint.yml
+scripts/smoke_test_compose_checkpoint.sh
+```
+
+Documentation updated:
+
+```text
+docs/architecture.md
+docs/run_me_observe_results.md
+```
+
+Tested optional checkpoint Docker Compose smoke test:
+
+```bash
+cd /opt/projects/cosmosai-platform
+scripts/smoke_test_compose_checkpoint.sh
+```
+
+Result:
+
+```text
+PASS: api-gateway health
+PASS: inference-router health
+PASS: galaxy-classifier-service health
+PASS: stellar-classifier-service health
+PASS: api-gateway galaxy checkpoint route
+PASS: api-gateway stellar stub route
+All optional checkpoint Docker Compose smoke tests passed.
+```
+
+Observed checkpoint route response:
+
+```json
+{"input_type":"galaxy_image","selected_service":"galaxy-classifier-service","status":"stub","classification":{"image_id":"gz2-000001","image_uri":null,"label":"spiral","confidence":0.352059543132782,"status":"checkpoint_inference"}}
+```
+
+## Next milestone
+
+Build Milestone 41:
+
+```text
+refactor reusable galaxy checkpoint inference code into a shared importable module/package
+keep CLI scripts and FastAPI service using the same shared helper
+remove long-term reliance on copying the scripts/ folder as service internals
+preserve the optional Docker checkpoint override behavior
+run pytest and optional Docker checkpoint smoke tests
 do not download the full dataset yet
 do not add cloud, Kubernetes, Triton, or edge deployment yet
 ```
