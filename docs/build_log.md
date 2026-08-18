@@ -1397,18 +1397,74 @@ not every master's course necessarily requires a project
 when a course does require a project, compare the official requirements before deciding whether CosmosAI is the correct base
 ```
 
-## Next milestone
+## Completed milestone
 
-Build Milestone 39:
+Build Milestone 39 completed:
 
 ```text
-prepare galaxy-classifier-service for optional local checkpoint inference
-keep current stub behavior when no checkpoint is configured
-add configuration for checkpoint path and sample data paths
-wire a small internal helper that can call the checkpoint prediction path
-add tests for stub fallback and optional checkpoint inference helper
-do not require Docker Compose service integration yet
+prepared galaxy-classifier-service for optional local checkpoint inference
+kept current stub behavior when no checkpoint config is set
+added checkpoint, manifest, and data-root environment configuration
+added a small internal helper that reuses the checkpoint prediction path
+added tests for stub fallback and optional checkpoint inference
+kept Docker Compose checkpoint integration out of scope
+did not download the full dataset
+```
+
+Implementation files:
+
+```text
+apps/galaxy-classifier-service/main.py
+tests/test_service_contracts.py
+```
+
+Documentation updated:
+
+```text
+docs/architecture.md
+docs/concepts_explanations.md
+docs/run_me_observe_results.md
+```
+
+Tested direct service helper:
+
+```bash
+cd /opt/projects/cosmosai-platform
+COSMOSAI_GALAXY_CHECKPOINT_PATH=models/tiny_galaxy_cnn_baseline.pt COSMOSAI_GALAXY_MANIFEST_PATH=data/samples/galaxy_manifest_sample.csv COSMOSAI_GALAXY_DATA_ROOT=data/samples/images .venv/bin/python -c "import importlib.util; from pathlib import Path; p=Path('apps/galaxy-classifier-service/main.py'); s=importlib.util.spec_from_file_location('galaxy_service_demo', p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); r=m.classify(m.ClassifyRequest(image_id='gz2-000001')); print(r.model_dump())"
+```
+
+Result:
+
+```text
+{'image_id': 'gz2-000001', 'image_uri': None, 'label': 'spiral', 'confidence': 0.352059543132782, 'status': 'checkpoint_inference'}
+```
+
+Tested full pytest suite:
+
+```bash
+cd /opt/projects/cosmosai-platform
+.venv/bin/python -m pytest
+```
+
+Result:
+
+```text
+40 passed in 3.11s
+```
+
+## Next milestone
+
+Build Milestone 40:
+
+```text
+prepare optional Docker Compose checkpoint inference wiring
+keep default docker-compose.yml stub-safe
+decide the cleanest way for the galaxy service container to access checkpoint inference code
+mount or configure local sample data and models only in an optional/demo path
+test api-gateway -> inference-router -> galaxy-classifier-service with checkpoint_inference enabled
+keep stub fallback tests
 do not download the full dataset yet
+do not add cloud, Kubernetes, Triton, or edge deployment yet
 ```
 
 ## Future documentation cleanup milestone
