@@ -1,0 +1,10 @@
+{
+  "name": "cosmosai-learning-build",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Build-only Excalidraw SVG export; no browser runtime framework",
+  "dependencies": {
+    "@excalidraw/utils": "0.1.5",
+    "playwright": "1.63.0"
+  }
+}

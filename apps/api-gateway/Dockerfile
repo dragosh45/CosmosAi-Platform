@@ -5,13 +5,21 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy the service dependency list into the container.
-COPY requirements.txt .
+COPY apps/api-gateway/requirements.txt .
 
 # Install the Python dependencies without keeping pip's download cache.
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the FastAPI application code into the container.
-COPY main.py .
+COPY apps/api-gateway/main.py .
+COPY cosmosai ./cosmosai
+COPY apps/api-gateway/static ./static
+COPY apps/learning-replay ./learning-replay
+COPY apps/learning-content/site ./learning-content
+COPY data/samples/images/gz2_pilot_preview ./demo-images
+ENV COSMOSAI_PREVIEW_ROOT=/app/demo-images
+ENV COSMOSAI_REPLAY_ROOT=/app/learning-replay
+ENV COSMOSAI_LEARNING_CONTENT_ROOT=/app/learning-content
 
 # Document that the container listens on port 8000.
 EXPOSE 8000

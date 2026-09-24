@@ -1,0 +1,5 @@
+image_id,image_path,label,split,source,label_confidence,original_filename,width,height,notes
+preview-gz2-587724649798959294,images/gz2_pilot_preview/gz2-587724649798959294.jpg,elliptical,train,galaxy_zoo_2,0.842000,gz2-587724649798959294.jpg,424,424,Copied from the bounded Kingston GZ2 pilot for local inspection.
+preview-gz2-587725590382051490,images/gz2_pilot_preview/gz2-587725590382051490.jpg,spiral,train,galaxy_zoo_2,0.981166,gz2-587725590382051490.jpg,424,424,Copied from the bounded Kingston GZ2 pilot for local inspection.
+preview-gz2-587722983908311227,images/gz2_pilot_preview/gz2-587722983908311227.jpg,lenticular,val,galaxy_zoo_2,0.927000,gz2-587722983908311227.jpg,424,424,Copied from the bounded Kingston GZ2 pilot for local inspection.
+preview-gz2-587725816425480462,images/gz2_pilot_preview/gz2-587725816425480462.jpg,irregular,test,galaxy_zoo_2,1.000000,gz2-587725816425480462.jpg,424,424,Copied from the bounded Kingston GZ2 pilot for local inspection.

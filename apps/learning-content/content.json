@@ -1,0 +1,33 @@
+{
+  "concepts": "docs/concepts_explanations.md",
+  "diagrams": [
+    "neural_network_concepts",
+    "galaxy_gradient_backprop_weight_update_flow",
+    "galaxy_rgb_to_features_to_logits",
+    "galaxy_center_convolution_calculation",
+    "galaxy_cnn_training_cycle_overview",
+    "galaxy_cnn_exact_weight_updates",
+    "galaxy_cnn_weight_change_layers_flow",
+    "galaxy_training_concepts_in_code",
+    "galaxy_cnn_training_skeleton_flow",
+    "galaxy_training_function_call_graph",
+    "galaxy_pytorch_training_loop_flow",
+    "galaxy_pytorch_weight_update_flow",
+    "galaxy_pytorch_batch_training_flow",
+    "galaxy_pytorch_dataloader_flow",
+    "galaxy_dataloader_training_loop_flow",
+    "galaxy_training_sample_flow",
+    "galaxy_dataset_quality_gate",
+    "galaxy_pillow_image_loading_flow",
+    "galaxy_pytorch_evaluation_flow",
+    "galaxy_pytorch_checkpoint_flow",
+    "galaxy_checkpoint_preprocessing_flow",
+    "galaxy_checkpoint_inference_flow",
+    "galaxy_checkpoint_api_sequence_flow",
+    "galaxy_real_data_training_flow",
+    "galaxy_pilot_to_training_call_graph",
+    "galaxy_subset_script_code_flow",
+    "manifest_tooling_code_flow",
+    "shared_galaxy_package_oop_flow"
+  ]
+}

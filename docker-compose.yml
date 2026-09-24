@@ -5,9 +5,9 @@ services:
     # Build the Docker image from the api-gateway service folder.
     build:
       # Use apps/api-gateway as the Docker build context.
-      context: ./apps/api-gateway
-      # Use the Dockerfile inside apps/api-gateway.
-      dockerfile: Dockerfile
+      context: .
+      # Use the service Dockerfile from the repo root.
+      dockerfile: apps/api-gateway/Dockerfile
     # Give the built image a clear local name.
     image: cosmosai-api-gateway:latest
     # Give the running container a predictable name.
@@ -21,9 +21,9 @@ services:
     # Build the Docker image from the inference-router service folder.
     build:
       # Use apps/inference-router as the Docker build context.
-      context: ./apps/inference-router
-      # Use the Dockerfile inside apps/inference-router.
-      dockerfile: Dockerfile
+      context: .
+      # Use the service Dockerfile from the repo root.
+      dockerfile: apps/inference-router/Dockerfile
     # Give the built image a clear local name.
     image: cosmosai-inference-router:latest
     # Give the running container a predictable name.

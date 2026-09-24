@@ -1,0 +1,2 @@
+image_id,image_path,label,split,source,label_confidence,original_filename,width,height,notes
+preview-gz2-pilot-lenticular-3x3,images/processed/images_3x3/gz2-pilot-lenticular-3x3.ppm,lenticular,train,galaxy_zoo_2_derived_preview,0.927000,gz2-587722983908311227.jpg,3,3,Readable 3x3 BOX downsample of the real GZ2 JPEG; not an original source image.

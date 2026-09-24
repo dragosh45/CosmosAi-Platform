@@ -1,0 +1,57 @@
+# Local rehearsal of the portable hosting bundle. No cloud resources are created.
+x-runtime: &runtime
+  user: "10001:10001"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=64m,mode=1777"]
+  pids_limit: 128
+  restart: unless-stopped
+  environment:
+    PYTHONDONTWRITEBYTECODE: "1"
+  healthcheck: &health
+    test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()"]
+    interval: 15s
+    timeout: 5s
+    retries: 3
+    start_period: 20s
+
+services:
+  api-gateway:
+    <<: *runtime
+    image: cosmosai-release-gateway:${COSMOSAI_RELEASE_TAG:-local}
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+    ports: ["127.0.0.1:${COSMOSAI_RELEASE_PORT:-8090}:8000"]
+    mem_limit: 256m
+    cpus: 0.5
+    command: [uvicorn, "main:app", --host, "0.0.0.0", --port, "8000", --limit-concurrency, "16"]
+    depends_on:
+      inference-router:
+        condition: service_healthy
+
+  inference-router:
+    <<: *runtime
+    image: cosmosai-release-router:${COSMOSAI_RELEASE_TAG:-local}
+    build:
+      context: .
+      dockerfile: apps/inference-router/Dockerfile
+    mem_limit: 256m
+    cpus: 0.5
+    depends_on:
+      galaxy-classifier-service:
+        condition: service_healthy
+
+  galaxy-classifier-service:
+    <<: *runtime
+    image: cosmosai-release-classifier:${COSMOSAI_RELEASE_TAG:-local}
+    build:
+      context: .
+      dockerfile: apps/galaxy-classifier-service/Dockerfile.release
+    mem_limit: 1g
+    cpus: 2
+    healthcheck:
+      <<: *health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/model', timeout=8).read()"]
+      timeout: 10s

@@ -14,7 +14,8 @@ import torch
 
 # Import the shared label mapping and sample object used by the model.
 from cosmosai.galaxy.labels import LABEL_TO_ID
-from cosmosai.galaxy.training_sample import GalaxyTrainingSample
+from cosmosai.galaxy.training_sample import GalaxyInferenceSample, GalaxyTrainingSample
+from cosmosai.galaxy.preprocessing import CheckpointContractError, GalaxyPreprocessingPolicy
 
 
 # Store the output of one real PyTorch forward pass.
@@ -34,6 +35,16 @@ class TorchForwardPassResult:
 
     # Highest-probability class ID from the PyTorch forward pass.
     predicted_label_id: int
+
+
+# Store a manual batch for the existing educational comparison with DataLoader.
+@dataclass(frozen=True)
+class TorchGalaxyBatch:
+    image_ids: list[str]
+    labels: list[str]
+    # Images are NCHW; labels have one class ID per image in the same order.
+    image_tensor: torch.Tensor
+    label_tensor: torch.Tensor
 
 
 # Store the result of saving and loading one tiny PyTorch checkpoint.
@@ -56,6 +67,9 @@ class TorchCheckpointRoundTripResult:
 
     # True when loaded probabilities match the trained model probabilities.
     probabilities_match: bool
+
+    # Configuration saved alongside weights, not another trainable parameter.
+    preprocessing: GalaxyPreprocessingPolicy
 
 
 # Define the first tiny real CNN model used for local proofs.
@@ -89,18 +103,31 @@ class TinyGalaxyCNN(torch.nn.Module):
 
 
 # Create the tiny CNN with deterministic initial weights for stable local tests.
-def create_tiny_galaxy_cnn(label_count: int = len(LABEL_TO_ID)) -> TinyGalaxyCNN:
-    # Seed PyTorch so proof output is repeatable across runs on this machine.
-    torch.manual_seed(7)
+def create_tiny_galaxy_cnn(
+    label_count: int = len(LABEL_TO_ID),
+    seed: int = 7,
+) -> TinyGalaxyCNN:
+    # Seed PyTorch so baseline reports can be repeated with an explicit configuration.
+    torch.manual_seed(seed)
 
     # Return the tiny CNN model.
     return TinyGalaxyCNN(label_count=label_count)
 
 
 # Convert the current GalaxyImageTensor object into PyTorch's NCHW tensor shape.
-def galaxy_tensor_to_torch_image(sample: GalaxyTrainingSample) -> torch.Tensor:
+def galaxy_tensor_to_torch_image(
+    sample: GalaxyTrainingSample | GalaxyInferenceSample,
+) -> torch.Tensor:
+    # Lazy Dataset samples load exactly once for this item; eager samples simply
+    # return their already-prepared tensor through the same property.
+    tensor = (
+        sample.load_tensor()
+        if hasattr(sample, "load_tensor")
+        else sample.tensor
+    )
+
     # Read the current height, width, channels shape from the sample tensor.
-    height, width, channels = sample.tensor.shape
+    height, width, channels = tensor.shape
 
     # The first tiny CNN expects RGB input.
     if channels != 3:
@@ -108,14 +135,14 @@ def galaxy_tensor_to_torch_image(sample: GalaxyTrainingSample) -> torch.Tensor:
 
     # Confirm the flat value list matches height * width * channels.
     expected_value_count = height * width * channels
-    if len(sample.tensor.values) != expected_value_count:
+    if len(tensor.values) != expected_value_count:
         raise ValueError(
             f"Expected {expected_value_count} tensor values, "
-            f"got {len(sample.tensor.values)}"
+            f"got {len(tensor.values)}"
         )
 
     # Build a PyTorch tensor from the normalized flat Python list.
-    image_tensor = torch.tensor(sample.tensor.values, dtype=torch.float32)
+    image_tensor = torch.tensor(tensor.values, dtype=torch.float32)
 
     # Reshape from flat HWC values into height, width, channels.
     image_tensor = image_tensor.reshape(height, width, channels)
@@ -127,9 +154,26 @@ def galaxy_tensor_to_torch_image(sample: GalaxyTrainingSample) -> torch.Tensor:
     return image_tensor.unsqueeze(0)
 
 
+def galaxy_samples_to_torch_batch(samples: list[GalaxyTrainingSample]) -> TorchGalaxyBatch:
+    if not samples:
+        raise ValueError("Cannot create a batch from an empty sample list")
+    images = [galaxy_tensor_to_torch_image(sample) for sample in samples]
+    if any(image.shape != images[0].shape for image in images):
+        raise ValueError("Batch images must have matching shapes; use target_size when loading real PNG/JPG images")
+    # Each image already has a length-one batch axis; concatenate along that axis.
+    # This groups images without blending any pixel/channel values.
+    return TorchGalaxyBatch(
+        image_ids=[sample.image_id for sample in samples],
+        labels=[sample.label for sample in samples],
+        image_tensor=torch.cat(images, dim=0),
+        label_tensor=torch.tensor([sample.label_id for sample in samples], dtype=torch.long),
+    )
+
+
 # Run one real PyTorch forward pass without training or updating weights.
+# Concept docs: docs/concepts_explanations.md -> "Forward Pass Versus Training".
 def run_torch_forward_pass(
-    sample: GalaxyTrainingSample,
+    sample: GalaxyTrainingSample | GalaxyInferenceSample,
     model: TinyGalaxyCNN | None = None,
 ) -> TorchForwardPassResult:
     # Use the provided PyTorch model or create the deterministic tiny model.
@@ -142,6 +186,7 @@ def run_torch_forward_pass(
     torch_image = galaxy_tensor_to_torch_image(sample)
 
     # Disable gradient tracking because this is inspection/inference only.
+    # Forward pass uses current weights to calculate logits; it does not update weights.
     with torch.no_grad():
         # Run the real PyTorch CNN forward pass to produce logits.
         logits_tensor = active_model(torch_image)
@@ -170,6 +215,7 @@ def run_torch_forward_pass(
 def save_torch_checkpoint(
     model: TinyGalaxyCNN,
     checkpoint_path: Path,
+    preprocessing: GalaxyPreprocessingPolicy = GalaxyPreprocessingPolicy(),
 ) -> Path:
     # Create the parent folder, for example models/, if it does not exist yet.
     checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
@@ -179,6 +225,7 @@ def save_torch_checkpoint(
         "model_state_dict": model.state_dict(),
         "label_to_id": LABEL_TO_ID,
         "label_count": len(LABEL_TO_ID),
+        "preprocessing": preprocessing.to_metadata(),
     }
 
     # Write the checkpoint file. This is what serving code loads later.
@@ -188,14 +235,27 @@ def save_torch_checkpoint(
     return checkpoint_path
 
 
-# Load a TinyGalaxyCNN checkpoint into a fresh model object.
-def load_torch_checkpoint(checkpoint_path: Path) -> TinyGalaxyCNN:
-    # Load the checkpoint from CPU so this works on machines without a GPU.
-    checkpoint = torch.load(checkpoint_path, map_location="cpu")
+# Keep the learned model and validated input recipe together for inference.
+@dataclass(frozen=True)
+class LoadedGalaxyCheckpoint:
+    model: TinyGalaxyCNN
+    preprocessing: GalaxyPreprocessingPolicy
+
+
+def load_torch_checkpoint_bundle(checkpoint_path: Path) -> LoadedGalaxyCheckpoint:
+    # Read trusted local tensors/metadata on CPU; do not unpickle arbitrary objects.
+    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
+    if not isinstance(checkpoint, dict):
+        raise CheckpointContractError("Checkpoint must contain a metadata dictionary")
+    preprocessing = GalaxyPreprocessingPolicy.from_metadata(checkpoint.get("preprocessing"))
 
     # Fail clearly if the checkpoint was created for a different label mapping.
     if checkpoint.get("label_to_id") != LABEL_TO_ID:
-        raise ValueError("Checkpoint label mapping does not match current code")
+        raise CheckpointContractError("Checkpoint label mapping does not match current code")
+    if type(checkpoint.get("label_count")) is not int or checkpoint["label_count"] != len(LABEL_TO_ID):
+        raise CheckpointContractError("Checkpoint label count does not match current code")
+    if not isinstance(checkpoint.get("model_state_dict"), dict):
+        raise CheckpointContractError("Checkpoint is missing its model_state_dict")
 
     # Create a fresh model architecture, then fill it with saved learned weights.
     model = create_tiny_galaxy_cnn(label_count=checkpoint["label_count"])
@@ -204,8 +264,12 @@ def load_torch_checkpoint(checkpoint_path: Path) -> TinyGalaxyCNN:
     # Evaluation mode is the normal mode for a loaded model used for prediction.
     model.eval()
 
-    # Return the loaded model so caller code can run predictions.
-    return model
+    return LoadedGalaxyCheckpoint(model=model, preprocessing=preprocessing)
+
+
+# Preserve the existing model-only helper while validating the same contract.
+def load_torch_checkpoint(checkpoint_path: Path) -> TinyGalaxyCNN:
+    return load_torch_checkpoint_bundle(checkpoint_path).model
 
 
 # Prove a saved checkpoint can load into a fresh model with the same prediction.
@@ -213,9 +277,11 @@ def run_torch_checkpoint_round_trip(
     sample: GalaxyTrainingSample,
     trained_model: TinyGalaxyCNN,
     checkpoint_path: Path,
+    preprocessing: GalaxyPreprocessingPolicy = GalaxyPreprocessingPolicy(),
 ) -> TorchCheckpointRoundTripResult:
-    # Save the trained model's current learned weights to disk.
-    saved_path = save_torch_checkpoint(trained_model, checkpoint_path)
+    # Training supplies the actual recipe rather than guessing from one tensor.
+    preprocessing.validate_tensor_shape(sample.tensor.shape)
+    saved_path = save_torch_checkpoint(trained_model, checkpoint_path, preprocessing)
 
     # Load those weights into a fresh TinyGalaxyCNN instance.
     loaded_model = load_torch_checkpoint(saved_path)
@@ -240,4 +306,5 @@ def run_torch_checkpoint_round_trip(
         probabilities_match=bool(
             torch.allclose(trained_probabilities, loaded_probabilities)
         ),
+        preprocessing=preprocessing,
     )

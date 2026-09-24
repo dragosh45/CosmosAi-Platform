@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% set active = 'concepts' %}
+{% block title %}Concepts Explanations{% endblock %}{% block page %}concepts{% endblock %}
+{% block body %}
+<div class="page-heading"><div><p class="eyebrow">COSMOSAI / LEARNING</p><h1>Concepts Explanations</h1>
+<p>Neural networks, training, gradients and inference.</p></div>
+<a class="return-replay" href="/learn/?resume=1" hidden>Return to selected calculation</a></div>
+<p class="source-note">From the project's concepts notes. Examples span earlier milestones; current model results are on the Galaxy Classifier page.</p>
+<div class="reading-layout">
+  <aside class="contents"><label for="concept-search">Search concepts</label><input id="concept-search" type="search" placeholder="Gradient, pooling, loss..." autocomplete="off">
+    <p id="search-status" role="status" class="muted"></p>
+    <nav aria-label="Concept topics" id="concept-topics">{% for h in headings %}
+      <a href="#{{ h.id }}" data-topic="{{ h.topic }}" class="level-{{ h.level }}">{{ h.title }}</a>
+    {% endfor %}</nav>
+  </aside>
+  <div class="concept-content">{% for topic in topics %}<article data-topic="{{ topic.id }}">{{ topic.html|safe }}</article>{% endfor %}</div>
+</div>
+{% endblock %}

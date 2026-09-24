@@ -25,7 +25,11 @@ preserve the AI engineering / AI infrastructure story
 
 ## Current Source Status
 
-The course/topic list is provisional. It is based on planning notes, not confirmed full syllabi.
+Updated 9 September 2026: the **official AAIMR 2025-2027 curriculum** has now been checked, including its project-hour columns. The full course/assessment evidence and research limits are in [Craiova AAIMR course research](craiova_master_course_research.md). Your entry cohort and the applicability of this plan still need confirmation.
+
+Course existence and scheduled project activity are now source-backed; **the mapping of CosmosAI to an accepted assignment remains provisional**. No current complete assignment briefs or grading rubrics were located. Not all courses allocate separate project hours, and laboratory work can still be assessed.
+
+The research also corrects two earlier assumptions: the architecture and embedded-AI options are specifically **automotive architectures** and **autonomous driving**, not generic software architecture or edge inference. A benchmark alone may not satisfy them.
 
 Before using CosmosAI for a course project, check:
 
@@ -56,6 +60,10 @@ Do not force robotics, SCADA, automotive, safety, or biomimetic topics into Cosm
 
 ## Current CosmosAI Baseline
 
+For the maintained implementation snapshot, read [current_status.md](current_status.md). M48 feeds the real training loop through DataLoader; M49 saves the checkpoint's input recipe and verifies consistent CLI/API preparation; M50 makes malformed manifests and accepted/skipped/rejected image rows explicit. This supports reproducible experiments, but is not yet a real-data academic result. The lists below distinguish mechanics already demonstrated from future useful models.
+
+Learning addition approved 16 September 2026: [M50-L1/L2 CNN Learning Replay](cnn_learning_replay_plan.md), before M51. A measured trace and local HTML/JavaScript viewer will support worked convolution, derivative and SGD exercises alongside implementation. It is planned teaching material, potentially an appendix to a course submission, not a confirmed mandatory project or evidence of useful accuracy. The preferred academic investigation remains two models on identical real-data splits with error analysis and accuracy/latency measurements, subject to the actual brief. This addition does not replace that investigation or introduce robotics/hardware scope.
+
 Already implemented:
 
 ```text
@@ -76,6 +84,7 @@ galaxy data/model proof path:
   backpropagation
   optimizer updates
   tiny training loop
+  DataLoader-driven training (already-loaded samples, not lazy image files)
   read-only evaluation
   checkpoint save/load
   checkpoint inference command
@@ -99,14 +108,16 @@ multimodal data fusion
 
 ## Mapping Matrix
 
+DIRECT below means a natural technical overlap, **not confirmed course-project acceptance**. Full abbreviated curriculum, optional variants, credits and project hours: [[craiova_master_course_research#Confirmed Curriculum|research tables]].
+
 | Course / topic | Classification | CosmosAI fit |
 |---|---|---|
 | Systems and Applications for Data Processing | DIRECT INTEGRATION | Deepen the existing data validation, preprocessing, splits, statistics, and dataset-quality path. |
 | Machine Vision & AI | DIRECT INTEGRATION | Galaxy morphology classification is a natural image-classification project. |
 | Artificial Intelligence Applications | DIRECT INTEGRATION | Galaxy/stellar supervised learning fits a broad AI applications course. |
-| Intelligent Systems Architectures | DIRECT INTEGRATION | The service topology is already a distributed intelligent-system architecture. |
-| Software & Hardware Architectures | DIRECT INTEGRATION | CPU/GPU/ONNX/Triton benchmarking fits hardware-aware AI work. |
-| Embedded AI | OPTIONAL COSMOSAI EXTENSION | ONNX/TensorRT/Jetson inference can be coherent after a useful model exists. |
+| Intelligent Systems Architectures in Mechatronics and Robotics | SYLLABUS-DEPENDENT | Service boundaries and inference flow offer a candidate study; robotics/control requirements may not fit. |
+| System, Software and Hardware Architectures in Automotive | SYLLABUS-DEPENDENT | Optional automotive course; a generic CPU/GPU benchmark is not automatically sufficient. |
+| Embedded AI in Autonomous Driving | SYLLABUS-DEPENDENT | Optional driving-focused course; edge inference is a candidate only if domain/hardware rules allow it. |
 | Human-Machine Interaction / Advanced Interfaces | OPTIONAL COSMOSAI EXTENSION | A future UI could show predictions, confidence, explanations, Grad-CAM, and RAG sources. |
 | AI for Data Security | OPTIONAL COSMOSAI EXTENSION | Could study adversarial examples, API abuse, or RAG prompt-injection if the syllabus allows. |
 | New Technologies in AI & Robotics | SYLLABUS-DEPENDENT | Could fit RAG, LangGraph, GPU, edge, or multimodal work depending on the semester topic. |
@@ -120,6 +131,14 @@ multimodal data fusion
 | AI & ML in CAE/CAM | SEPARATE PROJECT | Manufacturing/engineering simulation is not the CosmosAI domain. |
 
 ## Direct Integrations
+
+### Delivery And Academic Reuse Rule
+
+Delivery is now **R1 galaxy classifier -> R2 astronomy assistant -> R3 serving/performance**, as defined in the [roadmap](portfolio_ai_project_plan_ultimate.md). The stellar model remains a later extension, not a blocker for R1. General AI software jobs matter alongside master's reuse: retrieval, LLM APIs, evaluation, tests, observability and deployment have their own release evidence.
+
+The preferred academic proposal is the [[craiova_master_course_research#Recommended CosmosAI Investigation|bounded two-model investigation]]: same object-level splits, a small CNN versus one transfer-learning model, validation-based selection, error analysis and measured accuracy/latency tradeoffs. Deliver configurations, commands, metrics, limitations and a report, not just a UI or an architecture diagram.
+
+This study can extend a useful galaxy baseline; it does not require all optional tools or a stellar model. Before treating it as coursework, obtain the full brief, rubric, hardware constraints and approval to reuse existing work. Record the distinct new contribution for each submission and applicable AI-assistance disclosure rules. Hardware/control-specific assignments can remain separate projects.
 
 ### Galaxy Vision Research Track
 
@@ -147,7 +166,7 @@ TinyGalaxyCNN proof path
 future MLflow/evaluation path
 ```
 
-Future additions:
+Bounded additions for the proposed study (subject to the assignment):
 
 ```text
 real Galaxy Zoo ingestion
@@ -155,11 +174,11 @@ dataset statistics
 class imbalance analysis
 augmentation
 CNN baseline
-ResNet/EfficientNet transfer learning
-ViT / LoRA experiment
+one transfer-learning comparison model
 accuracy, precision, recall, F1
 confusion matrix
-Grad-CAM or another explainability view
+inference latency under a documented measurement setup
+optional Grad-CAM or another explainability view
 ```
 
 ### Intelligent-System Architecture Track
@@ -168,7 +187,7 @@ Possible course fit:
 
 ```text
 Intelligent Systems Architectures
-Software & Hardware Architectures
+Automotive system/software/hardware architectures, only if assignment permits
 New Technologies in AI & Robotics, if the syllabus fits
 ```
 
@@ -209,8 +228,8 @@ deployment comparison
 Possible course fit:
 
 ```text
-Software & Hardware Architectures
-Embedded AI, if the syllabus fits
+Automotive system/software/hardware architectures, if the syllabus fits
+Embedded AI in autonomous driving, if domain/hardware constraints fit
 New Technologies in AI & Robotics, if the syllabus fits
 ```
 

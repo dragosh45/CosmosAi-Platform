@@ -1,0 +1,19 @@
+{
+  "checkpoint_sha256": "6e1ee07039fcad43ebb85b0c61c2f46e714a3b72d65a632e682bc67105a1865b",
+  "title": "GZ2 pilot baseline",
+  "training_images": 56,
+  "epochs": 2,
+  "validation": {
+    "sample_count": 12,
+    "accuracy": 0.25
+  },
+  "test": {
+    "sample_count": 12,
+    "accuracy": 0.25
+  },
+  "notes": [
+    "The 80-image pilot predicted elliptical for every evaluated image and matched the majority baseline.",
+    "Lenticular is a derived GZ2 label proxy.",
+    "Probabilities are model scores, not calibrated certainty."
+  ]
+}

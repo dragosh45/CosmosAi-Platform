@@ -3,10 +3,65 @@
 **Author:** Dragos-Nicolae Preda
 **Created:** June 2026
 **Status:** Active development
-**Current implementation focus:** galaxy classifier model/inference integration
+**Current implementation focus:** galaxy classifier foundation; M51 lazy image loading complete, real-data subset next
 **Roadmap:** evolving with verified implementation milestones
 **Companion to:** `AI_skills_through_self_learn_cannot_do_atwork.md` (skills this covers)
 **Also covers:** `master/general_all_masters/project/master_decide_project.md` (replaces the plain CNN project)
+
+---
+
+## Delivery Releases And Current Position
+
+Updated 24 September 2026. **Milestone 51 is complete locally: Phase 1A, R1 foundation. M50-L1 measured trace, M50-L2 browser replay and M51 lazy image loading are complete; a bounded real-data subset is next.** Future concept pages, diagram publishing and HTTP hosting are now recorded in the learning-web backlog. Start at [current_status.md](current_status.md); the [build log](build_log.md) owns the next implementation milestone. The long technical phases below are a capability catalogue, not a requirement to finish every tool in order.
+
+| Release | Independently useful result | Evidence required before calling it released | Relevant technical phases |
+|---|---|---|---|
+| **R1 Galaxy classifier** | Real labeled images -> reproducible training -> evaluation -> checkpoint -> API -> small usable interface | Licensed/provenanced data, justified labels, fixed leak-free splits, baseline metrics/error report, saved preprocessing/model contract, matching CLI/API inference, tests in CI and a runnable demo | Phase 1A, selected Phase 4 API work and the small UI from Phase 5a |
+| **R2 Astronomy assistant** | Cited explanations and follow-up questions, usable with R1 results or standalone astronomy questions | Curated corpus, retrieval and answer eval set, citations that support claims, insufficient-evidence behavior, bounded tool use, request traces, latency/cost measurements | Phases 2 and 3 plus relevant Phase 4 endpoints/UI |
+| **R3 Serving/performance** | A deployed, monitored service plus one measured optimization or hardware comparison | Reproducible deployment, error/latency monitoring, load-test baseline, before/after quality and performance measurements, cost/operational notes | Selected Phase 5a.5 / 5b work; edge only with a justified experiment |
+
+The stellar classifier remains valuable for a later multi-model demonstration. **It is not a prerequisite for R1 or R2.** Do not build every cloud, orchestration and serving option as a release checklist. Select one implementation per need; compare another only for a concrete learning question or job requirement.
+
+### Near-Term Sequence
+
+1. M48: DataLoader supplies real training batches (completed; still tiny fixtures).
+2. M49: preprocessing saved/validated with checkpoints; resized-image CLI/API parity verified (completed on synthetic fixtures).
+3. M50: malformed-manifest handling and explicit accepted/skipped/rejected dataset outcomes (completed on fixtures).
+4. M50-L1: extend the existing measured weight observer with convolution/backward calculations and a versioned trace (completed; 9 focused tests pass).
+5. M50-L2: build an HTML/JavaScript learning replay of that trace, with a timeline, selectable matrices/connections and actual substituted formulas (completed locally; stable standalone copy verified).
+6. M51: replace eager image storage with lazy loading before increasing data volume; preserve the observer contract using actual delivered batches (completed locally).
+7. Prepare a manageable real-data subset: source/license, label mapping, object-level splits, class counts and reproducible acquisition. Use the Kingston external drive for data, not Git; inspect its actual mount/free space before downloads.
+8. Produce an observable baseline result and error report, then finish the API/UI path. Add CI before calling R1 released. An academic two-model comparison can deepen this result without blocking its first version.
+
+Every milestone must close a specific learning gap or advance a release acceptance criterion. Explain the changed concepts and update diagrams when the runtime flow changes. Documentation is part of the learning work; no fixed weekly deadline is imposed.
+
+### CNN Learning Replay
+
+**Implemented local learning artifact:** the current tiny training run is inspectable from RGB pixels through convolution, ReLU, pooling, classifier, loss, backward and SGD, then through the next update. The [replay plan](cnn_learning_replay_plan.md) owns the architecture and trace contract; the [learning TODO](To-Do%20ChatGPT.md) owns the exercises.
+
+Extend `scripts/observe_galaxy_weight_updates.py`, which already probes the real trainer and exports JSON/CSV. Python supplies verified numerical evidence; a small static HTML/CSS/JavaScript viewer presents it. A learning run can generate its own local report. Ordinary training and inference remain unchanged and do not capture every tensor by default. Keep the existing 20-update bound and add explicit tiny-input/artifact limits during implementation.
+
+This is the first implemented CosmosAI interface, currently a local **Learn / Replay** file. Later reuse its HTML/JavaScript for a shared HTTP website with **Learn / Replay**, **Learn / Concepts**, **Classify** (gateway requests in R1) and **Ask** (R2). Saved reports remain standalone and read-only. An optional Manim video renderer can consume the same trace later; video, cloud hosting, LLM calls and a new service are not prerequisites.
+
+The replay is learning/engineering evidence, not a useful galaxy model, production monitoring, or a substitute for the R1 evaluation and classifier interface. M51 is complete; continue with real data. Concept pages and diagram exports can be scheduled later as focused learning work.
+
+### Future Learning Website
+
+Planning decision, 24 September 2026. The [detailed web plan](cnn_learning_replay_plan.md#future-learning-website) owns routes, content/export rules, service boundaries and acceptance criteria:
+
+- **Learn / Replay:** measured examples, matrices, diagrams and calculations; preserve the existing renderer and offline report.
+- **Learn / Concepts:** selected canonical Markdown explanations with exported Excalidraw illustrations, stable topic links and return navigation to the selected replay state. Begin with gradient, backward, SGD and loss.
+- **Shared hosting:** generate reviewed static assets, mount them through the existing API Gateway, and document a local HTTP build/serve workflow. Keep `/route`, `/health` and FastAPI `/docs` intact; concept pages live under `/learn/concepts/`.
+- **Classify integration:** R1's galaxy page uses the gateway/router/checkpoint contract. Stellar UI follows a real stellar implementation; Ask follows in R2. Learning pages can run without classifier availability.
+- **Real-data replay later:** add bounded trace capture and rendering for actual image/map dimensions after the dataset and baseline; preserve the tiny fixture as a teaching reference.
+
+These are future W1-W4 work packages, not a newly completed milestone or a requirement before the real-data subset. The small R1 interface may reuse W1 hosting without waiting for the concept library. Review the explicit publishable content list because many current notes and diagrams are private/ignored.
+
+### Master's And Job Constraints
+
+The [official-course research](craiova_master_course_research.md) found scheduled project work but not the full current assignment briefs. The preferred reuse is a [[master_project_integration#Delivery And Academic Reuse Rule|bounded model comparison]], not a claim that CosmosAI satisfies every course. Automotive/control topics may need separate projects.
+
+R1 supplies applied-ML and backend evidence; R2 deliberately supplies general AI software skills (retrieval, LLM APIs, stateful orchestration, evaluation, guardrails); R3 supplies serving and operations evidence. Hardware-aware AI, edge, multimodal fusion and explainable interfaces remain selective branches, not four additional mandatory releases.
 
 ---
 
@@ -32,11 +87,56 @@ Do not assume every master's course requires a project. When a course does requi
 
 ---
 
+## Job Target Alignment
+
+Current job-description planning docs:
+
+```text
+docs/job_description_catalog.md
+docs/job_targets.md
+docs/cosmosai_job_skill_alignment.md
+```
+
+Conclusion from the current job scan:
+
+```text
+CosmosAI does not need a new main direction.
+The gathered jobs mostly confirm the current plan.
+```
+
+The project should stay focused on:
+
+```text
+astronomy AI
+PyTorch model training
+FastAPI model APIs
+Docker/service architecture
+RAG
+LangGraph agents
+LLM APIs
+observability
+cloud and GPU/model-serving infrastructure later
+```
+
+Small job-aligned additions to keep explicit:
+
+```text
+MCP/tool integrations in the future agent layer
+AI evaluations, guardrails, human-in-the-loop checks, and audit logs
+OpenTelemetry/SLO-style service observability after APIs are real
+data quality and labeling checks before larger real-dataset training
+CI/CD with tests before the first public release
+```
+
+Do not add robotics, automotive ECU/CAN, industrial control, or C++ embedded runtime work unless a master's course brief specifically requires that direction.
+
+---
+
 ## What This Is
 
-A publicly deployed AI system with two classification tasks: galaxy morphology (from images) and stellar spectral type (from spectrum data). Both feed into the same RAG + LLM pipeline that answers natural language questions about astronomy, grounded in retrieved scientific literature.
+The planned mature system combines galaxy morphology (images), a later stellar spectral classifier, and an astronomy assistant grounded in retrieved literature. It is **not publicly deployed yet**. The first usable release is the galaxy classifier alone.
 
-Two models, one router, one generation pipeline — this is the multi-model serving architecture the AI infrastructure job market requires.
+The eventual two-model path offers multi-model routing experience for relevant infrastructure roles; it is not a requirement of every AI job.
 
 **The user experience in 60 seconds — two paths:**
 
@@ -54,7 +154,9 @@ Two models, one router, one generation pipeline — this is the multi-model serv
 4. Ask: *"How long will a G-type star like this remain on the main sequence?"*
 5. Get a RAG-grounded answer from retrieved stellar physics papers
 
-That's the demo. Two input types, two fine-tuned models, one routing layer, one generation pipeline — it answers every job interview question about multi-model AI in production.
+Those are future demo scenarios, not currently implemented behavior or a guarantee of production experience. Explanations must stay within the model's supported labels and retrieved evidence; a four-class classifier does not establish a detailed barred-spiral subtype.
+
+**Learning path (M50-L, before those product flows):** run the tiny training observer -> open the generated local report -> replay a selected epoch/batch/stage -> inspect a pixel product, gradient and weight update. This is offline training inspection, not another prediction route or a claim that a pooled feature names a galaxy class.
 
 ---
 
@@ -75,7 +177,7 @@ That's the demo. Two input types, two fine-tuned models, one routing layer, one 
 
 Every skill listed in `AI_skills_through_self_learn_cannot_do_atwork.md` is mapped here.
 
-### Priority 1 — All covered
+### Priority 1 — Planned Coverage
 
 | Skill (from self-learn doc) | How CosmosAI covers it | Component |
 |---|---|---|
@@ -86,7 +188,7 @@ Every skill listed in `AI_skills_through_self_learn_cannot_do_atwork.md` is mapp
 | **5. RAG full pipeline** | Ingest arXiv PDFs → chunk by section → embed with sentence-transformers → store in Qdrant → retrieve on query → generate answer | Phase 2+3 |
 | **6. HuggingFace Transformers** | `sentence-transformers` for document embeddings; `google/vit-base-patch16-224` fine-tuned for galaxy morphology; 1D-CNN for stellar spectra — two distinct architectures | Phase 1+2 |
 
-### Priority 2 — All covered
+### Priority 2 — Planned Coverage
 
 | Skill | How CosmosAI covers it | Component |
 |---|---|---|
@@ -99,7 +201,7 @@ Every skill listed in `AI_skills_through_self_learn_cannot_do_atwork.md` is mapp
 | **13. Multi-LLM (LiteLLM)** | LiteLLM gateway: swap between Gemini Flash (free tier, fast), Anthropic Sonnet (quality), Mistral (open) without changing application code | Phase 3 |
 | **14. Streaming (SSE)** | FastAPI `StreamingResponse` streams LLM explanation tokens to the frontend as they arrive | Phase 4 |
 
-### Priority 3 — Partially covered (optional depth)
+### Priority 3 — Optional Depth
 
 | Skill | How CosmosAI covers it | Priority |
 |---|---|---|
@@ -108,7 +210,7 @@ Every skill listed in `AI_skills_through_self_learn_cannot_do_atwork.md` is mapp
 | **18. Fine-tuning (LoRA/QLoRA)** | LoRA fine-tuning of `vit-base-patch16-224` on Galaxy Zoo 2 data — shows fine-tuning workflow even on a small model | Phase 1 optional |
 | **15. n8n** | Scheduled workflow: fetch new arXiv papers tagged `astro-ph.GA` weekly → trigger re-indexing pipeline | Phase 5 optional |
 
-**Coverage summary: 14 of 18 skills fully demonstrated, 4 partially/optionally.**
+**These tables describe planned skill coverage, not completed skills.** Current evidence is Python/PyTorch tiny-data training, tests, FastAPI contracts, local service routing, Pillow and checkpoint inference. RAG, LLM orchestration, experiment tracking, cloud/GPU serving and observability remain future work. Use [job skill alignment](cosmosai_job_skill_alignment.md) to distinguish implemented, partial and planned evidence; do not report a numerical completion score from this catalogue.
 
 ### Infrastructure / MLOps — Added for AI Infrastructure Engineer roles
 
@@ -126,10 +228,10 @@ Every skill listed in `AI_skills_through_self_learn_cannot_do_atwork.md` is mapp
 
 ## Architecture
 
-Current implemented baseline:
+Current implemented API baseline (a separate local learning replay also exists; shared HTTP website is future work):
 
 ```text
-User / Frontend
+CLI / HTTP client
       ↓
 API Gateway
       ↓
@@ -138,6 +240,19 @@ Inference Router
       ├── Stellar Classifier Service
       └── RAG Assistant Service later
 ```
+
+The galaxy service is stub-by-default with optional checkpoint inference; stellar remains a stub and RAG is not implemented. Implemented learning path, separate from these HTTP requests:
+
+```text
+existing offline trainer -> extended observer -> measured JSON/CSV report
+                                                   |
+                                                   v
+                                            HTML/JS Learn replay
+                                                   |
+                                            optional video later
+```
+
+See [architecture boundaries](architecture.md#implemented-extension-cnn-learning-replay-and-lazy-dataset-boundary) and the [integration plan](cnn_learning_replay_plan.md#architecture-and-service-boundaries). Future [web hosting and concepts](architecture.md#planned-extension-shared-learning-website) reuse that flow. The replay reads artifacts; the gateway/router continue to route predictions. The mature diagram below is a capability sketch, not a reason to replace the implemented four-service topology.
 
 Planned mature end-state:
 
@@ -216,7 +331,7 @@ INDEXING (offline, optional n8n automation):
 
 ## Build Phases
 
-### Phase 0 — Setup (0.5 weekend)
+### Phase 0 — Setup
 
 **Why each piece:**
 
@@ -260,7 +375,7 @@ mlflow server --host 0.0.0.0 --port 5000   # runs at localhost:5000
 
 ---
 
-### Phase 1 — Two Classifiers (1.5 weekends)
+### Phase 1 — Galaxy First, Stellar Later
 
 **Goal:** Two fine-tuned models: one that classifies galaxy images, one that classifies stellar spectra. Both tracked in MLflow. Different input types, different architectures — this is what justifies the multi-model routing layer in Phase 3 and the Triton setup in Phase 5b.
 
@@ -287,7 +402,7 @@ This is not yet useful full Galaxy Zoo training. It is the learning/proof founda
 **Recommended Phase 1 progression from the current code:**
 
 ```text
-1A. Tiny local proof path — completed through current milestones
+1A. Tiny local proof path — M50, M50-L1/L2 replay and M51 lazy loading complete locally
 1B. Real Galaxy Zoo ingestion and dataset-quality checks
 1C. Useful CNN baseline on real train/val/test splits
 1D. Metrics, confusion matrix, class imbalance handling, MLflow tracking
@@ -356,7 +471,7 @@ torch.save(best_model.state_dict(), "galaxy_model_checkpoint.pt")
 
 ---
 
-**Model 2 — Stellar Spectral Classifier (0.5 weekend)**
+**Model 2 — Stellar Spectral Classifier (later extension; not an R1 gate)**
 
 **Data:** SDSS DR17 stellar spectra — ~10k stars labeled O/B/A/F/G/K/M (Harvard spectral sequence, 7 classes). Each sample is a 1D array of ~3800 flux values (one per wavelength bin from 3800Å to 9200Å).
 
@@ -423,7 +538,7 @@ Comparative Deep Learning Approaches for Galaxy Morphology Classification
 
 This should reuse the current CosmosAI galaxy data/model pipeline. It should not create a second unrelated galaxy classifier unless an official assignment forces a separate structure.
 
-### Phase 2 — RAG Pipeline (1 weekend)
+### Phase 2 — RAG Pipeline
 
 **Goal:** A retrieval system over astronomical literature that answers questions about galaxy types.
 
@@ -456,9 +571,11 @@ Publish scores in README: "RAG pipeline: faithfulness 0.87, context recall 0.79"
 
 ---
 
-### Phase 3 — LangGraph Agent + LLM Layer (1 weekend)
+### Phase 3 — LangGraph Agent + LLM Layer
 
 **Goal:** Multi-node agent that classifies, retrieves, generates, and streams — with Langfuse tracking.
+
+The earlier Learn replay does not depend on this phase. Its formulas and recorded values are deterministic, not generated explanations. Future classifier tool calls reuse the gateway/router/classifier contracts; do not duplicate model training or loading in the frontend or agent. A later Ask view may explain recorded evidence, but must distinguish that evidence from retrieved astronomy claims.
 
 **Agent state:**
 ```python
@@ -483,17 +600,19 @@ Node 0: router
 Node 1a: classify_galaxy
   → runs ViT model on the image
   → sets classification (Elliptical/Spiral/Lenticular/Irregular) + confidence
-  → conditional edge: if confidence < 0.65 → Node 1a_retry (low-confidence path)
-                       if confidence ≥ 0.65 → Node 2
+  → conditional edge: below a validation-chosen threshold → uncertainty path
+                       otherwise → Node 2
 
-Node 1a_retry: retrieve_similar_examples (low-confidence path)
-  → retrieves 3 similar galaxy images from training set for context
-  → re-runs classifier → back to Node 2
+Node 1a_uncertain: preserve uncertainty (bounded path, not a retry loop)
+  → explain uncertainty or abstain; optionally retrieve examples for context
+  → retrieval does not change the image classifier's weights or input
+  → do not rerun the same deterministic classifier expecting a better answer
+  → additional model/evidence only if separately evaluated; then Node 2
 
 Node 1b: classify_stellar
   → runs 1D-CNN model on the flux array
   → sets classification (O/B/A/F/G/K/M) + confidence
-  → goes to Node 2 (stellar spectra are distinctive — low-confidence path rarely needed)
+  → apply an evaluated uncertainty policy; do not assume this branch is more reliable
 
 Node 2: retrieve_literature
   → queries Qdrant with filter: domain=input_type (galaxy or stellar)
@@ -508,6 +627,15 @@ Node 3: generate_explanation
 Node 4 (optional loop): evaluate_confidence
   → if explanation contains uncertainty markers → flag for human review
   → otherwise → END
+```
+
+**Agent quality layer added by job-target scan:**
+
+```text
+tool integration: MCP/tool schemas where the agent needs controlled external actions
+evaluation: small automatic checks plus human review for uncertain outputs
+guardrails: prompt-injection, invalid tool call, and unsafe output checks
+audit logs: record what the agent decided, what tool it used, and why
 ```
 
 **LiteLLM for multi-LLM:**
@@ -531,7 +659,7 @@ langfuse.trace(name="galaxy_classification", input=image_id, output=explanation)
 
 ---
 
-### Phase 4 — API Gateway + Inference Router + Classifier Services + Docker + Cloud Run (1 week)
+### Phase 4 — API Gateway + Inference Router + Classifier Services + Docker + Cloud Run
 
 **Goal:** Deploy the already-started service topology at a public URL. The API gateway handles external requests, the inference-router chooses the domain service, and each classifier service owns its request contract, preprocessing, model/backend selection, and response shape.
 
@@ -546,6 +674,9 @@ api-gateway/
 ```
 
 **Classifier service endpoints:**
+
+The examples below are target contracts, not today's complete capabilities. Before the Classify view, add and test supported inputs, honest status/error behavior and any model identity fields. Currently only manifest-ID galaxy checkpoint inference is real; URI-only requests remain stubbed, and the router's top-level status is still `stub`. Keep this later API work separate from the local learning replay. Serve the frontend and public API on one origin where possible; otherwise explicitly configure CORS and the gateway URL.
+
 ```python
 # galaxy-classifier-service/main.py
 POST /classify   # image_id/image_uri -> {label, confidence, model_version, status}
@@ -609,11 +740,13 @@ gcloud run deploy cosmosai-api \
 
 ---
 
-### Phase 5a — Polish + Optional Depth (0.5 weekend)
+### Phase 5a — Usable Interface + Optional Depth
 
 - [ ] Clean GitHub README: project overview, architecture diagram, demo GIF, RAGAS scores, MLflow best run link
 - [ ] n8n workflow (optional): weekly arXiv fetch → trigger `/reindex` endpoint → Qdrant updated automatically
-- [ ] Simple frontend: Streamlit or plain HTML with fetch — just enough to demo the upload + streaming
+- [ ] Reuse the plain HTML/JavaScript frontend begun with M50-L's Learn replay; add a useful Classify view for R1 and Ask/streaming for R2 when their APIs exist. Keep report rendering separate from network calls. Do not require Streamlit or a second frontend framework by default.
+- [ ] Deliver the [W1 shared HTTP hosting](cnn_learning_replay_plan.md#future-work-packages-and-acceptance) foundation with a reproducible local command and unchanged API paths; preserve standalone reports.
+- [ ] Schedule W2 concept pages and W3 Excalidraw publishing as future learning work, with stable Replay -> Concepts -> Replay navigation. W4 real-data examples follow the baseline and a bounded trace adapter.
 - [ ] CV entry and master's paragraph (see framings below)
 
 ---
@@ -675,11 +808,11 @@ New Technologies in AI & Robotics, if the semester topic fits
 
 ---
 
-### Phase 5b — Model Serving Infrastructure + Kubernetes (3 weeks)
+### Phase 5b — Model Serving Infrastructure (selective; Kubernetes optional)
 
 **Goal:** Replace the FastAPI model server from Phase 4 with production-grade serving: Triton for vision models, vLLM for the LLM, both running on GPU hardware and orchestrated by Kubernetes. Two sub-stories: raw GPU (RunPod) for learning, managed (Vertex AI) for the production story.
 
-#### Sub-story 1: Self-hosted vLLM on RunPod (0.5 week)
+#### Sub-story 1: Self-hosted vLLM on RunPod
 
 **Why RunPod:** decentralized GPU cloud ($0.20–0.35/hr for RTX 3090, 24GB VRAM). This is the same category of infrastructure that companies like Pragmatike build and operate — not a managed abstraction, but raw GPU compute you configure yourself.
 
@@ -729,7 +862,7 @@ Scrape with Prometheus, visualise in Grafana. This is an "observability system f
 
 ---
 
-#### Sub-story 2: Kubernetes on GKE with GPU node pool (1 week)
+#### Sub-story 2: Kubernetes on GKE with GPU node pool
 
 **Goal:** Move from Docker Compose (local) and Cloud Run (managed serverless) to Kubernetes — the industry standard for orchestrating GPU workloads. This is what "container orchestration for GPU-based workloads in production" means.
 
@@ -803,7 +936,7 @@ The api-gateway and rag-service run as separate K8s Deployments (no GPU needed).
 
 ---
 
-#### Sub-story 3: Vertex AI Model Registry (0.5 week)
+#### Sub-story 3: Vertex AI Model Registry
 
 **Why Vertex AI:** managed model serving on GCP (same cloud as the rest of CosmosAI). Gives you the model registry + blue/green story for MLOps/AI Engineer roles at larger companies.
 
@@ -831,7 +964,7 @@ gcloud ai endpoints deploy-model ENDPOINT_ID \
 
 ---
 
-#### Sub-story 4: Comparison document (0.5 week)
+#### Sub-story 4: Comparison document
 
 One README section comparing the two approaches — this is what an infrastructure engineer thinks about, and publishing it demonstrates the mindset:
 
@@ -922,7 +1055,12 @@ This is scientifically coherent as multimodal astronomy/data fusion. It should s
 
 ## Full Tech Stack
 
+This is a target catalogue, not an installed-dependency list. M50-L adds a small frontend and report extension only; the optional video toolchain remains deferred.
+
 ```
+Learning replay:       existing PyTorch observer -> versioned JSON/CSV -> local HTML/CSS/JavaScript
+Formula rendering:     locally bundled MathJax if needed (planned, learning app only)
+Video export:          optional later Manim renderer of the same trace, not an AI video API
 Model 1 (galaxy):      PyTorch + HuggingFace ViT (vit-base-patch16-224) + LoRA (PEFT)
 Model 2 (stellar):     PyTorch 1D-CNN on SDSS spectral flux arrays
 Metrics (eval only):   scikit-learn — confusion_matrix, classification_report, train_test_split
@@ -932,12 +1070,15 @@ Vector store:          Qdrant Cloud (tagged by domain: galaxy / stellar)
 RAG framework:         LangChain (primary) + LlamaIndex (comparison)
 RAG evaluation:        RAGAS
 Agent:                 LangGraph (router node + two classifier branches + shared generate)
+Agent tool protocol:   MCP/tool schemas later, only for controlled external actions
+Agent quality:         evals + guardrails + human-in-the-loop checks + audit logs
 LLM gateway:           LiteLLM → Gemini Flash / Anthropic Haiku / self-hosted vLLM
 Observability (app):   Langfuse (LLM traces, token cost, RAG quality)
-Observability (infra): Prometheus + Grafana (inference latency, GPU utilization, throughput)
+Observability (infra): OpenTelemetry + Prometheus + Grafana (traces, inference latency, GPU utilization, throughput)
 API service:           FastAPI + Pydantic v2 (api-gateway + inference-router + classifier services)
 Streaming:             SSE (Server-Sent Events)
 Containerization:      Docker + Docker Compose (local multi-service dev)
+CI/CD:                 GitHub Actions before the first public release
 Model serving (Phase 4):    Classifier services load PyTorch checkpoints or call model backends behind /classify
 Model serving (Phase 5b):   Triton Inference Server — optimized ONNX backend behind classifier services
 Model serving (LLM):   vLLM (self-hosted on RunPod GPU, Phi-3 Mini)
@@ -948,12 +1089,14 @@ GPU compute:           RunPod RTX 3090 (dev/learning, $0.25/hr) + GCP GKE GPU no
 Cloud:                 GCP Cloud Run (Phase 4) → GKE (Phase 5b) + Artifact Registry
 Automation:            n8n (optional weekly re-index from arXiv)
 Data:                  Galaxy Zoo 2 (Kaggle), SDSS DR17 stellar spectra (Kaggle), arXiv API, Wikipedia API
-Language:              Python 3.11
+Languages (target):    Python + browser JavaScript; verify supported Python setup before installation
 ```
 
 ---
 
 ## What You Can Say in an Interview
+
+**Future wording examples only.** Use each claim only after the matching feature is implemented and measured; remove unsupported tools, deployments and metrics. For what is true today, use [current_status.md](current_status.md).
 
 **"Experience building and deploying LLM-powered applications in production":**
 > "I built CosmosAI — an astronomy AI system with two classification tasks deployed on GCP Cloud Run. It uses a fine-tuned ViT for galaxy morphology and a 1D-CNN for stellar spectral classification, a LangGraph router-agent that directs each request to the right model, Qdrant for RAG over scientific literature, and LiteLLM to swap between Gemini and self-hosted backends. The API is live at [URL], streams responses via SSE, tracks every request in Langfuse, and evaluates retrieval quality with RAGAS."
@@ -974,6 +1117,8 @@ Language:              Python 3.11
 
 ## Master's Application Framings
 
+Historical examples for other programmes, not current achievements or Craiova assignment approvals. Current AAIMR direction is in [master_project_integration.md](master_project_integration.md).
+
 **Leiden (astronomy + data science):**
 > "To demonstrate both my computational skills and genuine engagement with astronomical data, I built CosmosAI — a galaxy morphology classifier trained on Galaxy Zoo 2, extended with a RAG system over galaxy formation literature. The project is available at [GitHub URL] and deployed publicly. This reflects the type of computational astrophysics work I want to pursue at Leiden."
 
@@ -984,31 +1129,22 @@ Language:              Python 3.11
 
 ## Build Timeline
 
-**Pace:** 6–7 hours per week of focused work.
+The original ten-week estimate is retired. It did not account for learning, review, diagrams, data preparation and debugging. Use the release gates at the top of this plan and the next bounded milestone in [build_log.md](build_log.md), not a completion date inferred from the number of phases.
 
-| Week | Phase | What you finish |
-|---|---|---|
-| 1 | Phase 0 | GCP setup, Qdrant, Langfuse, MLflow, datasets downloaded |
-| 2 | Phase 1 pt.1 | Galaxy CNN baseline + ViT/LoRA trained, MLflow runs, metrics logged |
-| 3 | Phase 1 pt.2 | Stellar 1D-CNN trained, both models saved as checkpoints |
-| 4 | Phase 2 | RAG pipeline: arXiv + Wikipedia indexed in Qdrant, RAGAS evaluated |
-| 5 | Phase 3 | LangGraph agent: router + two branches + generate + Langfuse tracing |
-| 6 | Phase 4 | api-gateway + inference-router + classifier services, Docker Compose local, deployed to Cloud Run |
-| 7 | Phase 5a | Clean README, architecture diagram, demo GIF, RAGAS scores published |
-| 8 | Phase 5b pt.1 | vLLM on RunPod + Triton serving both ONNX models + Prometheus/Grafana |
-| 9 | Phase 5b pt.2 | GKE cluster + GPU node pool, Triton + vLLM as K8s Deployments, HPA |
-| 10 | Phase 5b pt.3 | Vertex AI Model Registry + blue/green + comparison doc in README |
-
-**Total: 10 weeks ≈ 2.5 months at 6–7h/week.**
-
-Start after CNRED submitted (July) — target: end of September / early October 2026.
+Before starting each milestone, state its learning question, intended observable result and verification command. At completion, record what actually ran and what remains unproven. Re-estimate from observed work and available study time; university deadlines apply only once confirmed from an assignment brief.
 
 ---
 
 ## Decision Log
 
+Earlier rows are historical planning decisions, including old time estimates and tool choices. The current release policy above supersedes conflicting rows; cloud prices/model choices must be rechecked before spending or implementing.
+
 | Date | Decision | Rationale |
 |---|---|---|
+| 16 Sep 2026 | M50-L1/L2 CNN Learning Replay before M51 | Reuse the real observer, verify concrete calculus, then render a bounded local HTML/JS replay. Learn alongside implementation; leave M51's number/scope intact. Reuse the frontend for Classify/Ask later; no new inference service, live web training or video gate. |
+| 24 Sep 2026 | Future shared learning website, project implementation first | Separate measured Replay examples from Markdown Concepts with Excalidraw exports; plan gateway static hosting and later Classify integration. Keep the real-data subset next and retain portable offline reports. W1-W4 remain future work. |
+| 9 Sep 2026 | Three evidence-gated releases; galaxy first | Deliver independently useful galaxy, assistant and serving/performance results. Stellar is later; no tool-count or ten-week completion claim. |
+| 9 Sep 2026 | Official AAIMR curriculum research and bounded reuse | Project allocations are verified for the located 2025-2027 plan; assignment acceptance remains unknown. Prefer a two-model comparison; automotive/control work may remain separate. |
 | Jun 2026 | Galaxy morphology chosen over exoplanet transit | Images are more demo-friendly; Galaxy Zoo 2 is a well-known dataset; visual output works better for a portfolio URL |
 | Jun 2026 | LiteLLM for multi-LLM instead of single provider | Shows multi-LLM competence (item 13 in self-learn doc) for free — same code, different model string |
 | Jun 2026 | Qdrant Cloud over pgvector | Dedicated vector DB = cleaner architecture story; pgvector is the PDQ-adjacent option so keeping them separate |
@@ -1020,6 +1156,7 @@ Start after CNRED submitted (July) — target: end of September / early October 
 | Aug 2026 | Roadmap reconciled with implemented service topology | The actual repo evolved into api-gateway -> inference-router -> galaxy/stellar classifier services. Future PyTorch/Triton backends should sit behind classifier services instead of forcing the code back into one generic model-server. |
 | Aug 2026 | Added master's integration companion document | `docs/master_project_integration.md` maps possible AAIMR master's topics onto CosmosAI while keeping this roadmap canonical. Course fit remains provisional until official syllabi/project briefs are known. |
 | Aug 2026 | Added CPU -> CUDA -> profiling -> ONNX/TensorRT -> Triton progression | This gives a safer learning bridge before production GPU serving and keeps local CPU development supported. |
+| Sep 2026 | Added job-description alignment docs | `docs/job_description_catalog.md`, `docs/job_targets.md`, and `docs/cosmosai_job_skill_alignment.md` now separate raw job summaries, repeated skill signals, and project-fit decisions. The scan confirms the existing roadmap; only small additions were made explicit: MCP/tool integrations, AI evals/guardrails/audit logs, OpenTelemetry/SLO-style observability, data-quality checks, and CI/CD. |
 | Jun 2026 | Timeline switched to per-week at 6-7h/week | More realistic planning unit. 10 weeks total ≈ 2.5 months. Starts after CNRED (July), done by end of September / early October 2026. |
 
 ---
@@ -1027,4 +1164,4 @@ Start after CNRED submitted (July) — target: end of September / early October 
 *Related: `AI_skills_through_self_learn_cannot_do_atwork.md` — the full skill list this project covers*
 *Related: `master/general_all_masters/project/master_decide_project.md` — master's project requirements*
 *Related: `overall_ai_project_plan.md` — the PDQ-adjacent projects (pdq-rag, classifier, incident intelligence)*
-*Last updated: June 2026*
+*Last updated: September 2026*

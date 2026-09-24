@@ -5,13 +5,14 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy the service dependency list into the container.
-COPY requirements.txt .
+COPY apps/inference-router/requirements.txt .
 
 # Install the Python dependencies without keeping pip's download cache.
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the FastAPI application code into the container.
-COPY main.py .
+COPY apps/inference-router/main.py .
+COPY cosmosai ./cosmosai
 
 # Document that the container listens on port 8000 internally.
 EXPOSE 8000

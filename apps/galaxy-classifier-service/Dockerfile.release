@@ -1,0 +1,15 @@
+# Portable inference artifact: no training dataset or workstation bind mounts.
+FROM python:3.10-slim
+WORKDIR /app
+COPY apps/galaxy-classifier-service/requirements-checkpoint.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+COPY apps/galaxy-classifier-service/main.py .
+COPY cosmosai ./cosmosai
+COPY data/demo/gz2_pilot_80.pt ./demo-model/checkpoint.pt
+COPY data/samples/gz2_pilot_model_card.json ./demo-model/model_card.json
+ENV COSMOSAI_GALAXY_CHECKPOINT_PATH=/app/demo-model/checkpoint.pt \
+    COSMOSAI_GALAXY_MODEL_CARD=/app/demo-model/model_card.json \
+    OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 PYTHONDONTWRITEBYTECODE=1
+USER 10001:10001
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--limit-concurrency", "8"]

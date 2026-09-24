@@ -1,0 +1,15 @@
+CosmosAI learning illustrations
+
+The original drawings are project-authored Excalidraw scenes. Web copies are
+exported with @excalidraw/utils 0.1.5, an MIT-licensed build-time dependency.
+The browser does not load the Excalidraw editor or its JavaScript bundle.
+
+Exported SVGs include font subsets to render without remote font requests:
+- Virgil, created by Ellinor Rapp, SIL Open Font License 1.1.
+  https://github.com/excalidraw/virgil/blob/main/LICENSE.md
+- Cascadia Code, Microsoft Corporation, SIL Open Font License 1.1.
+  https://github.com/microsoft/cascadia-code/blob/main/LICENSE
+
+License texts accompany this notice in Excalidraw-MIT.txt, Virgil-OFL.txt and
+Cascadia-Code-OFL.txt. The fonts' licenses apply to their embedded font data,
+not to the surrounding project-authored teaching content.

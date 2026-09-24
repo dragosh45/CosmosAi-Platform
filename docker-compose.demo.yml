@@ -1,0 +1,36 @@
+# Local portfolio demo. Supply a trusted checkpoint with COSMOSAI_DEMO_CHECKPOINT.
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+    ports:
+      - "127.0.0.1:8080:8000"
+    depends_on:
+      - inference-router
+
+  inference-router:
+    build:
+      context: .
+      dockerfile: apps/inference-router/Dockerfile
+    depends_on:
+      - galaxy-classifier-service
+
+  galaxy-classifier-service:
+    build:
+      context: .
+      dockerfile: apps/galaxy-classifier-service/Dockerfile.checkpoint
+    environment:
+      COSMOSAI_GALAXY_CHECKPOINT_PATH: /app/demo-model/checkpoint.pt
+      COSMOSAI_GALAXY_MODEL_CARD: /app/demo-model/model_card.json
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    volumes:
+      - type: bind
+        source: ${COSMOSAI_DEMO_CHECKPOINT:?Set COSMOSAI_DEMO_CHECKPOINT to a trusted checkpoint file}
+        target: /app/demo-model/checkpoint.pt
+        read_only: true
+      - type: bind
+        source: ${COSMOSAI_DEMO_MODEL_CARD:-./data/samples/gz2_pilot_model_card.json}
+        target: /app/demo-model/model_card.json
+        read_only: true

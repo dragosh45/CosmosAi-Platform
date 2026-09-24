@@ -1,6 +1,25 @@
 # Import Path to pass the sample image root into preprocessing helpers.
 from pathlib import Path
 
+# Import Pillow in tests so we can create a normal PNG fixture at runtime.
+from PIL import Image
+
+# Import shared manifest and preprocessing helpers for the real image path.
+from cosmosai.galaxy.manifest import GalaxyManifestRecord
+from cosmosai.galaxy.preprocessing import load_and_preprocess_image_for_record
+
+
+# Create a tiny PNG file for package preprocessing tests.
+def _write_tiny_png(image_path: Path) -> None:
+    # Create a tiny RGB image with two visible pixel values.
+    image = Image.new("RGB", (2, 1))
+
+    # Store black and white pixels so normalized min/max are easy to reason about.
+    image.putdata([(0, 0, 0), (255, 255, 255)])
+
+    # Save as PNG so the loader must go through Pillow.
+    image.save(image_path)
+
 
 # Test that the tiny sample image can be normalized into tensor-like values.
 def test_preprocess_sample_image_from_manifest_record(load_service_module):
@@ -88,3 +107,36 @@ def test_preprocess_rejects_out_of_range_pixels(load_service_module):
         assert "Pixel value out of 0-255 range" in str(error)
     else:
         raise AssertionError("Expected out-of-range pixel to raise ValueError")
+
+
+# Test that a normal PNG can be resized and normalized into model-ready numbers.
+def test_preprocess_png_image_with_resize(tmp_path):
+    # Create a fake image root and one PNG file under a manifest-style path.
+    image_root = tmp_path / "images"
+    image_folder = image_root / "processed" / "images_224"
+    image_folder.mkdir(parents=True)
+    image_path = image_folder / "tiny-galaxy.png"
+    _write_tiny_png(image_path)
+
+    # Build a manifest-style record that points to the PNG.
+    record = GalaxyManifestRecord(
+        image_id="png-001",
+        image_path=Path("processed/images_224/tiny-galaxy.png"),
+        label="spiral",
+        split="train",
+        source="test",
+    )
+
+    # Resize to width=3, height=3 and normalize pixels into floats.
+    tensor = load_and_preprocess_image_for_record(
+        record,
+        image_root,
+        target_size=(3, 3),
+    )
+
+    # Tensor shape uses height, width, channels order after Pillow resizing.
+    assert tensor.path == image_path
+    assert tensor.shape == (3, 3, 3)
+    assert len(tensor.values) == 27
+    assert min(tensor.values) >= 0.0
+    assert max(tensor.values) <= 1.0

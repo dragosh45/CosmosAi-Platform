@@ -26,6 +26,7 @@ def test_load_sample_galaxy_manifest(load_service_module):
         split="train",
         source="galaxy_zoo_2",
     )
+    assert records[0].manifest_row == 2
 
 
 # Test that records can be grouped into train/val/test buckets.
