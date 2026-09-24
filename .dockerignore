@@ -1,0 +1,12 @@
+.git
+.venv
+.env
+.env.*
+docs
+models
+datasets
+mlruns
+assignment-property-dashboard
+**/node_modules
+**/__pycache__
+**/*.pyc

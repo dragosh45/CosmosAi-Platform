@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% set active = 'diagrams' %}
+{% block title %}Diagrams{% endblock %}{% block page %}diagrams{% endblock %}
+{% block body %}
+<div class="page-heading"><div><p class="eyebrow">COSMOSAI / LEARNING</p><h1>Diagrams</h1>
+<p>Neurons, data flow and measured training calculations.</p></div><a class="return-replay" href="/learn/?resume=1" hidden>Return to selected calculation</a></div>
+<div class="diagram-toolbar"><label for="diagram-select">Diagram<select id="diagram-select">{% for d in diagrams %}<option value="{{ d.id }}">{{ d.title }}</option>{% endfor %}</select></label>
+  <div class="zoom-tools"><button id="zoom-out" type="button" title="Zoom out" aria-label="Zoom out"><i data-lucide="zoom-out"></i></button>
+    <label class="zoom-label" for="diagram-zoom">Zoom<input id="diagram-zoom" type="range" min="5" max="200" value="100"></label><output id="zoom-value" for="diagram-zoom">100%</output>
+    <button id="zoom-in" type="button" title="Zoom in" aria-label="Zoom in"><i data-lucide="zoom-in"></i></button>
+    <button id="fit-diagram" type="button" title="Fit diagram width" aria-label="Fit diagram width"><i data-lucide="maximize"></i></button>
+    <a id="download-diagram" class="icon-button" download title="Download SVG" aria-label="Download SVG"><i data-lucide="download"></i></a>
+  </div></div>
+<h2 id="diagram-title"></h2><p id="diagram-status" class="muted" role="status">Loading diagram</p>
+<div class="diagram-viewport" id="diagram-viewport" tabindex="0" aria-label="Scrollable diagram"><object id="diagram-object" type="image/svg+xml" aria-label="Selected learning diagram"></object></div>
+<div class="diagram-links"><a id="diagram-source" download>Excalidraw source</a><nav id="diagram-concepts" aria-label="Related concepts"></nav><a href="/assets/vendor/learning-licenses/NOTICE.txt">Attribution</a></div>
+<noscript><ul>{% for d in diagrams %}<li><a href="svg/{{ d.id }}.svg">{{ d.title }}</a></li>{% endfor %}</ul></noscript>
+{% endblock %}

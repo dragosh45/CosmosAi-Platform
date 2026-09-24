@@ -1,10 +1,15 @@
 """Manifest loading helpers for galaxy training and inference paths."""
 
+# Docs: docs/architecture.md Step 20 explains M50 data-quality boundaries.
+
 # Import csv so the package can read manifest rows without extra dependencies.
 import csv
 
-# Import dataclass so one manifest row can be passed around as a clear object.
-from dataclasses import dataclass
+# Import Counter to detect duplicate CSV column names before row parsing.
+from collections import Counter
+
+# Import dataclass helpers so records can retain their source row for diagnostics.
+from dataclasses import dataclass, field
 
 # Import Path to represent local and mounted filesystem paths.
 from pathlib import Path
@@ -44,6 +49,10 @@ class GalaxyManifestRecord:
     # Dataset source name, such as galaxy_zoo_2.
     source: str
 
+    # Original CSV row, used only for data-quality messages. Programmatic records
+    # can omit it, and it does not change record equality in existing callers.
+    manifest_row: int | None = field(default=None, compare=False)
+
 
 # Validate one galaxy manifest CSV file and return human-readable errors.
 def validate_manifest(manifest_path: Path) -> list[str]:
@@ -54,70 +63,120 @@ def validate_manifest(manifest_path: Path) -> list[str]:
     if not manifest_path.exists():
         return [f"Manifest file does not exist: {manifest_path}"]
 
-    # Open the CSV with newline="" so csv handles platform line endings.
-    with manifest_path.open(newline="", encoding="utf-8") as manifest_file:
-        # DictReader reads each row as a dictionary keyed by column name.
-        reader = csv.DictReader(manifest_file)
+    try:
+        # Open the CSV with newline="" so csv handles platform line endings.
+        with manifest_path.open(newline="", encoding="utf-8") as manifest_file:
+            # Strict mode reports malformed quoting instead of guessing a row shape.
+            reader = csv.DictReader(manifest_file, strict=True)
 
-        # Normalize fieldnames to an empty list when the CSV has no header row.
-        fieldnames = reader.fieldnames or []
+            # Normalize fieldnames to an empty list when the CSV has no header row.
+            fieldnames = reader.fieldnames or []
 
-        # Check whether all required contract columns are present.
-        missing_columns = sorted(REQUIRED_COLUMNS - set(fieldnames))
-        if missing_columns:
-            errors.append(
-                "Missing required columns: " + ", ".join(missing_columns)
+            # Duplicate/blank headers make DictReader mappings ambiguous.
+            duplicate_columns = sorted(
+                name for name, count in Counter(fieldnames).items() if count > 1
             )
-            return errors
-
-        # Track image IDs so duplicate IDs can be reported.
-        seen_image_ids: set[str] = set()
-
-        # Count rows so an empty manifest can be reported.
-        row_count = 0
-
-        # Validate every manifest row against the current data contract.
-        for row_number, row in enumerate(reader, start=2):
-            row_count += 1
-            image_id = row["image_id"].strip()
-            image_path = row["image_path"].strip()
-            label = row["label"].strip()
-            split = row["split"].strip()
-            source = row["source"].strip()
-
-            # image_id is the stable identifier used by code, logs, and APIs.
-            if not image_id:
-                errors.append(f"Row {row_number}: image_id is empty")
-            elif image_id in seen_image_ids:
-                errors.append(f"Row {row_number}: duplicate image_id '{image_id}'")
-            else:
-                seen_image_ids.add(image_id)
-
-            # image_path should point to the image relative to the data root.
-            if not image_path:
-                errors.append(f"Row {row_number}: image_path is empty")
-
-            # label must be one of the agreed galaxy morphology classes.
-            if label not in ALLOWED_LABELS:
+            if duplicate_columns:
                 errors.append(
-                    f"Row {row_number}: invalid label '{label}' "
-                    f"(allowed: {', '.join(sorted(ALLOWED_LABELS))})"
+                    "Duplicate column names: " + ", ".join(duplicate_columns)
+                )
+            if any(not name.strip() for name in fieldnames):
+                errors.append("Manifest header contains an empty column name")
+
+            # Check whether all required contract columns are present.
+            missing_columns = sorted(REQUIRED_COLUMNS - set(fieldnames))
+            if missing_columns:
+                errors.append(
+                    "Missing required columns: " + ", ".join(missing_columns)
                 )
 
-            # split tells training code how the row should be used.
-            if split not in ALLOWED_SPLITS:
-                errors.append(
-                    f"Row {row_number}: invalid split '{split}' "
-                    f"(allowed: {', '.join(sorted(ALLOWED_SPLITS))})"
-                )
+            # Row dictionaries are unreliable until the header contract is sound.
+            if duplicate_columns or missing_columns or any(
+                not name.strip() for name in fieldnames
+            ):
+                return errors
 
-            # source records where this row came from, such as galaxy_zoo_2.
-            if not source:
-                errors.append(f"Row {row_number}: source is empty")
+            # Track image IDs so duplicate IDs can be reported.
+            seen_image_ids: set[str] = set()
 
-        # The manifest should contain at least one data row.
-        if row_count == 0:
-            errors.append("Manifest has no data rows")
+            # Count rows so an empty manifest can be reported.
+            row_count = 0
+
+            # Validate every manifest row against the current data contract.
+            for row_number, row in enumerate(reader, start=2):
+                row_count += 1
+
+                # DictReader stores extra values under None and missing values as None.
+                extra_values = row.get(None) or []
+                if extra_values:
+                    errors.append(
+                        f"Row {row_number}: has extra value(s) beyond the "
+                        f"{len(fieldnames)} header columns: {extra_values}"
+                    )
+
+                missing_row_fields = {
+                    name for name in fieldnames if row.get(name) is None
+                }
+                for name in sorted(missing_row_fields):
+                    errors.append(
+                        f"Row {row_number}, field '{name}': value is missing "
+                        "because the row has fewer columns than the header"
+                    )
+
+                # Convert present values to stripped text without calling .strip() on None.
+                values = {
+                    name: (row.get(name) or "").strip()
+                    for name in REQUIRED_COLUMNS
+                }
+                image_id = values["image_id"]
+                image_path = values["image_path"]
+                label = values["label"]
+                split = values["split"]
+                source = values["source"]
+
+                # image_id is the stable identifier used by code, logs, and APIs.
+                if not image_id and "image_id" not in missing_row_fields:
+                    errors.append(f"Row {row_number}, field 'image_id': value is empty")
+                elif image_id in seen_image_ids:
+                    errors.append(
+                        f"Row {row_number}, field 'image_id': duplicate value "
+                        f"'{image_id}'"
+                    )
+                elif image_id:
+                    seen_image_ids.add(image_id)
+
+                # image_path should point to the image relative to the data root.
+                if not image_path and "image_path" not in missing_row_fields:
+                    errors.append(f"Row {row_number}, field 'image_path': value is empty")
+
+                # label must be one of the agreed galaxy morphology classes.
+                if not label and "label" not in missing_row_fields:
+                    errors.append(f"Row {row_number}, field 'label': value is empty")
+                elif label and label not in ALLOWED_LABELS:
+                    errors.append(
+                        f"Row {row_number}, field 'label': invalid label '{label}' "
+                        f"(allowed: {', '.join(sorted(ALLOWED_LABELS))})"
+                    )
+
+                # split tells training code how the row should be used.
+                if not split and "split" not in missing_row_fields:
+                    errors.append(f"Row {row_number}, field 'split': value is empty")
+                elif split and split not in ALLOWED_SPLITS:
+                    errors.append(
+                        f"Row {row_number}, field 'split': invalid split '{split}' "
+                        f"(allowed: {', '.join(sorted(ALLOWED_SPLITS))})"
+                    )
+
+                # source records where this row came from, such as galaxy_zoo_2.
+                if not source and "source" not in missing_row_fields:
+                    errors.append(f"Row {row_number}, field 'source': value is empty")
+
+            # The manifest should contain at least one data row.
+            if row_count == 0:
+                errors.append("Manifest has no data rows")
+    except (OSError, UnicodeError, csv.Error) as error:
+        # Convert filesystem/encoding/CSV parser failures into normal validation output.
+        errors.append(f"Could not read manifest {manifest_path}: {error}")
 
     # Return every problem found. An empty list means the manifest is valid.
     return errors
@@ -180,10 +239,10 @@ def load_manifest(manifest_path: Path) -> list[GalaxyManifestRecord]:
     # Read the CSV rows after validation succeeds.
     with manifest_path.open(newline="", encoding="utf-8") as manifest_file:
         # DictReader returns one dictionary per manifest row.
-        reader = csv.DictReader(manifest_file)
+        reader = csv.DictReader(manifest_file, strict=True)
 
         # Convert each row into the small dataclass used by later code.
-        for row in reader:
+        for row_number, row in enumerate(reader, start=2):
             records.append(
                 GalaxyManifestRecord(
                     image_id=row["image_id"].strip(),
@@ -191,6 +250,7 @@ def load_manifest(manifest_path: Path) -> list[GalaxyManifestRecord]:
                     label=row["label"].strip(),
                     split=row["split"].strip(),
                     source=row["source"].strip(),
+                    manifest_row=row_number,
                 )
             )
 
@@ -215,4 +275,3 @@ def records_by_split(
 
     # Return the grouped records.
     return grouped
-

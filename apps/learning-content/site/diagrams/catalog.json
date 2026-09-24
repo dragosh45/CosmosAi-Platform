@@ -1,0 +1,251 @@
+[
+  {
+    "id": "neural_network_concepts",
+    "title": "Neural Network Concepts For CosmosAI",
+    "source_sha256": "53f192e83d3909295aa1bac7624cc5b9c01ff1724450e5c563f42f94af1b8ede",
+    "related": [],
+    "width": 1043,
+    "height": 1673
+  },
+  {
+    "id": "galaxy_gradient_backprop_weight_update_flow",
+    "title": "Gradient, Backpropagation, And Weight Change",
+    "source_sha256": "3a2c92563f7cd68997894883b9f30b8fb5dbf099d9748217624bbcc043a6b2f1",
+    "related": [
+      "/learn/concepts/#concept-forward-pass",
+      "/learn/concepts/#concept-gradient",
+      "/learn/concepts/#concept-gradient-backprop-logic-flow",
+      "/learn/concepts/#concept-gradient-calculation-example",
+      "/learn/concepts/#concept-optimizer-step"
+    ],
+    "width": 2378,
+    "height": 1158
+  },
+  {
+    "id": "galaxy_rgb_to_features_to_logits",
+    "title": "RGB first. Features later. Two different sets of weights.",
+    "source_sha256": "4607e4c1c67230f3943611cb2d66a61a2a625c45274e14f37a2c9afbfa216b62",
+    "related": [],
+    "width": 1948,
+    "height": 2903
+  },
+  {
+    "id": "galaxy_center_convolution_calculation",
+    "title": "Where filter 0's center value 0.037116 comes from",
+    "source_sha256": "844b454772e8a7ca578e8d7f920262565447075bd8f14c6da70d85de39c5bbac",
+    "related": [],
+    "width": 2334.214478314453,
+    "height": 2270.0447871169517
+  },
+  {
+    "id": "galaxy_cnn_training_cycle_overview",
+    "title": "Our tiny CNN: one complete training cycle, then the next update",
+    "source_sha256": "b31d6c5021e3abfb7fd997070c9f380916aaaf3b59138b1a9a9c473baa9e64f0",
+    "related": [],
+    "width": 2308,
+    "height": 2073
+  },
+  {
+    "id": "galaxy_cnn_exact_weight_updates",
+    "title": "Our tiny CNN: pixels, features, classes and changing weights",
+    "source_sha256": "69aeb51d0104622ca076a62efb7b7e4d0e5045b03f8f382848d41a883b101c2a",
+    "related": [],
+    "width": 1948,
+    "height": 6383
+  },
+  {
+    "id": "galaxy_cnn_weight_change_layers_flow",
+    "title": "CNN Weight Change: From One Connection To Filters And Layers",
+    "source_sha256": "98f564a727eccd2d31e154fb14125c3f72d6c59fb521ade21ec8925abd8d2e04",
+    "related": [
+      "/learn/concepts/#concept-cnn-filter-weights",
+      "/learn/concepts/#concept-gradient-calculation-example"
+    ],
+    "width": 2168,
+    "height": 1277
+  },
+  {
+    "id": "galaxy_training_concepts_in_code",
+    "title": "Training Concept Diagram: Current Code Skeleton",
+    "source_sha256": "559edecb56f9f48a555ca59be8376d619c9b3e96ddbe503e35364ee7ec398b77",
+    "related": [],
+    "width": 2301.237171561324,
+    "height": 2618
+  },
+  {
+    "id": "galaxy_cnn_training_skeleton_flow",
+    "title": "Step 3 Diagrams: CNN Baseline Training Skeleton",
+    "source_sha256": "94a74d27996e2c636aff2efcd0585d3fac0d3d28fecb27c132d5451e1cb103e3",
+    "related": [],
+    "width": 1838,
+    "height": 3027
+  },
+  {
+    "id": "galaxy_training_function_call_graph",
+    "title": "Training Function Call Graph: what calls what, and why",
+    "source_sha256": "693ea0c24d1094e32535c27efced9c31f813739fc7e4992e2d7d747c889f1c3e",
+    "related": [
+      "/learn/concepts/#concept-checkpoint-round-trip",
+      "/learn/concepts/#concept-forward-pass",
+      "/learn/concepts/#concept-inside-training-loop",
+      "/learn/concepts/#concept-one-step-vs-loop",
+      "/learn/concepts/#concept-pytorch-training-step"
+    ],
+    "width": 1943,
+    "height": 1958
+  },
+  {
+    "id": "galaxy_pytorch_training_loop_flow",
+    "title": "Milestone 35: Tiny Real PyTorch Training Loop",
+    "source_sha256": "686bfd5d577e05b2e34486acb4f40c2afa7574e378ededd86c8aa08fda8ac03c",
+    "related": [],
+    "width": 2053,
+    "height": 738
+  },
+  {
+    "id": "galaxy_pytorch_weight_update_flow",
+    "title": "Milestone 34: One Tiny Image Changes CNN Weights",
+    "source_sha256": "75ac7a4884d3c9e79f4f2146085f77faceaacccf29c4954fedc2410a9c43ac6d",
+    "related": [],
+    "width": 2658,
+    "height": 723
+  },
+  {
+    "id": "galaxy_pytorch_batch_training_flow",
+    "title": "Milestone 45: Tiny PyTorch Batch Training Proof",
+    "source_sha256": "e661136ac7d37a352ad596cb9ba7cd9d0999f214ca42e5b5457c8cd77be77895",
+    "related": [
+      "/learn/concepts/#concept-pytorch-batch",
+      "/learn/concepts/#concept-pytorch-training-loop"
+    ],
+    "width": 1728,
+    "height": 1108
+  },
+  {
+    "id": "galaxy_pytorch_dataloader_flow",
+    "title": "Milestone 47: PyTorch Dataset/DataLoader Proof",
+    "source_sha256": "d1670e400eaabc89cb6b9a6c28bc5dfa899a89a6d71e8f14a1c9f8e63e8c0754",
+    "related": [
+      "/learn/concepts/#concept-manual-batch-vs-dataloader",
+      "/learn/concepts/#concept-pytorch-dataloader",
+      "/learn/concepts/#concept-pytorch-dataset",
+      "/learn/concepts/#concept-pytorch-dataset-dataloader"
+    ],
+    "width": 1928,
+    "height": 914
+  },
+  {
+    "id": "galaxy_dataloader_training_loop_flow",
+    "title": "Milestone 48: DataLoader feeds real CNN training",
+    "source_sha256": "ec5b5d01adb7ba71a3cb56e54f4dc3477236874a0754516239e01304bb6a8747",
+    "related": [],
+    "width": 1491.7312811811141,
+    "height": 2013
+  },
+  {
+    "id": "galaxy_training_sample_flow",
+    "title": "Step 2 Diagrams: Tiny Model-Ready Dataset Proof",
+    "source_sha256": "36e49f85dbf3870d1ff388503dec1d5c286d0126c56692fda40f5ad76a8a2aa2",
+    "related": [],
+    "width": 1997.0662841796875,
+    "height": 2873
+  },
+  {
+    "id": "galaxy_dataset_quality_gate",
+    "title": "Milestone 50: which rows are allowed to reach training?",
+    "source_sha256": "467cdcf28e9e4e07ec8964db307078796801a89fc8d1884e680fbc5d80adab48",
+    "related": [],
+    "width": 1908,
+    "height": 1323
+  },
+  {
+    "id": "galaxy_pillow_image_loading_flow",
+    "title": "Milestone 46: Pillow Real-Image Loading Proof",
+    "source_sha256": "5ab26d1221bcf9a14b73866ece4eff93beb12394cee0cc59519315a1b9419bde",
+    "related": [
+      "/learn/concepts/#concept-pillow-image-loading"
+    ],
+    "width": 1858,
+    "height": 683
+  },
+  {
+    "id": "galaxy_pytorch_evaluation_flow",
+    "title": "Milestone 36: Tiny PyTorch Evaluation Proof",
+    "source_sha256": "abc58b07c150d25b28fb0700adddbb35f76606a372e1afeacacd45b0dbfd0268",
+    "related": [],
+    "width": 1268,
+    "height": 968
+  },
+  {
+    "id": "galaxy_pytorch_checkpoint_flow",
+    "title": "Milestone 37: Tiny PyTorch Checkpoint Save/Load",
+    "source_sha256": "dbc3d2a9ca6641c1c9559ae5d550e1efbcc928afc6419281372de83337709b33",
+    "related": [],
+    "width": 1438,
+    "height": 968
+  },
+  {
+    "id": "galaxy_checkpoint_preprocessing_flow",
+    "title": "M49: save the weights AND their input recipe",
+    "source_sha256": "d6dfad9f873106f31a92a80b83ee9f0c6b3264b99ceb832661d52973b802c944",
+    "related": [],
+    "width": 1418,
+    "height": 1798
+  },
+  {
+    "id": "galaxy_checkpoint_inference_flow",
+    "title": "Milestone 38: Tiny Checkpoint Inference Command",
+    "source_sha256": "5bbb39ea99f753b4673e8d1f7c7ed9e5bf70af6a6f8c67dd78e68db0e2658e80",
+    "related": [],
+    "width": 1513,
+    "height": 918
+  },
+  {
+    "id": "galaxy_checkpoint_api_sequence_flow",
+    "title": "Checkpoint Sequence Diagram: train once, then API predicts",
+    "source_sha256": "5a78e3c8c53bc17a549131beac61d4f1682eb97758ec1eaacdd60b439a6332d1",
+    "related": [],
+    "width": 1823,
+    "height": 1648
+  },
+  {
+    "id": "galaxy_real_data_training_flow",
+    "title": "Real Galaxy Zoo pilot: download, train, evaluate",
+    "source_sha256": "b5236b37fe717be45790527ad055935fc76738b75294ae669dd7b7f2ddf85c16",
+    "related": [],
+    "width": 1428,
+    "height": 968
+  },
+  {
+    "id": "galaxy_pilot_to_training_call_graph",
+    "title": "What calls what? The real pilot-to-training handoff",
+    "source_sha256": "b53734fee9054aee3e24672ad3f0a03792783848c00dd29f9c5689f95a2b8384",
+    "related": [],
+    "width": 1448,
+    "height": 1201
+  },
+  {
+    "id": "galaxy_subset_script_code_flow",
+    "title": "prepare_galaxy_zoo_subset.py: code flow",
+    "source_sha256": "ce0d55ff5009c277636a7ac15cabf29cfa6d6b4bf6b7f6215f20016dbddd1ec9",
+    "related": [],
+    "width": 1398,
+    "height": 933
+  },
+  {
+    "id": "manifest_tooling_code_flow",
+    "title": "Step 1 Code Flow: Manifest And Tiny Image Loader",
+    "source_sha256": "e894b26df8dade9b0bad5d5b91cf051fe456fc2d0ab2fa90f4c08d0503246ef5",
+    "related": [],
+    "width": 1820.558349609375,
+    "height": 2523
+  },
+  {
+    "id": "shared_galaxy_package_oop_flow",
+    "title": "Milestones 42-43: Shared Galaxy Package / OOP Flow",
+    "source_sha256": "da6133387317a2e26bae6e2caebcd8c61d8b70359c3793d0a0297d381efac78d",
+    "related": [],
+    "width": 1793,
+    "height": 2185.5
+  }
+]

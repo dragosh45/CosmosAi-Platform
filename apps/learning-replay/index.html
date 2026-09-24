@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CosmosAI CNN Learning Replay</title>
+  <link rel="stylesheet" href="viewer.css">
+  <script src="sample_trace.js" defer></script>
+  <script src="viewer.js" defer></script>
+</head>
+<body>
+  <nav id="site-nav" class="site-nav" aria-label="Main navigation" hidden>
+    <a href="/">Galaxy Classifier</a>
+    <a href="/learn/" aria-current="page">CNN Learning Replay</a>
+    <a href="/learn/concepts/">Concepts Explanations</a>
+    <a href="/learn/diagrams/">Diagrams</a>
+  </nav>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">COSMOSAI / PHASE 1A</p>
+      <h1>CNN Learning Replay</h1>
+      <p class="lede">Recorded training calculations: RGB convolution, pooling, class scores, loss, gradients and SGD weight updates. This tiny teaching run is separate from uploaded-image predictions.</p>
+    </div>
+    <div class="status-block">
+      <span id="trace-status" class="status status-ok">Loading sample trace</span>
+      <span id="trace-source" class="source-name">sample_trace.json</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="toolbar" aria-label="Replay controls">
+      <div class="control-group playback-controls">
+        <button id="previous-update" type="button" title="Previous optimizer update">Previous</button>
+        <button id="play-toggle" type="button" class="primary" title="Play or pause the recorded trace">Play</button>
+        <button id="next-update" type="button" title="Next optimizer update">Next</button>
+      </div>
+      <label class="timeline-label" for="update-slider">Optimizer update <output id="update-label" for="update-slider">1 / 2</output>
+        <input id="update-slider" type="range" min="0" max="1" value="0">
+      </label>
+      <label class="speed-label" for="speed-select">Speed
+        <select id="speed-select">
+          <option value="1800">Slow</option>
+          <option value="900" selected>Normal</option>
+          <option value="450">Fast</option>
+        </select>
+      </label>
+      <label class="file-picker" title="Load a version-2 trace exported by the observer">Open trace JSON
+        <input id="trace-file" type="file" accept="application/json,.json">
+      </label>
+    </section>
+
+    <section class="run-strip" aria-label="Run facts">
+      <div><span class="fact-label">Model</span><strong>TinyGalaxyCNN</strong><small>Conv2d 3 -> 4, Linear 4 -> 4</small></div>
+      <div><span class="fact-label">Parameters</span><strong id="parameter-count">132</strong><small>108 conv weights + 4 conv biases + 16 classifier weights + 4 classifier biases</small></div>
+      <div><span class="fact-label">Current state</span><strong id="state-label">Forward pass</strong><small id="state-detail">Epoch 1, batch 1</small></div>
+      <div><span class="fact-label">Learning rate</span><strong id="learning-rate">0.1</strong><small>Plain SGD</small></div>
+    </section>
+
+    <section class="section-heading">
+      <div><p class="section-kicker">01 / FORWARD PASS</p><h2>Pixels become internal features</h2></div>
+      <p>One filter uses three RGB kernel slices. The same weights visit every spatial position, so each map cell gets a different sum.<span class="concept-links" hidden><a href="/learn/concepts/#kernel-slices-and-the-center-convolution">Convolution</a><a href="/learn/concepts/#relu-activation">ReLU</a><a href="/learn/concepts/#pooled-features-are-not-galaxy-classes">Pooling</a></span></p>
+    </section>
+
+    <section class="forward-grid">
+      <div id="input-planes" class="panel input-panel">
+        <div class="panel-header"><h3>Input planes</h3><span id="image-meta">Image A</span></div>
+        <div class="select-row">
+          <label>Image <select id="image-select"></select></label>
+          <label>Filter <select id="filter-select"></select></label>
+          <label>Output row <select id="row-select"></select></label>
+          <label>Output column <select id="column-select"></select></label>
+        </div>
+        <div id="input-plane-values" class="plane-grid"></div>
+        <p class="caption">Each square is one normalized channel value. The label belongs to the fixture; it is not stored in the pixels.</p>
+        <p id="window-explanation" class="window-note"></p>
+      </div>
+
+      <div class="panel kernel-panel">
+        <div class="panel-header"><h3>Filter and response</h3><span id="map-meta">Filter 0</span></div>
+        <div id="kernel-slices" class="plane-grid"></div>
+        <p class="caption kernel-legend"><strong>Kernel slices = learned weights.</strong> They start as repeatable initialized values, then training updates them. The response maps below are calculated outputs: each cell is 27 input-value × weight products plus the filter bias.</p>
+        <div class="response-pair">
+          <div><h4>Pre-ReLU map</h4><div id="pre-map"></div></div>
+          <div><h4>After ReLU</h4><div id="post-map"></div></div>
+        </div>
+        <p id="response-explanation" class="formula-note"></p>
+      </div>
+    </section>
+
+    <section class="panel products-panel">
+      <div class="panel-header"><h3>Selected output position</h3><span id="position-meta">row 1, column 1</span></div>
+      <p id="window-formula" class="window-note"></p>
+      <p id="position-formula" class="formula-line"></p>
+      <p id="product-explanation" class="formula-note"></p>
+      <div class="table-scroll"><table id="products-table"><thead><tr><th>Channel</th><th>Input row,col</th><th>Input</th><th>Kernel weight</th><th>Product</th></tr></thead><tbody></tbody></table></div>
+      <div id="subtotal-strip" class="subtotal-strip"></div>
+    </section>
+
+    <div id="pooled-summary" class="pooled-summary pooled-summary-band" aria-label="Four pooled internal feature signals"></div>
+
+    <section class="section-heading">
+      <div><p class="section-kicker">02 / CLASSIFIER</p><h2>Features become class scores</h2></div>
+      <p>Pooling produces four internal signals, <code>a[0]</code> through <code>a[3]</code>, one from each filter. The final 4 x 4 matrix multiplies those signals; its outputs are logits before softmax.<span class="concept-links" hidden><a href="/learn/concepts/#matrix-multiplication-is-many-weighted-sums">Matrix multiplication</a><a href="/learn/concepts/#concept-logits-probabilities-loss">Logits, softmax and loss</a></span></p>
+    </section>
+
+    <section class="classifier-grid">
+      <div class="panel network-panel">
+        <div class="panel-header"><h3>Feature connections</h3><span>green = features, violet = classes</span></div>
+        <div id="network-diagram" class="network-diagram"></div>
+        <p class="caption">Green lines are positive weights; brown lines are negative weights. With positive features, positive weights raise a class logit and negative weights lower it. Thickness shows magnitude. The class nodes show the calculated logit and softmax probability.</p>
+        <p id="classifier-connection-example" class="formula-note"></p>
+        <label class="inline-label">Class row <select id="class-select"></select></label>
+      </div>
+      <div class="panel logits-panel">
+        <div class="panel-header"><h3>Matrix multiplication</h3><span id="classifier-meta">Image A</span></div>
+        <div id="features-list" class="value-list"></div>
+        <div id="classifier-schematic" class="matrix-schematic" aria-label="Classifier matrix times pooled feature vector plus bias produces logits, then softmax produces probabilities"></div>
+        <div class="matrix-block"><h4>Classifier weights W</h4><div id="classifier-matrix"></div></div>
+        <p id="classifier-general-formula" class="matrix-explanation"></p>
+        <p id="classifier-order" class="formula-note"></p>
+        <p id="classifier-formula" class="formula-note"></p>
+        <div id="logit-list" class="logit-list"></div>
+        <p id="softmax-explanation" class="matrix-explanation"></p>
+      </div>
+    </section>
+
+    <section class="section-heading">
+      <div><p class="section-kicker">03 / BACKWARD + UPDATE</p><h2>Each parameter gets its own gradient</h2></div>
+      <p>Backward fills gradients. SGD is the moment that changes the stored weights.<span class="concept-links" hidden><a href="/learn/concepts/#concept-backpropagation">Backward</a><a href="/learn/concepts/#concept-gradient">Gradients</a><a href="/learn/concepts/#concept-optimizer-step">SGD update</a><a href="/learn/diagrams/#galaxy_gradient_backprop_weight_update_flow">Gradient diagram</a></span></p>
+    </section>
+
+    <section class="backward-grid">
+      <div class="panel update-panel">
+        <div class="panel-header"><h3>Selected parameter</h3><span id="parameter-shape"></span></div>
+        <label class="wide-label" for="parameter-select">Inspect one scalar (one stored weight or bias)
+          <select id="parameter-select"></select>
+        </label>
+        <p id="parameter-meaning" class="parameter-meaning"></p>
+        <div id="parameter-equation" class="equation-card"></div>
+        <div id="gradient-source" class="gradient-source"></div>
+      </div>
+      <div class="panel inventory-panel">
+        <div class="panel-header"><h3>Parameter inventory</h3><span>before / gradient / after</span></div>
+        <div id="gradient-diagram" class="gradient-diagram" aria-label="Gradient accumulation and parameter update diagram"></div>
+        <div id="parameter-inventory"></div>
+        <div id="update-overview" class="update-overview" aria-label="Whole model gradient and optimizer update overview"></div>
+      </div>
+    </section>
+
+    <section id="training-metrics" class="panel metrics-panel">
+      <div class="panel-header"><h3>What changed in this update?</h3><span id="metrics-meta">same batch, read-only after-step measurement</span></div>
+      <div id="metric-cards" class="metric-grid"></div>
+      <div id="loss-walkthrough" class="loss-walkthrough"></div>
+      <p class="concept-links" hidden><a href="/learn/concepts/#cross-entropy-loss-with-simple-numbers">Cross-entropy calculation</a></p>
+      <div class="probability-grid"><div><h4>Before update probabilities</h4><div id="probabilities-before"></div></div><div><h4>After update probabilities</h4><div id="probabilities-after"></div></div></div>
+    </section>
+
+    <section class="learn-footer">
+      <div><p class="section-kicker">KEEP EXPLORING</p><h2>The trace is evidence, not a new training run</h2><p>Scrubbing changes only what you see. The RGB values and labels stay fixed; the recorded model parameters change at optimizer steps.</p></div>
+      <nav aria-label="Replay sections"><a href="#input-planes">Kernel slices</a><a href="#parameter-inventory">Exact weights</a><a href="#training-metrics">Whole training cycle</a></nav>
+    </section>
+  </main>
+</body>
+</html>

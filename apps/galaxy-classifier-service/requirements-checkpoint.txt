@@ -9,3 +9,6 @@ uvicorn==0.49.0
 
 # CPU-only PyTorch loads TinyGalaxyCNN checkpoints and runs inference.
 torch==2.13.0+cpu
+
+# Pillow loads normal PNG/JPG galaxy images before checkpoint inference.
+Pillow>=10.0.0,<13.0.0

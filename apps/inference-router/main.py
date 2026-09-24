@@ -1,7 +1,19 @@
 # Docs: docs/architecture.md Step 0 explains this service's routing flow and links to this code.
 
 # Import FastAPI, the web framework used to create HTTP API endpoints.
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+import os
+
+# Direct runs from the service directory and Docker both find the shared package.
+import sys
+from pathlib import Path
+
+parents = Path(__file__).resolve().parents
+package_root = parents[2] if len(parents) > 2 else parents[0]
+if (package_root / "cosmosai").is_dir() and str(package_root) not in sys.path:
+    sys.path.insert(0, str(package_root))
+
+from cosmosai.upload_proxy import forward_image, upstream_request
 
 # Import BaseModel to define structured request and response bodies.
 from pydantic import BaseModel
@@ -11,7 +23,8 @@ import requests
 
 
 # Internal Docker Compose URL for the galaxy-classifier-service endpoint.
-GALAXY_CLASSIFIER_URL = "http://galaxy-classifier-service:8000/classify"
+GALAXY_BASE_URL = os.getenv("COSMOSAI_GALAXY_BASE_URL", "http://galaxy-classifier-service:8000").rstrip("/")
+GALAXY_CLASSIFIER_URL = f"{GALAXY_BASE_URL}/classify"
 
 # Internal Docker Compose URL for the stellar-classifier-service endpoint.
 STELLAR_CLASSIFIER_URL = "http://stellar-classifier-service:8000/classify"
@@ -93,12 +106,13 @@ def route(request: RouteRequest) -> RouteResponse:
         # Raise an error if galaxy-classifier-service returns a non-success status.
         classifier_response.raise_for_status()
 
-        # Return the selected service plus the classifier stub result.
+        # A checkpoint result must remain identifiable through the router.
+        classification = classifier_response.json()
         return RouteResponse(
             input_type=request.input_type,
             selected_service=selected_service,
-            status="stub",
-            classification=classifier_response.json(),
+            status=classification.get("status", "stub"),
+            classification=classification,
         )
 
     # Call the stellar classifier stub when the request is for a stellar spectrum.
@@ -115,12 +129,13 @@ def route(request: RouteRequest) -> RouteResponse:
         # Raise an error if stellar-classifier-service returns a non-success status.
         classifier_response.raise_for_status()
 
-        # Return the selected service plus the classifier stub result.
+        # A checkpoint result must remain identifiable through the router.
+        classification = classifier_response.json()
         return RouteResponse(
             input_type=request.input_type,
             selected_service=selected_service,
-            status="stub",
-            classification=classifier_response.json(),
+            status=classification.get("status", "stub"),
+            classification=classification,
         )
 
     # Return the stub route for future supported services that are not wired yet.
@@ -129,3 +144,23 @@ def route(request: RouteRequest) -> RouteResponse:
         selected_service=selected_service,
         status="stub",
     )
+
+
+
+@app.post("/classify/image", response_model=RouteResponse)
+async def classify_image(request: Request) -> RouteResponse:
+    """Route an uploaded image to real galaxy checkpoint inference."""
+    classification = await forward_image(request, f"{GALAXY_BASE_URL}/classify/image", timeout=45)
+    if (classification.get("status") != "checkpoint_inference"
+            or not isinstance(classification.get("label"), str)
+            or not isinstance(classification.get("probabilities"), dict)):
+        raise HTTPException(502, "The classifier did not return a checkpoint prediction")
+    return RouteResponse(
+        input_type="galaxy_image", selected_service="galaxy-classifier-service",
+        status="checkpoint_inference", classification=classification,
+    )
+
+
+@app.get("/model")
+def model_information() -> dict:
+    return upstream_request("GET", f"{GALAXY_BASE_URL}/model", timeout=25)

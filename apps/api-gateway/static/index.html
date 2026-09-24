@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CosmosAI local galaxy classification experiment.">
+  <title>CosmosAI | Galaxy Classifier</title>
+  <link rel="stylesheet" href="/assets/classify.css">
+  <script src="/assets/vendor/lucide.min.js" defer></script>
+  <script src="/assets/classify.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="CosmosAI home"><i data-lucide="orbit" aria-hidden="true"></i>CosmosAI</a>
+    <nav aria-label="Main navigation"><a href="/" aria-current="page">Galaxy Classifier</a><a href="/learn/" title="Recorded training calculations: RGB pixels, pooling, class scores, loss, gradients and SGD updates.">CNN Learning Replay</a><a href="/learn/concepts/">Concepts Explanations</a><a href="/learn/diagrams/">Diagrams</a></nav>
+    <span class="connection" id="connection" role="status"><span class="status-dot"></span><span id="connection-text">Connecting</span></span>
+  </header>
+  <main>
+    <div class="page-heading"><div><p class="eyebrow">IMAGE CLASSIFICATION</p><h1>Galaxy classifier</h1></div><span class="experiment-tag">Experimental baseline</span></div>
+    <div class="benchmark-notice" id="benchmark-notice"><i data-lucide="flask-conical" aria-hidden="true"></i><p id="benchmark-text">Model evaluation is loading.</p></div>
+    <div class="workspace">
+      <section class="image-section" aria-labelledby="image-heading">
+        <div class="section-heading"><h2 id="image-heading">Galaxy image</h2><div class="image-actions">
+          <button id="choose-image" class="button secondary"><i data-lucide="image-plus" aria-hidden="true"></i>Choose image</button>
+          <button id="clear-image" class="icon-button" title="Clear image" aria-label="Clear image" disabled><i data-lucide="x" aria-hidden="true"></i></button>
+          <input id="image-file" type="file" accept="image/jpeg,image/png" aria-label="Galaxy image file" hidden>
+        </div></div>
+        <div id="drop-zone" class="image-stage">
+          <img id="preview" alt="" hidden>
+          <div class="empty-image" id="empty-image"><i data-lucide="image" aria-hidden="true"></i><span>No image selected</span></div>
+          <span id="reference-label" class="reference-label" hidden></span>
+        </div>
+        <div class="file-row"><span id="filename">No image selected</span><span id="dimensions">JPG / PNG</span></div>
+        <div class="image-footer"><span>Up to 5 MiB / 1 megapixel</span><button id="predict" class="button primary" disabled><i data-lucide="scan-line" aria-hidden="true"></i><span id="predict-text">Predict image</span></button></div>
+      </section>
+      <section class="prediction-section" aria-labelledby="prediction-heading" aria-busy="false" id="prediction-section">
+        <div class="section-heading"><h2 id="prediction-heading">Prediction</h2><span class="result-state" id="result-state">Ready for an image</span></div>
+        <div id="error-message" class="error-message" role="alert" hidden></div>
+        <button id="retry-connection" class="button secondary" hidden><i data-lucide="refresh-cw" aria-hidden="true"></i>Retry connection</button>
+        <div class="prediction-summary" aria-live="polite" aria-atomic="true"><p class="label">Highest-scoring class</p><div class="prediction-title"><h3 id="predicted-label">Awaiting prediction</h3><strong id="top-score">--</strong></div><p id="prediction-note">No prediction yet.</p></div>
+        <div class="probability-heading"><span>Class</span><span>Model probability</span></div>
+        <div id="probabilities" class="probabilities">
+          <div class="probability-row" data-class="elliptical"><div><span>Elliptical</span><span class="probability-value">--</span></div><div class="bar-track"><div class="bar-fill elliptical"></div></div></div>
+          <div class="probability-row" data-class="spiral"><div><span>Spiral</span><span class="probability-value">--</span></div><div class="bar-track"><div class="bar-fill spiral"></div></div></div>
+          <div class="probability-row" data-class="lenticular"><div><span>Lenticular <small>(proxy)</small></span><span class="probability-value">--</span></div><div class="bar-track"><div class="bar-fill lenticular"></div></div></div>
+          <div class="probability-row" data-class="irregular"><div><span>Irregular</span><span class="probability-value">--</span></div><div class="bar-track"><div class="bar-fill irregular"></div></div></div>
+        </div>
+        <p class="score-note">Probabilities are model scores, not calibrated certainty.</p>
+        <details class="prediction-details"><summary>Prediction details</summary><dl><dt>Checkpoint</dt><dd id="result-checkpoint">--</dd><dt>Model input</dt><dd id="result-shape">--</dd><dt>Preprocessing</dt><dd id="result-preprocessing">--</dd></dl></details>
+        <div class="result-footer"><span id="prediction-time"></span><button id="download-result" class="button secondary" disabled><i data-lucide="download" aria-hidden="true"></i>Download result</button></div>
+      </section>
+    </div>
+    <section class="examples-section" aria-labelledby="examples-heading"><div class="section-heading"><h2 id="examples-heading">GZ2 pilot examples</h2><span class="muted">Reference labels</span></div><div id="examples" class="examples"></div><p class="source-note">SDSS DR7 cutouts / Galaxy Zoo 2 pilot. Lenticular uses a derived label proxy.</p></section>
+    <section class="model-section" id="model" aria-labelledby="model-heading"><div class="section-heading"><h2 id="model-heading">Model details</h2><span class="muted" id="model-name">No checkpoint connected</span></div><dl class="model-facts"><div><dt>Training images</dt><dd id="training-count">--</dd></div><div><dt>Validation accuracy</dt><dd id="validation-score">--</dd><small id="validation-count"></small></div><div><dt>Test accuracy</dt><dd id="test-score">--</dd><small id="test-count"></small></div><div><dt>Training epochs</dt><dd id="epoch-count">--</dd></div></dl><p class="model-note" id="model-note">An evaluation summary is shown only when it matches the active checkpoint.</p></section>
+  </main>
+  <footer><span>CosmosAI / Galaxy classification experiment</span><a href="/docs">API reference <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></footer>
+</body>
+</html>

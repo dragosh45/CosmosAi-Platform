@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # Docs: docs/architecture.md Step 1 explains the current galaxy data path.
+# Docs: docs/architecture.md Step 16 explains the Pillow real-image loading proof.
 
 # Import argparse so the training sample proof can run from the command line.
 import argparse
@@ -67,9 +68,14 @@ def label_to_id(label: str) -> int:
 def create_training_sample_for_record(
     record: GalaxyManifestRecord,
     galaxy_data_root: Path,
+    target_size: tuple[int, int] | None = None,
 ) -> GalaxyTrainingSample:
-    # Load and normalize the image referenced by this manifest row.
-    tensor = load_and_preprocess_image_for_record(record, galaxy_data_root)
+    # Load, optionally resize, and normalize the image referenced by this row.
+    tensor = load_and_preprocess_image_for_record(
+        record,
+        galaxy_data_root,
+        target_size=target_size,
+    )
 
     # Convert the human label into a stable numeric target.
     numeric_label = label_to_id(record.label)
@@ -82,6 +88,24 @@ def create_training_sample_for_record(
         split=record.split,
         tensor=tensor,
     )
+
+
+# Convert optional image width/height CLI values into a Pillow resize target.
+def target_size_from_args(args: argparse.Namespace) -> tuple[int, int] | None:
+    # If neither value is passed, do not resize images.
+    if args.image_width is None and args.image_height is None:
+        return None
+
+    # Require both dimensions so resizing cannot silently distort intent.
+    if args.image_width is None or args.image_height is None:
+        raise ValueError("--image-width and --image-height must be used together")
+
+    # Both dimensions must be positive pixel counts.
+    if args.image_width < 1 or args.image_height < 1:
+        raise ValueError("--image-width and --image-height must be at least 1")
+
+    # Pillow expects target size as width, height.
+    return (args.image_width, args.image_height)
 
 
 # Parse command-line arguments for the one-sample proof.
@@ -113,6 +137,22 @@ def parse_args() -> argparse.Namespace:
         help="Manifest image_id to convert into a training sample.",
     )
 
+    # Optionally resize normal PNG/JPG inputs before they become training samples.
+    parser.add_argument(
+        "--image-width",
+        type=int,
+        default=None,
+        help="Optional target image width for Pillow-loaded PNG/JPG files.",
+    )
+
+    # Keep height separate so commands say exactly which image shape they want.
+    parser.add_argument(
+        "--image-height",
+        type=int,
+        default=None,
+        help="Optional target image height for Pillow-loaded PNG/JPG files.",
+    )
+
     # Return the parsed arguments.
     return parser.parse_args()
 
@@ -132,12 +172,16 @@ def main() -> int:
         return 1
 
     try:
+        # Convert optional resize arguments before creating the sample.
+        target_size = target_size_from_args(args)
+
         # Convert the selected manifest row into one training sample.
         sample = create_training_sample_for_record(
             record_by_id[args.image_id],
             Path(args.galaxy_data_root),
+            target_size=target_size,
         )
-    except (FileNotFoundError, ValueError) as error:
+    except (FileNotFoundError, RuntimeError, ValueError) as error:
         # Print sample creation failures and return a non-zero exit code.
         print(error)
         return 1
