@@ -20,8 +20,5 @@ models/
 # Private documentation
 docs/**
 
-# Keep docs folder structure
-!docs/.gitkeep
-
 # Local setup leftovers
 packages.microsoft.gpg
