@@ -8,9 +8,9 @@
 <div class="reading-layout">
   <aside class="contents"><label for="concept-search">Search concepts</label><input id="concept-search" type="search" placeholder="Gradient, pooling, loss..." autocomplete="off">
     <p id="search-status" role="status" class="muted"></p>
-    <nav aria-label="Concept topics" id="concept-topics">{% for h in headings %}
+    <nav aria-label="Concept topics" id="concept-topics">{%- for h in headings %}
       <a href="#{{ h.id }}" data-topic="{{ h.topic }}" class="level-{{ h.level }}">{{ h.title }}</a>
-    {% endfor %}</nav>
+    {%- endfor %}</nav>
   </aside>
   <div class="concept-content">{% for topic in topics %}<article data-topic="{{ topic.id }}">{{ topic.html|safe }}</article>{% endfor %}</div>
 </div>

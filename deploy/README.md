@@ -8,6 +8,78 @@ The public release was verified on 10 October 2026 at
 **https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app**. The authenticated and public
 smoke checks both passed against checkpoint tag `f7f9de5`.
 
+## How The Cloud Deployment Works
+
+```text
+GitHub commit
+  -> manually cloned/pulled in Google Cloud Shell
+  -> deploy.sh submits that checkout to Cloud Build
+  -> Cloud Build creates three versioned Docker images
+  -> Artifact Registry stores the images
+  -> Cloud Run pulls them into one managed multi-container service
+```
+
+GitHub is the source history, but it is not currently connected to an automatic
+deployment trigger. Cloud Shell starts the release; Cloud Build performs the
+remote Docker builds; Artifact Registry is durable image storage; Cloud Run is
+the managed runtime. No dedicated VM is created or administered by this project.
+Cloud Run starts an ephemeral instance when needed and can remove it while idle.
+
+At runtime:
+
+```text
+browser -> HTTPS -> api-gateway:8080
+                         |
+                         +-> inference-router:8001
+                                  |
+                                  +-> galaxy-classifier:8002 -> saved checkpoint
+```
+
+All three containers share one Cloud Run instance and communicate on localhost.
+Only the gateway declares the ingress port. The classifier image contains the
+small checkpoint and model card; the full training dataset and Kingston drive
+are not deployed. Upload requests perform inference only and do not train or
+persist a new model.
+
+## Configuration Concepts
+
+| Setting | Current value | Why it exists |
+| --- | --- | --- |
+| Service | One multi-container Cloud Run service | Preserves gateway/router/classifier boundaries while allowing private localhost calls. |
+| Ports | Gateway `8080`, router `8001`, classifier `8002` | Cloud Run sends public traffic only to the ingress container; sidecars need distinct local ports. |
+| Startup order | Classifier -> router -> gateway | Prevents the public gateway becoming ready before its dependencies can answer. |
+| Startup probes | `/model` for classifier; `/health` for router/gateway | Confirms model loading and service readiness before traffic is routed. Probe timeout must be shorter than its period. |
+| Scaling | Minimum `0`, maximum `1` | Scales to zero while idle and bounds portfolio-demo cost/exposure. The first request can be slower. |
+| Concurrency | `1` request per instance | Bounds simultaneous work for the small CPU model; it is not per-client rate limiting. |
+| CPU | Request-based throttling with startup boost | CPU is primarily allocated while requests run; startup boost helps load PyTorch. |
+| IAM | Private first, then `allUsers` gets `roles/run.invoker` | Separates deployment verification from the deliberate decision to publish. |
+| Budget | USD 5 monthly alert | Sends warnings; it is not a hard spending cap. |
+| Image tag | Git commit SHA | Connects a deployed image to a reviewable source version. |
+
+The service template is [`service.template.yaml`](cloud-run/service.template.yaml).
+The build recipe is [`cloudbuild.yaml`](cloud-run/cloudbuild.yaml).
+
+## What The Deployment Script Does
+
+[`deploy.sh`](cloud-run/deploy.sh) performs these operations in order:
+
+1. Read project/region/repository/service settings and choose the Git SHA as the image tag.
+2. Verify `gcloud`, template rendering and enabled project billing.
+3. Require explicit confirmation that the budget alert exists.
+4. Enable only Artifact Registry, Cloud Build and Cloud Run APIs.
+5. Create the private Docker repository if it does not exist.
+6. Submit the checkout to Cloud Build and push three tagged images.
+7. Render the Cloud Run YAML with concrete service, region, registry and tag values.
+8. Replace the Cloud Run service privately and reassert min/max scaling limits.
+9. Print the private URL and authenticated smoke-test command.
+
+`SKIP_BUILD=YES` is a recovery option for reusing an existing image tag when
+only the service configuration failed. It must be paired with the known existing
+`TAG`; otherwise a template could reference images that were never published.
+Public/private IAM remains in separate, explicit scripts:
+[`make-public.sh`](cloud-run/make-public.sh) and
+[`make-private.sh`](cloud-run/make-private.sh).
+
 ## Start Locally
 
 From the repository root, with Docker Engine and Compose available:

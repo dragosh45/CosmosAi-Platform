@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 import re
 from urllib.parse import parse_qs, unquote, urlsplit
+import xml.etree.ElementTree as ET
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markdown_it import MarkdownIt
@@ -173,8 +174,20 @@ def build(output=SOURCE / "site", source_root=ROOT, manifest_path=SOURCE / "cont
         title = texts[0]["text"].split("\n")[0] if texts else name.replace("_", " ").title()
         related = sorted({e["link"] for e in scene["elements"] if (e.get("link") or "").startswith("/learn/concepts/#")})
         (output / "diagrams/scenes" / (name + ".excalidraw")).write_text(json.dumps(scene, ensure_ascii=True), encoding="utf-8")
-        catalog.append({"id": name, "title": title, "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                        "related": related})
+        item = {"id": name, "title": title,
+                "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "related": related}
+        # A concepts-only rebuild can retain dimensions from an existing SVG.
+        # The exporter still owns creating or changing diagram renderings.
+        svg_path = output / "diagrams/svg" / (name + ".svg")
+        if svg_path.exists():
+            viewbox = ET.fromstring(svg_path.read_text()).attrib.get("viewBox", "").split()
+            if len(viewbox) == 4:
+                dimensions = [float(value) for value in viewbox[2:]]
+                item["width"], item["height"] = [
+                    int(value) if value.is_integer() else value for value in dimensions
+                ]
+        catalog.append(item)
     (output / "diagrams/catalog.json").write_text(json.dumps(catalog, indent=2) + "\n")
     (output / "diagrams/index.html").write_text(env.get_template("diagrams.html").render(diagrams=catalog), encoding="utf-8")
     summary = {"concept_source": manifest["concepts"], "source_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),

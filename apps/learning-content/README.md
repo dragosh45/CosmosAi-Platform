@@ -18,7 +18,7 @@ tools/learning-site/node_modules/.bin/playwright install chromium
 node scripts/export_learning_diagrams.cjs
 ```
 
-The Markdown stage retains all 67 topics and 139 section headings. Stable
+The Markdown stage retains every reviewed topic and section heading. Stable
 Obsidian block IDs become HTML anchors; supported wiki-links, Markdown links and
 diagram links become browser URLs. Raw HTML is disabled. Workstation paths and
 unpublished file links are not exposed: unavailable references remain text.

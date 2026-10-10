@@ -28,6 +28,13 @@ The same deployment includes the CNN Learning Replay, Concepts Explanations and
 Diagrams pages in its navigation. A first request after inactivity can take
 around 20 seconds while Cloud Run starts the containers and loads PyTorch.
 
+| Public page | Purpose |
+| --- | --- |
+| **[Galaxy Classifier](https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app/)** | Upload a JPEG/PNG or choose a GZ2 example, run the saved model and inspect four class scores. This demonstrates the deployed inference path, not a reliable scientific classifier. |
+| **[CNN Learning Replay](https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app/learn/)** | Explore one recorded teaching run from RGB convolution through pooling, loss, backward gradients and an SGD weight update. It does not retrain the deployed model. |
+| **[Concepts Explanations](https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app/learn/concepts/)** | Search the theory behind the CNN, data pipeline and Cloud Run deployment, with links back to worked examples. |
+| **[Diagrams](https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app/learn/diagrams/)** | Browse the project’s Excalidraw learning and code-flow diagrams as zoomable web illustrations. |
+
 **Model limitation:** the bundled model is an experimental baseline trained on
 56 images from an 80-image Galaxy Zoo 2 pilot. It scored **25% on validation and
 25% on test** (3/12 each), predicting elliptical for every evaluated image.
@@ -45,7 +52,7 @@ All pages share the same local web application and navigation.
 | --- | --- | --- |
 | Galaxy Classifier | `/` | Image upload and preview, four sample galaxies, probabilities, model details and JSON results. |
 | CNN Learning Replay | `/learn/` | Step-by-step RGB convolution, ReLU, pooling, matrix multiplication, loss, gradients and SGD weight updates. |
-| Concepts Explanations | `/learn/concepts/` | 67 topics from the project's Markdown learning notes, with search and links to individual concepts. |
+| Concepts Explanations | `/learn/concepts/` | Searchable topics from the project's Markdown learning notes, with links to individual concepts. |
 | Diagrams | `/learn/diagrams/` | 28 Excalidraw diagrams published as zoomable SVGs, with related concepts and source downloads. |
 
 The replay is a **recorded, small teaching run**, not an explanation of the image
@@ -89,6 +96,27 @@ API Gateway
                                 Class scores and probabilities
                                 (returned through the same APIs)
 ```
+
+### Cloud Deployment
+
+```text
+GitHub source -> Cloud Shell -> Cloud Build -> Artifact Registry -> Cloud Run
+
+public HTTPS
+    -> gateway :8080
+         -> router :8001 over localhost
+              -> classifier :8002 over localhost
+```
+
+The deployed revision is one Cloud Run service containing three containers.
+Only the gateway is ingress; the router and classifier are sidecars in the same
+instance. Cloud Run can scale the service to zero while idle and start at most
+one instance. The initial release was deployed privately, smoke-tested with an
+identity token, then granted public Invoker access. This is a manual controlled
+deployment from a GitHub checkout, not continuous deployment on every push.
+Read the public [Cloud Run deployment concepts](https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app/learn/concepts/#concept-cloud-run-deployment)
+for a concise explanation of images, containers, sidecars, probes, scaling, IAM
+and budget alerts.
 
 `POST /classify/image` runs prediction. `GET /model` reports the active model's
 details. **Uploading an image never trains the model or changes its weights.**
