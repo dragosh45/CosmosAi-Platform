@@ -4,6 +4,10 @@ The local bundle and the Google Cloud Run deployment package use the same three
 service images. The model is still the experimental 25%-accuracy pilot, so the
 public UI must continue to present its evaluation warning.
 
+The public release was verified on 10 October 2026 at
+**https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app**. The authenticated and public
+smoke checks both passed against checkpoint tag `f7f9de5`.
+
 ## Start Locally
 
 From the repository root, with Docker Engine and Compose available:
@@ -98,12 +102,12 @@ will be slower because it starts three containers and loads PyTorch.
 
 ## Public Hosting Checklist
 
-1. Confirm the USD 5 budget alert and email notifications.
-2. Review the image/data licenses and the experimental model warning.
-3. Run the authenticated release checker against the private URL.
-4. Inspect Cloud Run logs, cold-start latency, memory, and one-instance scaling.
-5. Make the service public and repeat desktop/mobile upload and error checks.
-6. Add the verified HTTPS URL to the README only after those checks pass.
+1. [x] Confirm the USD 5 budget alert and email notifications.
+2. [x] Preserve the experimental-model warning in the public UI.
+3. [x] Run the authenticated release checker against the private URL.
+4. [x] Make the service public and repeat the upload/error smoke check without a token.
+5. [x] Add the verified HTTPS URL to the README.
+6. [ ] Inspect ongoing Cloud Run cost/logs and test a cold start from another device.
 
 Cloud Run maps the gateway to port 8080. The router and classifier listen only
 inside the same instance on ports 8001 and 8002 via localhost. The service can be

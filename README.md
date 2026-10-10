@@ -18,9 +18,15 @@ limitations rather than claims of production readiness.
   and linked Excalidraw diagrams, served alongside the classifier.
 - **Training pipeline:** dataset preparation, validation, training, evaluation
   and checkpoint save/load are implemented separately from the web application.
-- **Deployment preparation:** a portable three-service Docker release has been
-  tested locally, and a private-first Google Cloud Run package is ready for the
-  `cosmosai-demo` project. There is **no public demo URL yet**.
+- **Public deployment:** the three-container release is running on Google Cloud
+  Run with scale-to-zero, a one-instance maximum and a USD 5 billing alert.
+
+## Live Demo
+
+Open the **[CosmosAI Galaxy Classifier](https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app)**.
+The same deployment includes the CNN Learning Replay, Concepts Explanations and
+Diagrams pages in its navigation. A first request after inactivity can take
+around 20 seconds while Cloud Run starts the containers and loads PyTorch.
 
 **Model limitation:** the bundled model is an experimental baseline trained on
 56 images from an 80-image Galaxy Zoo 2 pilot. It scored **25% on validation and
@@ -55,8 +61,8 @@ for authoring and rebuilding the Markdown and diagram exports.
 
 | Service | Responsibility | Status |
 | --- | --- | --- |
-| [API Gateway](apps/api-gateway/main.py) | Serves the UI and learning pages; accepts image uploads and forwards prediction requests. | Running in the local demo. |
-| [Inference Router](apps/inference-router/main.py) | Forwards galaxy requests to the classifier and provides a routing boundary for future model services. | Running in the local demo. |
+| [API Gateway](apps/api-gateway/main.py) | Serves the UI and learning pages; accepts image uploads and forwards prediction requests. | Running locally and on Cloud Run. |
+| [Inference Router](apps/inference-router/main.py) | Forwards galaxy requests to the classifier and provides a routing boundary for future model services. | Running locally and as a Cloud Run sidecar. |
 | [Galaxy Classifier](apps/galaxy-classifier-service/main.py) | Loads the saved checkpoint, preprocesses images and returns logits and probabilities for elliptical, spiral, lenticular and irregular. | Real inference; experimental model. |
 | [Stellar Classifier](apps/stellar-classifier-service/main.py) | API scaffold for future classification from stellar spectra or features. | Stub only; no trained model or UI. Not started by the demo launcher. |
 
@@ -133,11 +139,11 @@ The small demo checkpoint and sample images live under [`data/`](data).
 | Machine learning | CPU PyTorch, NumPy and Pillow for image loading and preprocessing. |
 | Browser UI | HTML, CSS and vanilla JavaScript, with locally bundled Lucide icons. |
 | Learning content | Markdown, Jinja2, markdown-it-py and Excalidraw SVG exports. Node.js and Playwright are used for diagram export and browser checks. |
-| Packaging | Docker and Docker Compose. |
+| Packaging and hosting | Docker, Docker Compose, Cloud Build, Artifact Registry and Google Cloud Run. |
 | Verification | pytest, HTTP smoke checks and desktop/mobile browser checks. |
 
-Cloud hosting, RAG, experiment tracking and production monitoring are future
-work, not already-installed capabilities of the current application.
+RAG, experiment tracking and production monitoring are future work, not
+already-installed capabilities of the current application.
 
 ## Run Locally
 
@@ -177,9 +183,9 @@ Stop it with:
 docker compose -p cosmosai-release -f docker-compose.release.yml down
 ```
 
-See the [deployment guide](deploy/README.md) for resource limits, smoke checks
-and the remaining public-hosting checklist. These localhost URLs are not public
-demo links.
+See the [deployment guide](deploy/README.md) for resource limits, smoke checks,
+deployment commands and teardown. These localhost URLs remain separate from the
+[public Cloud Run demo](https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app).
 
 ## Tests
 
@@ -196,12 +202,12 @@ in the [learning content guide](apps/learning-content/README.md).
 
 ## Next Milestones
 
-1. **Public reviewer demo:** deploy privately to Google Cloud Run with the
-   checked-in low-cost configuration, verify the authenticated HTTPS service,
-   then deliberately enable public access and publish only the tested URL here.
-2. **Better galaxy predictions:** review labels, test a stronger small model,
+1. **Better galaxy predictions:** review labels, test a stronger small model,
    expand the balanced dataset and measure validation performance before
    replacing the serving checkpoint. More data alone is not proof of improvement.
+2. **Public-demo operations:** monitor billing and Cloud Run logs, test cold
+   starts from another device, and add stronger abuse controls before promoting
+   the experimental service beyond a portfolio preview.
 3. **Astronomy assistant:** add a separate retrieval-augmented question-answering
    service with cited sources and its own UI.
 4. **Serving and learning improvements:** measure latency and resource use,
