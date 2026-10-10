@@ -16,11 +16,13 @@ import requests
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def check(base_url):
+def check(base_url, identity_token=None):
     """Exercise only public gateway endpoints, using a bundled galaxy JPEG."""
     base = base_url.rstrip("/")
     expected = hashlib.sha256((ROOT / "data/demo/gz2_pilot_80.pt").read_bytes()).hexdigest()
     session = requests.Session()
+    if identity_token:
+        session.headers["Authorization"] = f"Bearer {identity_token}"
     started = time.monotonic()
     try:
         for page in ("/", "/learn/", "/learn/concepts/", "/learn/diagrams/",
@@ -63,4 +65,9 @@ def check(base_url):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default="http://127.0.0.1:8090")
-    print(json.dumps(check(parser.parse_args().base_url), indent=2))
+    parser.add_argument(
+        "--identity-token",
+        help="Optional Google identity token when checking a private Cloud Run service",
+    )
+    arguments = parser.parse_args()
+    print(json.dumps(check(arguments.base_url, arguments.identity_token), indent=2))

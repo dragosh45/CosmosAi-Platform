@@ -19,8 +19,8 @@ limitations rather than claims of production readiness.
 - **Training pipeline:** dataset preparation, validation, training, evaluation
   and checkpoint save/load are implemented separately from the web application.
 - **Deployment preparation:** a portable three-service Docker release has been
-  tested locally. There is **no public demo URL yet**; Google Cloud Run is the
-  proposed hosting target, not a completed deployment.
+  tested locally, and a private-first Google Cloud Run package is ready for the
+  `cosmosai-demo` project. There is **no public demo URL yet**.
 
 **Model limitation:** the bundled model is an experimental baseline trained on
 56 images from an 80-image Galaxy Zoo 2 pilot. It scored **25% on validation and
@@ -196,9 +196,9 @@ in the [learning content guide](apps/learning-content/README.md).
 
 ## Next Milestones
 
-1. **Public reviewer demo:** select a hosting account and budget, deploy the
-   packaged application over HTTPS, add access or abuse controls, and verify the
-   public URL before publishing it here. Google Cloud Run is the proposed target.
+1. **Public reviewer demo:** deploy privately to Google Cloud Run with the
+   checked-in low-cost configuration, verify the authenticated HTTPS service,
+   then deliberately enable public access and publish only the tested URL here.
 2. **Better galaxy predictions:** review labels, test a stronger small model,
    expand the balanced dataset and measure validation performance before
    replacing the serving checkpoint. More data alone is not proof of improvement.

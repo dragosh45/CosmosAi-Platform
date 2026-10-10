@@ -14,8 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY apps/inference-router/main.py .
 COPY cosmosai ./cosmosai
 
-# Document that the container listens on port 8000 internally.
+# Document the local default. Cloud Run assigns a distinct sidecar port.
 EXPOSE 8000
 
-# Start the FastAPI app with Uvicorn when the container runs.
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Keep Compose on 8000 while allowing a Cloud Run sidecar port override.
+CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --limit-concurrency 8"]

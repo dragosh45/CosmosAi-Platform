@@ -21,8 +21,8 @@ ENV COSMOSAI_PREVIEW_ROOT=/app/demo-images
 ENV COSMOSAI_REPLAY_ROOT=/app/learning-replay
 ENV COSMOSAI_LEARNING_CONTENT_ROOT=/app/learning-content
 
-# Document that the container listens on port 8000.
+# Document the local default. Cloud Run injects PORT=8080 for ingress.
 EXPOSE 8000
 
-# Start the FastAPI app with Uvicorn when the container runs.
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Keep Compose on 8000 while allowing the same image to run as Cloud Run ingress.
+CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --limit-concurrency 16"]

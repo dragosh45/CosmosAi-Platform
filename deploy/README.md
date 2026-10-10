@@ -1,8 +1,8 @@
-# Portable Demo Rehearsal
+# Portable Demo and Cloud Run Release
 
-This package prepares M55 without choosing a hosting account, enabling billing,
-publishing images or creating cloud resources. Public HTTPS hosting remains a
-separate approved step. The model is still the experimental 25%-accuracy pilot.
+The local bundle and the Google Cloud Run deployment package use the same three
+service images. The model is still the experimental 25%-accuracy pilot, so the
+public UI must continue to present its evaluation warning.
 
 ## Start Locally
 
@@ -61,16 +61,51 @@ Stopping removes this project's containers/network, not the checkpoint, source,
 Docker images or unrelated services. Wait for healthy services after a restart
 before running the check. Do not restart the PC to update this application.
 
-## Before Public Hosting
+## Deploy Privately to Cloud Run
 
-1. Choose account/provider, region and budget. Approve any billable resources.
-2. Review the files/data licenses for publication; publish only the intended repository and build context.
-3. Push versioned images to the selected private registry. Record image digests, checkpoint hash and dependency versions.
-4. Map the host's ingress port and private service URLs; add HTTPS, low instance/concurrency limits, alerts and per-client rate limiting or reviewer access control.
-5. Run the same smoke/browser checks through the public URL, including cold start, restart and a separate device. Test public-host-specific upload and timeout limits.
-6. Record the approved URL, deployment/rollback commands and provider-specific deletion steps.
+The checked-in deployment targets project `cosmosai-demo`, region
+`europe-west1`, and an Artifact Registry repository named `cosmosai`. Override
+`PROJECT_ID`, `REGION`, `REPOSITORY`, `SERVICE`, or `TAG` when needed.
 
-Google Cloud Run remains a proposed target, not a selected account or completed
-deployment. Its platform configuration, cost estimate and authentication depend
-on the hosting decision. Do not expose port 8090 on all interfaces as a substitute
-for that work. Local memory/latency observations are not cloud measurements.
+Create a USD 5 billing budget alert first. Then clone this repository in Google
+Cloud Shell and run:
+
+```bash
+deploy/cloud-run/deploy.sh
+```
+
+The script verifies billing, asks for explicit budget confirmation, enables only
+Artifact Registry, Cloud Build, and Cloud Run, builds versioned images remotely,
+and deploys one private multi-container service. It sets minimum instances to 0,
+maximum instances to 1, request-based CPU throttling, concurrency 1, and startup
+ordering from classifier to router to gateway.
+
+Use the authenticated smoke command printed by the script. Only after it passes:
+
+```bash
+deploy/cloud-run/make-public.sh
+```
+
+Return to private access at any time with:
+
+```bash
+deploy/cloud-run/make-private.sh
+```
+
+The public action is intentionally separate and asks for confirmation. A billing
+budget is an alert, not a hard spending cap. The first request after scale-to-zero
+will be slower because it starts three containers and loads PyTorch.
+
+## Public Hosting Checklist
+
+1. Confirm the USD 5 budget alert and email notifications.
+2. Review the image/data licenses and the experimental model warning.
+3. Run the authenticated release checker against the private URL.
+4. Inspect Cloud Run logs, cold-start latency, memory, and one-instance scaling.
+5. Make the service public and repeat desktop/mobile upload and error checks.
+6. Add the verified HTTPS URL to the README only after those checks pass.
+
+Cloud Run maps the gateway to port 8080. The router and classifier listen only
+inside the same instance on ports 8001 and 8002 via localhost. The service can be
+deleted with `gcloud run services delete cosmosai-demo --region europe-west1`;
+Artifact Registry images are retained separately until explicitly removed.
