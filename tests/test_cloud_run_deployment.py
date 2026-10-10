@@ -32,6 +32,13 @@ def test_cloud_run_sidecars_use_distinct_localhost_ports_and_startup_order():
     assert "containerConcurrency: 1" in service
 
 
+def test_classifier_startup_probe_timeout_is_shorter_than_its_period():
+    service = read("deploy/cloud-run/service.template.yaml")
+    classifier = service.split("- name: galaxy-classifier", 1)[1]
+    assert "timeoutSeconds: 3" in classifier
+    assert "periodSeconds: 5" in classifier
+
+
 def test_cloud_build_publishes_all_three_release_images():
     build = read("deploy/cloud-run/cloudbuild.yaml")
     assert "apps/api-gateway/Dockerfile" in build
@@ -48,3 +55,9 @@ def test_public_access_requires_a_separate_confirmed_action():
     assert "roles/run.invoker" not in deploy
     assert 'confirmation" == "PUBLIC"' in publish
     assert "roles/run.invoker" in publish
+
+
+def test_deployment_can_reuse_an_existing_image_tag_after_config_failure():
+    deploy = read("deploy/cloud-run/deploy.sh")
+    assert '"${SKIP_BUILD:-}" == "YES"' in deploy
+    assert "Reusing existing Artifact Registry images" in deploy

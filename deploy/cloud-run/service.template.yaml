@@ -72,6 +72,6 @@ spec:
             httpGet:
               path: /model
               port: 8002
-            timeoutSeconds: 10
+            timeoutSeconds: 3
             periodSeconds: 5
             failureThreshold: 30

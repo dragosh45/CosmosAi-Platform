@@ -50,9 +50,13 @@ if ! gcloud artifacts repositories describe "$REPOSITORY" \
     --description "CosmosAI release containers"
 fi
 
-gcloud builds submit "$ROOT" \
-  --config "$ROOT/deploy/cloud-run/cloudbuild.yaml" \
-  --substitutions "_REGION=${REGION},_REPOSITORY=${REPOSITORY},_TAG=${TAG}"
+if [[ "${SKIP_BUILD:-}" == "YES" ]]; then
+  echo "Reusing existing Artifact Registry images tagged ${TAG}."
+else
+  gcloud builds submit "$ROOT" \
+    --config "$ROOT/deploy/cloud-run/cloudbuild.yaml" \
+    --substitutions "_REGION=${REGION},_REPOSITORY=${REPOSITORY},_TAG=${TAG}"
+fi
 
 export REGION REGISTRY SERVICE TAG
 envsubst '${REGION} ${REGISTRY} ${SERVICE} ${TAG}' \
