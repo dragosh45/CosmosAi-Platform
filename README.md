@@ -230,18 +230,23 @@ in the [learning content guide](apps/learning-content/README.md).
 
 ## Next Milestones
 
-1. **Better galaxy predictions:** review labels, test a stronger small model,
-   expand the balanced dataset and measure validation performance before
-   replacing the serving checkpoint. More data alone is not proof of improvement.
-2. **Public-demo operations:** monitor billing and Cloud Run logs, test cold
-   starts from another device, and add stronger abuse controls before promoting
-   the experimental service beyond a portfolio preview.
-3. **Astronomy assistant:** add a separate retrieval-augmented question-answering
+1. **Audit the pilot:** review representative cutouts, framing and label
+   provenance, especially the derived lenticular proxy, without using test data.
+2. **Run the stronger bounded baseline:** train the spatial CNN on the full
+   training split and compare per-class validation metrics, the confusion matrix
+   and retained errors against the 25% majority baseline.
+3. **Decide checkpoint promotion:** expand balanced data only after the audit;
+   evaluate the test split once for the selected candidate and replace the live
+   checkpoint only if its model card, checksum and release checks all pass.
+4. **Operate the public preview:** monitor billing and Cloud Run request/error
+   logs, record an external-device cold start, and keep scale-to-zero, maximum one
+   instance and the USD 5 alert in place.
+5. **Astronomy assistant:** add a separate retrieval-augmented question-answering
    service with cited sources and its own UI.
-4. **Serving and learning improvements:** measure latency and resource use,
+6. **Serving and learning improvements:** measure latency and resource use,
    add experiment tracking and monitoring, and extend the replay to real-data
    tensor shapes while keeping concepts separate from worked calculations.
-5. **Stellar classification:** replace the stub with a trained, evaluated model
+7. **Stellar classification:** replace the stub with a trained, evaluated model
    and a suitable input page for stellar data.
 
 The aim is a usable, understandable portfolio application first, with model
