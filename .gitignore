@@ -30,7 +30,10 @@ models/gz2-learning-check-adam/**
 # Editor
 .vscode/
 .obsidian/
-docs/.obsidian/
+
+# Maintainer context: docs/ is a separate private repository cloned in place.
+# Never commit it here.
+docs/
 
 # Local setup leftovers
 packages.microsoft.gpg

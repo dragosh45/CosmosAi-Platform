@@ -26,9 +26,8 @@ def sha256(path):
 
 
 def test_portable_context_has_no_large_files():
-    paths = [path for path in (ROOT / "docs").rglob("*")
-             if path.is_file() and ".obsidian" not in path.parts]
-    paths.extend(path for path in (ROOT / "data").rglob("*") if path.is_file())
+    # docs/ is a separate private repository (ignored here), so only tracked folders are checked.
+    paths = [path for path in (ROOT / "data").rglob("*") if path.is_file()]
     paths.extend(MODEL_ARTIFACTS)
 
     oversized = {str(path.relative_to(ROOT)): path.stat().st_size
@@ -44,15 +43,12 @@ def test_candidate_model_cards_match_their_checkpoints():
 
 
 def test_cross_machine_context_entry_points_exist():
-    for path in (
-        ROOT / "AGENTS.md",
-        ROOT / "docs/README.md",
-        ROOT / "docs/current_status.md",
-        ROOT / "docs/build_log.md",
-        ROOT / "docs/workflow.md",
-        ROOT / "data/README.md",
-        ROOT / "models/README.md",
-    ):
+    paths = [ROOT / "AGENTS.md", ROOT / "data/README.md", ROOT / "models/README.md"]
+    # docs/ is the maintainer's private context repository; check it only when cloned.
+    if (ROOT / "docs").is_dir():
+        paths.extend(ROOT / name for name in (
+            "docs/README.md", "docs/current_status.md", "docs/build_log.md", "docs/workflow.md"))
+    for path in paths:
         assert path.is_file(), path
 
 

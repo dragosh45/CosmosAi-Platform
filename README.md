@@ -1,14 +1,18 @@
 # CosmosAI Inference Platform
 
-CosmosAI is a **learning-first astronomy and machine learning project**. It follows
-the path from image pixels and neural-network calculations to a working model
-API and browser application.
+CosmosAI is a **learning and implementation project in machine learning**. It
+goes from image pixels and neural-network calculations to a trained model, a
+model API and a browser application, and it explains each step along the way.
 
-The goal is to understand both sides: **how a model learns** and **how to build
-software around that model**. The project combines a galaxy classifier, an
-interactive CNN learning replay, concept notes and diagrams. It is also a
-portfolio project, developed incrementally with measured results and explicit
-limitations rather than claims of production readiness.
+It has two sides:
+
+- **Implementation:** an image classifier served by FastAPI microservices, with
+  dataset preparation, training, evaluation, checkpoints, Docker and a Google
+  Cloud Run deployment.
+- **Learning:** a CNN Learning Replay with real recorded calculations, searchable
+  concept explanations and code-flow diagrams, served alongside the classifier.
+
+Results are reported as measured, including limitations.
 
 ## Current State
 
@@ -69,12 +73,10 @@ for authoring and rebuilding the Markdown and diagram exports.
 | Service | Responsibility | Status |
 | --- | --- | --- |
 | [API Gateway](apps/api-gateway/main.py) | Serves the UI and learning pages; accepts image uploads and forwards prediction requests. | Running locally and on Cloud Run. |
-| [Inference Router](apps/inference-router/main.py) | Forwards galaxy requests to the classifier and provides a routing boundary for future model services. | Running locally and as a Cloud Run sidecar. |
+| [Inference Router](apps/inference-router/main.py) | Forwards image requests to the classifier service; the routing boundary between the gateway and model services. | Running locally and as a Cloud Run sidecar. |
 | [Galaxy Classifier](apps/galaxy-classifier-service/main.py) | Loads the saved checkpoint, preprocesses images and returns logits and probabilities for elliptical, spiral, lenticular and irregular. | Real inference; experimental model. |
-| [Stellar Classifier](apps/stellar-classifier-service/main.py) | API scaffold for future classification from stellar spectra or features. | Stub only; no trained model or UI. Not started by the demo launcher. |
+| [Stellar Classifier](apps/stellar-classifier-service/main.py) | API scaffold only. | Stub; no trained model or UI. Not started by the demo launcher. |
 
-An astronomy question-answering assistant with retrieved sources is planned;
-there is no implemented RAG service yet.
 
 ## Architecture
 
@@ -171,9 +173,6 @@ The small demo checkpoint and sample images live under [`data/`](data).
 | Packaging and hosting | Docker, Docker Compose, Cloud Build, Artifact Registry and Google Cloud Run. |
 | Verification | pytest, HTTP smoke checks and desktop/mobile browser checks. |
 
-RAG, experiment tracking and production monitoring are future work, not
-already-installed capabilities of the current application.
-
 ## Run Locally
 
 ### Python
@@ -229,39 +228,10 @@ Coverage includes dataset contracts, preprocessing, training and checkpoint
 behavior, upload/API handling, and learning content. Browser checks are described
 in the [learning content guide](apps/learning-content/README.md).
 
-## Next Milestones
+## Data And Model Files
 
-1. **Audit the pilot:** review representative cutouts, framing and label
-   provenance, especially the derived lenticular proxy, without using test data.
-2. **Run the stronger bounded baseline:** train the spatial CNN on the full
-   training split and compare per-class validation metrics, the confusion matrix
-   and retained errors against the 25% majority baseline.
-3. **Decide checkpoint promotion:** expand balanced data only after the audit;
-   evaluate the test split once for the selected candidate and replace the live
-   checkpoint only if its model card, checksum and release checks all pass.
-4. **Operate the public preview:** monitor billing and Cloud Run request/error
-   logs, record an external-device cold start, and keep scale-to-zero, maximum one
-   instance and the USD 5 alert in place.
-5. **Astronomy assistant:** add a separate retrieval-augmented question-answering
-   service with cited sources and its own UI.
-6. **Serving and learning improvements:** measure latency and resource use,
-   add experiment tracking and monitoring, and extend the replay to real-data
-   tensor shapes while keeping concepts separate from worked calculations.
-7. **Stellar classification:** replace the stub with a trained, evaluated model
-   and a suitable input page for stellar data.
-
-The aim is a usable, understandable portfolio application first, with model
-quality and infrastructure improved through evidence rather than extra tooling.
-
-## Continue On Another Computer
-
-Clone the repository and start with the [`docs` context index](docs/README.md).
-It links the current status, chronological build log, architecture, workflow,
-roadmap, Cloud Run record and active model-quality milestone. Small demo data,
-reviewed experiment reports and tiny checkpoints are versioned with the code.
-
-The full Galaxy Zoo dataset, ordinary training outputs, credentials and local
-tool caches are intentionally excluded. See the [data policy](data/README.md) and
-[model artifact policy](models/README.md) before adding binaries. A fresh clone
-can run tests and the bundled demo; full-data training requires reacquiring the
-external dataset and configuring its path on that machine.
+The repository contains only small data needed for tests and the demo (see the
+[data policy](data/README.md)) and a few small, reviewed checkpoints (see the
+[model artifact policy](models/README.md)). Full training datasets, training
+outputs, credentials and local caches are not part of the repository. Full-data
+training requires downloading the source dataset and configuring its local path.

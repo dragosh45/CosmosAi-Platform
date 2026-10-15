@@ -10,9 +10,8 @@ Tracked content:
   checksums and the measured demo model card.
 
 The full Galaxy Zoo metadata, source images, prepared 80-image pilot, manifests
-and training reports remain outside Git. Local planning records currently refer
-to `/media/h1dr0/KINGSTON/cosmosai-data/galaxy/`, but this path is machine-specific
-and is not part of the runtime contract.
+and training reports remain outside Git. Their location is machine-specific and
+not part of the runtime contract.
 
 To prepare a dataset on another machine, reacquire the licensed/provenanced
 source material and use `scripts/prepare_galaxy_zoo_subset.py` with a local output

@@ -8,30 +8,6 @@ The public release was verified on 10 October 2026 at
 **https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app**. The authenticated and public
 smoke checks both passed against checkpoint tag `f7f9de5`.
 
-## Release Batching Policy
-
-The live Cloud Run revision remains on image tag `f7f9de5`. As of 15 October
-2026, GitHub contains a new Cloud Run Concepts lesson and documentation updates
-that are intentionally **not deployed yet**. They should be included in the next
-substantial model, application or configuration release rather than triggering
-a Cloud Build and Cloud Run rollout on their own.
-
-Before the next deployment:
-
-1. Pull the latest `main` branch and inspect everything since the live tag with
-   `git log f7f9de5..HEAD --oneline`.
-2. Rebuild the learning site if its source changed and run the focused tests plus
-   the local release smoke check.
-3. Build and deploy once, using the new Git commit SHA as the image tag.
-4. Verify all four pages, the Cloud Run Concepts anchor, one real prediction,
-   model-card/checkpoint hashes and expected upload error responses.
-5. Confirm public access, billing/logs, scale-to-zero and maximum one instance
-   after the rollout.
-
-Documentation-only or generated-content-only changes are normally batched.
-Security fixes, broken public behavior or urgent operational changes can justify
-an immediate release. The USD 5 budget is an alert, not a hard spending cap.
-
 ## How The Cloud Deployment Works
 
 ```text
@@ -61,7 +37,7 @@ browser -> HTTPS -> api-gateway:8080
 
 All three containers share one Cloud Run instance and communicate on localhost.
 Only the gateway declares the ingress port. The classifier image contains the
-small checkpoint and model card; the full training dataset and Kingston drive
+small checkpoint and model card; the full training dataset and external dataset drive
 are not deployed. Upload requests perform inference only and do not train or
 persist a new model.
 
@@ -73,7 +49,7 @@ persist a new model.
 | Ports | Gateway `8080`, router `8001`, classifier `8002` | Cloud Run sends public traffic only to the ingress container; sidecars need distinct local ports. |
 | Startup order | Classifier -> router -> gateway | Prevents the public gateway becoming ready before its dependencies can answer. |
 | Startup probes | `/model` for classifier; `/health` for router/gateway | Confirms model loading and service readiness before traffic is routed. Probe timeout must be shorter than its period. |
-| Scaling | Minimum `0`, maximum `1` | Scales to zero while idle and bounds portfolio-demo cost/exposure. The first request can be slower. |
+| Scaling | Minimum `0`, maximum `1` | Scales to zero while idle and bounds demo cost/exposure. The first request can be slower. |
 | Concurrency | `1` request per instance | Bounds simultaneous work for the small CPU model; it is not per-client rate limiting. |
 | CPU | Request-based throttling with startup boost | CPU is primarily allocated while requests run; startup boost helps load PyTorch. |
 | IAM | Private first, then `allUsers` gets `roles/run.invoker` | Separates deployment verification from the deliberate decision to publish. |
@@ -120,7 +96,7 @@ To use another port, set `COSMOSAI_RELEASE_PORT=8095` for Compose and pass
 are in the ordinary project requirements; it needs `requests`, not PyTorch.
 
 The three images contain the gateway UI, learning content, replay, four previews,
-trusted checkpoint and checksum-matched model card. No bind mounts, Kingston
+trusted checkpoint and checksum-matched model card. No bind mounts, external-drive
 drive, training dataset, authoring notes or `.env` file are needed at runtime.
 Generated `apps/learning-content/site/` must accompany the code. To rebuild it,
 see [the learning build](../apps/learning-content/README.md).
