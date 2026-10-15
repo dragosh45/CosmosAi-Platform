@@ -8,6 +8,30 @@ The public release was verified on 10 October 2026 at
 **https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app**. The authenticated and public
 smoke checks both passed against checkpoint tag `f7f9de5`.
 
+## Release Batching Policy
+
+The live Cloud Run revision remains on image tag `f7f9de5`. As of 15 October
+2026, GitHub contains a new Cloud Run Concepts lesson and documentation updates
+that are intentionally **not deployed yet**. They should be included in the next
+substantial model, application or configuration release rather than triggering
+a Cloud Build and Cloud Run rollout on their own.
+
+Before the next deployment:
+
+1. Pull the latest `main` branch and inspect everything since the live tag with
+   `git log f7f9de5..HEAD --oneline`.
+2. Rebuild the learning site if its source changed and run the focused tests plus
+   the local release smoke check.
+3. Build and deploy once, using the new Git commit SHA as the image tag.
+4. Verify all four pages, the Cloud Run Concepts anchor, one real prediction,
+   model-card/checkpoint hashes and expected upload error responses.
+5. Confirm public access, billing/logs, scale-to-zero and maximum one instance
+   after the rollout.
+
+Documentation-only or generated-content-only changes are normally batched.
+Security fixes, broken public behavior or urgent operational changes can justify
+an immediate release. The USD 5 budget is an alert, not a hard spending cap.
+
 ## How The Cloud Deployment Works
 
 ```text

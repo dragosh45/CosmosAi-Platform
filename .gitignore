@@ -10,15 +10,27 @@ __pycache__/
 # Local artifacts / large files
 mlruns/
 datasets/
-models/
+# Model outputs are ignored by default. The small, reviewed reproducibility
+# artifacts below are explicit exceptions; do not unignore whole run folders.
+models/**
+!models/README.md
+!models/tiny_galaxy_cnn_baseline.pt
+!models/gz2-validation-30epochs-64px/
+models/gz2-validation-30epochs-64px/**
+!models/gz2-validation-30epochs-64px/candidate.pt
+!models/gz2-validation-30epochs-64px/evaluation.json
+!models/gz2-validation-30epochs-64px/model_card.json
+!models/gz2-learning-check-adam/
+models/gz2-learning-check-adam/**
+!models/gz2-learning-check-adam/candidate.pt
+!models/gz2-learning-check-adam/evaluation.json
+!models/gz2-learning-check-adam/model_card.json
 *.db
 
 # Editor
 .vscode/
 .obsidian/
-
-# Private documentation
-docs/**
+docs/.obsidian/
 
 # Local setup leftovers
 packages.microsoft.gpg

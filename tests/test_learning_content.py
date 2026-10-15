@@ -1,4 +1,4 @@
-"""The public learning bundle contains reviewed content, not the private docs tree."""
+"""The public learning bundle contains only reviewed, allowlisted source content."""
 
 import hashlib
 from html.parser import HTMLParser
@@ -92,7 +92,7 @@ def test_bundle_has_no_workstation_links_or_private_files():
 def test_source_headings_are_preserved_when_source_available():
     source = ROOT / "docs/concepts_explanations.md"
     if not source.exists():
-        pytest.skip("Private authoring source is not in this checkout")
+        pytest.skip("Canonical authoring source is not in this checkout")
     module = builder()
     _, _, headings, _ = module.parse_concepts(source.read_text())
     summary = json.loads((SITE / "concepts/build.json").read_text())
@@ -115,6 +115,7 @@ def test_markdown_disables_raw_html_and_preserves_code():
     assert "[[not_a_link]]" in html
     for target in ("javascript:alert(1)", "file:///private", "../private.md", "data:text/html,boom"):
         assert module.resolve_link(target, aliases, set()) is None
+    assert module.resolve_link("../docs/concepts_explanations.md#L2002", aliases, set()) is None
     with pytest.raises(ValueError, match="Unknown concept"):
         module.resolve_link("#missing", aliases, set())
 

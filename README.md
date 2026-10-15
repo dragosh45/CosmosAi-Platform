@@ -114,9 +114,10 @@ instance. Cloud Run can scale the service to zero while idle and start at most
 one instance. The initial release was deployed privately, smoke-tested with an
 identity token, then granted public Invoker access. This is a manual controlled
 deployment from a GitHub checkout, not continuous deployment on every push.
-Read the public [Cloud Run deployment concepts](https://cosmosai-demo-bbrzmrrfeq-ew.a.run.app/learn/concepts/#concept-cloud-run-deployment)
-for a concise explanation of images, containers, sidecars, probes, scaling, IAM
-and budget alerts.
+Read the [Cloud Run deployment guide](deploy/README.md) for a concise explanation
+of images, containers, sidecars, probes, scaling, IAM and budget alerts. A
+matching Concepts-page lesson is committed and will be bundled with the next
+substantial application or model release rather than deployed by itself.
 
 `POST /classify/image` runs prediction. `GET /model` reports the active model's
 details. **Uploading an image never trains the model or changes its weights.**
@@ -251,3 +252,16 @@ in the [learning content guide](apps/learning-content/README.md).
 
 The aim is a usable, understandable portfolio application first, with model
 quality and infrastructure improved through evidence rather than extra tooling.
+
+## Continue On Another Computer
+
+Clone the repository and start with the [`docs` context index](docs/README.md).
+It links the current status, chronological build log, architecture, workflow,
+roadmap, Cloud Run record and active model-quality milestone. Small demo data,
+reviewed experiment reports and tiny checkpoints are versioned with the code.
+
+The full Galaxy Zoo dataset, ordinary training outputs, credentials and local
+tool caches are intentionally excluded. See the [data policy](data/README.md) and
+[model artifact policy](models/README.md) before adding binaries. A fresh clone
+can run tests and the bundled demo; full-data training requires reacquiring the
+external dataset and configuring its path on that machine.

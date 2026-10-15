@@ -1,0 +1,19 @@
+{
+  "checkpoint_sha256": "44d8311a2308d9a641a134194a1eadaacd9e06222be0bb553407b0d741f4eadd",
+  "title": "GZ2 pilot validation candidate",
+  "training_images": 56,
+  "epochs": 30,
+  "validation": {
+    "sample_count": 12,
+    "accuracy": 0.25
+  },
+  "test": {
+    "sample_count": 12,
+    "accuracy": null
+  },
+  "notes": [
+    "Only 12 validation images; this result does not establish reliable accuracy.",
+    "Lenticular is a derived GZ2 label proxy.",
+    "Test images were not evaluated in this experiment."
+  ]
+}

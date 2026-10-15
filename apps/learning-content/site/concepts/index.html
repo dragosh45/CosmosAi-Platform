@@ -3842,7 +3842,8 @@ COSMOSAI_GALAXY_DATA_ROOT
 <p>Why this is useful:</p>
 <pre><code class="language-text">Default path stays fast and easy.
 Checkpoint demo path proves the full API chain can use saved model weights.
-The model artifact stays local under models/ and is not committed to git.
+The reviewed tiny checkpoint is allowlisted under `models/` for reproducibility;
+ordinary model outputs and larger run directories remain outside Git.
 </code></pre>
 <p>Conceptually, this is like saying:</p>
 <pre><code class="language-text">normal mode:

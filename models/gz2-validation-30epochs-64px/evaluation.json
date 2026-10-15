@@ -1,0 +1,636 @@
+{
+  "configuration": {
+    "epochs": 30,
+    "image_size": 64,
+    "learning_rate": 0.1,
+    "seed": 7,
+    "batch_size": 8
+  },
+  "manifest_sha256": "66ed24ba94c4e8f5a7e7b075ab3a3d825b3bcd0ec16b9a6d22b4ce2b6ba78557",
+  "training": {
+    "epochs": 30,
+    "train_sample_count": 56,
+    "val_sample_count": 12,
+    "test_sample_count": 0,
+    "skipped_row_count": 0,
+    "training_steps": 210,
+    "batch_size": 8,
+    "train_batch_count": 7,
+    "average_loss": 1.393253823689052,
+    "first_loss": 1.7191548347473145,
+    "final_loss": 1.384155511856079,
+    "first_correct_probability": 0.17921754717826843,
+    "final_correct_probability": 0.2505352795124054,
+    "final_predicted_label_id": 0,
+    "weight_changed": true,
+    "epoch_results": [
+      {
+        "epoch": 1,
+        "training_steps": 7,
+        "average_loss": 1.4140266009739466
+      },
+      {
+        "epoch": 2,
+        "training_steps": 7,
+        "average_loss": 1.406869547707694
+      },
+      {
+        "epoch": 3,
+        "training_steps": 7,
+        "average_loss": 1.4019035952431815
+      },
+      {
+        "epoch": 4,
+        "training_steps": 7,
+        "average_loss": 1.3984577996390206
+      },
+      {
+        "epoch": 5,
+        "training_steps": 7,
+        "average_loss": 1.3960678747722082
+      },
+      {
+        "epoch": 6,
+        "training_steps": 7,
+        "average_loss": 1.3944122450692313
+      },
+      {
+        "epoch": 7,
+        "training_steps": 7,
+        "average_loss": 1.3932665927069527
+      },
+      {
+        "epoch": 8,
+        "training_steps": 7,
+        "average_loss": 1.3924755028315954
+      },
+      {
+        "epoch": 9,
+        "training_steps": 7,
+        "average_loss": 1.3919299840927124
+      },
+      {
+        "epoch": 10,
+        "training_steps": 7,
+        "average_loss": 1.39155490057809
+      },
+      {
+        "epoch": 11,
+        "training_steps": 7,
+        "average_loss": 1.3912973403930664
+      },
+      {
+        "epoch": 12,
+        "training_steps": 7,
+        "average_loss": 1.3911210128239222
+      },
+      {
+        "epoch": 13,
+        "training_steps": 7,
+        "average_loss": 1.3910009520394462
+      },
+      {
+        "epoch": 14,
+        "training_steps": 7,
+        "average_loss": 1.3909191744668143
+      },
+      {
+        "epoch": 15,
+        "training_steps": 7,
+        "average_loss": 1.3908638443265642
+      },
+      {
+        "epoch": 16,
+        "training_steps": 7,
+        "average_loss": 1.3908264977591378
+      },
+      {
+        "epoch": 17,
+        "training_steps": 7,
+        "average_loss": 1.3908012764794486
+      },
+      {
+        "epoch": 18,
+        "training_steps": 7,
+        "average_loss": 1.3907842806407384
+      },
+      {
+        "epoch": 19,
+        "training_steps": 7,
+        "average_loss": 1.390772717339652
+      },
+      {
+        "epoch": 20,
+        "training_steps": 7,
+        "average_loss": 1.3907651901245117
+      },
+      {
+        "epoch": 21,
+        "training_steps": 7,
+        "average_loss": 1.3907596894672938
+      },
+      {
+        "epoch": 22,
+        "training_steps": 7,
+        "average_loss": 1.3907559939793177
+      },
+      {
+        "epoch": 23,
+        "training_steps": 7,
+        "average_loss": 1.3907535416739327
+      },
+      {
+        "epoch": 24,
+        "training_steps": 7,
+        "average_loss": 1.3907516172954015
+      },
+      {
+        "epoch": 25,
+        "training_steps": 7,
+        "average_loss": 1.390749795096261
+      },
+      {
+        "epoch": 26,
+        "training_steps": 7,
+        "average_loss": 1.3907481942858015
+      },
+      {
+        "epoch": 27,
+        "training_steps": 7,
+        "average_loss": 1.3907467467444283
+      },
+      {
+        "epoch": 28,
+        "training_steps": 7,
+        "average_loss": 1.3907454524721419
+      },
+      {
+        "epoch": 29,
+        "training_steps": 7,
+        "average_loss": 1.3907441241400582
+      },
+      {
+        "epoch": 30,
+        "training_steps": 7,
+        "average_loss": 1.3907426255089896
+      }
+    ]
+  },
+  "evaluation": {
+    "train": {
+      "split_name": "train",
+      "sample_count": 56,
+      "correct_predictions": 14,
+      "accuracy": 0.25,
+      "average_loss": 1.3863344533102853,
+      "first_true_label_id": 2,
+      "first_predicted_label_id": 0,
+      "first_correct_probability": 0.2505352795124054,
+      "confusion_matrix": [
+        [
+          14,
+          0,
+          0,
+          0
+        ],
+        [
+          14,
+          0,
+          0,
+          0
+        ],
+        [
+          14,
+          0,
+          0,
+          0
+        ],
+        [
+          14,
+          0,
+          0,
+          0
+        ]
+      ],
+      "class_metrics": [
+        {
+          "label_id": 0,
+          "label": "elliptical",
+          "support": 14,
+          "predicted_count": 56,
+          "true_positives": 14,
+          "precision": 0.25,
+          "recall": 1.0,
+          "f1": 0.4
+        },
+        {
+          "label_id": 1,
+          "label": "spiral",
+          "support": 14,
+          "predicted_count": 0,
+          "true_positives": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "label_id": 2,
+          "label": "lenticular",
+          "support": 14,
+          "predicted_count": 0,
+          "true_positives": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "label_id": 3,
+          "label": "irregular",
+          "support": 14,
+          "predicted_count": 0,
+          "true_positives": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      ],
+      "misclassified_count": 42,
+      "misclassified_examples": [
+        {
+          "image_id": "gz2-587722983908311227",
+          "image_path": "images/gz2-587722983908311227.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2505352795124054,
+          "predicted_probability": 0.25520598888397217
+        },
+        {
+          "image_id": "gz2-587725590382051490",
+          "image_path": "images/gz2-587725590382051490.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24245020747184753,
+          "predicted_probability": 0.2555769383907318
+        },
+        {
+          "image_id": "gz2-587725816425480462",
+          "image_path": "images/gz2-587725816425480462.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2511711120605469,
+          "predicted_probability": 0.2547524571418762
+        },
+        {
+          "image_id": "gz2-587725816961171597",
+          "image_path": "images/gz2-587725816961171597.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24341322481632233,
+          "predicted_probability": 0.25489965081214905
+        },
+        {
+          "image_id": "gz2-587725816964645006",
+          "image_path": "images/gz2-587725816964645006.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24340403079986572,
+          "predicted_probability": 0.25487273931503296
+        },
+        {
+          "image_id": "gz2-587725818561364116",
+          "image_path": "images/gz2-587725818561364116.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.25130727887153625,
+          "predicted_probability": 0.255278080701828
+        },
+        {
+          "image_id": "gz2-587725979617132675",
+          "image_path": "images/gz2-587725979617132675.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24304436147212982,
+          "predicted_probability": 0.25507649779319763
+        },
+        {
+          "image_id": "gz2-587725981763829854",
+          "image_path": "images/gz2-587725981763829854.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2514970898628235,
+          "predicted_probability": 0.2556380033493042
+        },
+        {
+          "image_id": "gz2-587726031696298123",
+          "image_path": "images/gz2-587726031696298123.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.250532329082489,
+          "predicted_probability": 0.254975289106369
+        },
+        {
+          "image_id": "gz2-587726031730573615",
+          "image_path": "images/gz2-587726031730573615.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.25132477283477783,
+          "predicted_probability": 0.2552889585494995
+        },
+        {
+          "image_id": "gz2-587726101492990163",
+          "image_path": "images/gz2-587726101492990163.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.25124552845954895,
+          "predicted_probability": 0.2550397217273712
+        },
+        {
+          "image_id": "gz2-587728879797338258",
+          "image_path": "images/gz2-587728879797338258.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2505430281162262,
+          "predicted_probability": 0.2546529471874237
+        },
+        {
+          "image_id": "gz2-587729228756877541",
+          "image_path": "images/gz2-587729228756877541.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24321584403514862,
+          "predicted_probability": 0.2550140619277954
+        },
+        {
+          "image_id": "gz2-587731891115458631",
+          "image_path": "images/gz2-587731891115458631.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24382266402244568,
+          "predicted_probability": 0.2545362412929535
+        },
+        {
+          "image_id": "gz2-587732134841548875",
+          "image_path": "images/gz2-587732134841548875.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24371479451656342,
+          "predicted_probability": 0.25461262464523315
+        },
+        {
+          "image_id": "gz2-587732134847381540",
+          "image_path": "images/gz2-587732134847381540.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.25054073333740234,
+          "predicted_probability": 0.25467318296432495
+        },
+        {
+          "image_id": "gz2-587732483269394684",
+          "image_path": "images/gz2-587732483269394684.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.25050583481788635,
+          "predicted_probability": 0.25483620166778564
+        },
+        {
+          "image_id": "gz2-587732484345168097",
+          "image_path": "images/gz2-587732484345168097.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.25053539872169495,
+          "predicted_probability": 0.2547950744628906
+        },
+        {
+          "image_id": "gz2-587732770512371873",
+          "image_path": "images/gz2-587732770512371873.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24363817274570465,
+          "predicted_probability": 0.25466233491897583
+        },
+        {
+          "image_id": "gz2-587733080275157134",
+          "image_path": "images/gz2-587733080275157134.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2511897087097168,
+          "predicted_probability": 0.25484392046928406
+        }
+      ]
+    },
+    "val": {
+      "split_name": "val",
+      "sample_count": 12,
+      "correct_predictions": 3,
+      "accuracy": 0.25,
+      "average_loss": 1.3862449924151103,
+      "first_true_label_id": 0,
+      "first_predicted_label_id": 0,
+      "first_correct_probability": 0.25476840138435364,
+      "confusion_matrix": [
+        [
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0,
+          0
+        ]
+      ],
+      "class_metrics": [
+        {
+          "label_id": 0,
+          "label": "elliptical",
+          "support": 3,
+          "predicted_count": 12,
+          "true_positives": 3,
+          "precision": 0.25,
+          "recall": 1.0,
+          "f1": 0.4
+        },
+        {
+          "label_id": 1,
+          "label": "spiral",
+          "support": 3,
+          "predicted_count": 0,
+          "true_positives": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "label_id": 2,
+          "label": "lenticular",
+          "support": 3,
+          "predicted_count": 0,
+          "true_positives": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        {
+          "label_id": 3,
+          "label": "irregular",
+          "support": 3,
+          "predicted_count": 0,
+          "true_positives": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      ],
+      "misclassified_count": 9,
+      "misclassified_examples": [
+        {
+          "image_id": "gz2-587735696454320329",
+          "image_path": "images/gz2-587735696454320329.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2434537261724472,
+          "predicted_probability": 0.2548167407512665
+        },
+        {
+          "image_id": "gz2-587741707811160150",
+          "image_path": "images/gz2-587741707811160150.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2512115240097046,
+          "predicted_probability": 0.2547959089279175
+        },
+        {
+          "image_id": "gz2-587742190444740743",
+          "image_path": "images/gz2-587742190444740743.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.24383148550987244,
+          "predicted_probability": 0.2545235753059387
+        },
+        {
+          "image_id": "gz2-587742611340525721",
+          "image_path": "images/gz2-587742611340525721.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2514108717441559,
+          "predicted_probability": 0.2556682527065277
+        },
+        {
+          "image_id": "gz2-588010878755799134",
+          "image_path": "images/gz2-588010878755799134.jpg",
+          "true_label_id": 3,
+          "true_label": "irregular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.25129005312919617,
+          "predicted_probability": 0.255144327878952
+        },
+        {
+          "image_id": "gz2-588017113977454704",
+          "image_path": "images/gz2-588017113977454704.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.25053951144218445,
+          "predicted_probability": 0.25463035702705383
+        },
+        {
+          "image_id": "gz2-588017627758854268",
+          "image_path": "images/gz2-588017627758854268.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2505373954772949,
+          "predicted_probability": 0.2547508478164673
+        },
+        {
+          "image_id": "gz2-588017702383976555",
+          "image_path": "images/gz2-588017702383976555.jpg",
+          "true_label_id": 2,
+          "true_label": "lenticular",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2505362927913666,
+          "predicted_probability": 0.2548178434371948
+        },
+        {
+          "image_id": "gz2-588017711510585475",
+          "image_path": "images/gz2-588017711510585475.jpg",
+          "true_label_id": 1,
+          "true_label": "spiral",
+          "predicted_label_id": 0,
+          "predicted_label": "elliptical",
+          "true_probability": 0.2435784935951233,
+          "predicted_probability": 0.2547217905521393
+        }
+      ]
+    }
+  },
+  "validation_majority_accuracy": 0.25,
+  "test_evaluated": false,
+  "test_records_excluded": 12
+}

@@ -88,6 +88,8 @@ def resolve_link(target, aliases, diagrams):
     if parsed.scheme in ("http", "https") and parsed.netloc:
         return target
     path, _, fragment = target.partition("#")
+    if re.fullmatch(r"L\d+(?:-L\d+)?", fragment):
+        return None
     if not path or Path(path).name in ("concepts_explanations", "concepts_explanations.md"):
         key = fragment.lstrip("^")
         anchor = aliases.get(key) or aliases.get(fragment) or aliases.get(slug(key))

@@ -1,0 +1,19 @@
+{
+  "checkpoint_sha256": "af6e335abb0b945c155657870e46c6539da8de3d9490418e18e439a714b1e772",
+  "title": "GZ2 pilot Adam diagnostic candidate",
+  "training_images": 56,
+  "epochs": 30,
+  "validation": {
+    "sample_count": 12,
+    "accuracy": 0.3333333333333333
+  },
+  "test": {
+    "sample_count": 12,
+    "accuracy": null
+  },
+  "notes": [
+    "Small validation trial, not established accuracy; no automatic promotion.",
+    "Optimizer, learning rate and batch order differ from the SGD candidate.",
+    "Lenticular is a derived GZ2 label proxy. Test images were not evaluated."
+  ]
+}
