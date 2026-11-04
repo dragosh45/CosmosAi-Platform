@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="660" viewBox="0 0 980 660" role="img" aria-labelledby="title desc">
+<title id="title">Stride one and two stacked 3 by 3 convolutions</title>
+<desc id="desc">Stride one moves a window one input cell per step; stride two moves it two cells. With two consecutive valid 3 by 3 stride-one layers, the second layer reads a 3 by 3 first-layer map, whose nine receptive fields together cover a 5 by 5 original input.</desc>
+<rect width="980" height="660" fill="#f6fafc"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#255872"/></marker></defs>
+<g font-family="Arial,sans-serif" fill="#17344b">
+<text x="30" y="38" font-size="24" font-weight="bold">Stride = how far the window moves on its current input</text>
+<rect x="35" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="57" y="109" font-size="18" font-weight="normal">0</text>
+<rect x="90" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="112" y="109" font-size="18" font-weight="normal">1</text>
+<rect x="145" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="167" y="109" font-size="18" font-weight="normal">2</text>
+<rect x="200" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="222" y="109" font-size="18" font-weight="normal">3</text>
+<rect x="255" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="277" y="109" font-size="18" font-weight="normal">4</text>
+<rect x="310" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="332" y="109" font-size="18" font-weight="normal">5</text>
+<rect x="365" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="387" y="109" font-size="18" font-weight="normal">6</text>
+<rect x="35" y="75" width="165" height="55" fill="none" stroke="#268074" stroke-width="4"/>
+<rect x="90" y="135" width="165" height="12" fill="#e39e25"/>
+<line x1="43" y1="160" x2="98" y2="160" stroke="#255872" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="35" y="192" font-size="18" font-weight="bold">Stride 1: next start = 1</text>
+<rect x="510" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="532" y="109" font-size="18" font-weight="normal">0</text>
+<rect x="565" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="587" y="109" font-size="18" font-weight="normal">1</text>
+<rect x="620" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="642" y="109" font-size="18" font-weight="normal">2</text>
+<rect x="675" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="697" y="109" font-size="18" font-weight="normal">3</text>
+<rect x="730" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="752" y="109" font-size="18" font-weight="normal">4</text>
+<rect x="785" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="807" y="109" font-size="18" font-weight="normal">5</text>
+<rect x="840" y="80" width="55" height="45" fill="white" stroke="#829eaf"/>
+<text x="862" y="109" font-size="18" font-weight="normal">6</text>
+<rect x="510" y="75" width="165" height="55" fill="none" stroke="#268074" stroke-width="4"/>
+<rect x="620" y="135" width="165" height="12" fill="#e39e25"/>
+<line x1="518" y1="160" x2="628" y2="160" stroke="#255872" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="510" y="192" font-size="18" font-weight="bold">Stride 2: next start = 2</text>
+<text x="35" y="220" font-size="17" font-weight="normal">Green: current 3-cell window. Gold: next window. The 2D rule also applies vertically.</text>
+<line x1="30" y1="245" x2="950" y2="245" stroke="#a8bbc6"/>
+<text x="30" y="281" font-size="24" font-weight="bold">Stacking = feeding one convolution layer into the next</text>
+<text x="35" y="315" font-size="19" font-weight="bold">Original input: 5 x 5</text>
+<rect x="35" y="335" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="47" y="362" font-size="16" font-weight="normal">1</text>
+<rect x="77" y="335" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="89" y="362" font-size="16" font-weight="normal">2</text>
+<rect x="119" y="335" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="131" y="362" font-size="16" font-weight="normal">3</text>
+<rect x="161" y="335" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="173" y="362" font-size="16" font-weight="normal">4</text>
+<rect x="203" y="335" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="215" y="362" font-size="16" font-weight="normal">5</text>
+<rect x="35" y="377" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="47" y="404" font-size="16" font-weight="normal">6</text>
+<rect x="77" y="377" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="89" y="404" font-size="16" font-weight="normal">7</text>
+<rect x="119" y="377" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="131" y="404" font-size="16" font-weight="normal">8</text>
+<rect x="161" y="377" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="173" y="404" font-size="16" font-weight="normal">9</text>
+<rect x="203" y="377" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="215" y="404" font-size="16" font-weight="normal">10</text>
+<rect x="35" y="419" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="47" y="446" font-size="16" font-weight="normal">11</text>
+<rect x="77" y="419" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="89" y="446" font-size="16" font-weight="normal">12</text>
+<rect x="119" y="419" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="131" y="446" font-size="16" font-weight="normal">13</text>
+<rect x="161" y="419" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="173" y="446" font-size="16" font-weight="normal">14</text>
+<rect x="203" y="419" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="215" y="446" font-size="16" font-weight="normal">15</text>
+<rect x="35" y="461" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="47" y="488" font-size="16" font-weight="normal">16</text>
+<rect x="77" y="461" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="89" y="488" font-size="16" font-weight="normal">17</text>
+<rect x="119" y="461" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="131" y="488" font-size="16" font-weight="normal">18</text>
+<rect x="161" y="461" width="42" height="42" fill="#ffe3a3" stroke="#829eaf"/>
+<text x="173" y="488" font-size="16" font-weight="normal">19</text>
+<rect x="203" y="461" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="215" y="488" font-size="16" font-weight="normal">20</text>
+<rect x="35" y="503" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="47" y="530" font-size="16" font-weight="normal">21</text>
+<rect x="77" y="503" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="89" y="530" font-size="16" font-weight="normal">22</text>
+<rect x="119" y="503" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="131" y="530" font-size="16" font-weight="normal">23</text>
+<rect x="161" y="503" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="173" y="530" font-size="16" font-weight="normal">24</text>
+<rect x="203" y="503" width="42" height="42" fill="#ffffff" stroke="#829eaf"/>
+<text x="215" y="530" font-size="16" font-weight="normal">25</text>
+<text x="35" y="570" font-size="16" font-weight="normal">Gold: one first-layer cell sees 3 x 3.</text>
+<text x="350" y="315" font-size="19" font-weight="bold">Layer 1 output: 3 x 3</text>
+<rect x="350" y="375" width="46" height="46" fill="#ffffff" stroke="#829eaf"/>
+<rect x="396" y="375" width="46" height="46" fill="#ffffff" stroke="#829eaf"/>
+<rect x="442" y="375" width="46" height="46" fill="#ffffff" stroke="#829eaf"/>
+<rect x="350" y="421" width="46" height="46" fill="#ffffff" stroke="#829eaf"/>
+<rect x="396" y="421" width="46" height="46" fill="#ffe3a3" stroke="#829eaf"/>
+<rect x="442" y="421" width="46" height="46" fill="#ffffff" stroke="#829eaf"/>
+<rect x="350" y="467" width="46" height="46" fill="#ffffff" stroke="#829eaf"/>
+<rect x="396" y="467" width="46" height="46" fill="#ffffff" stroke="#829eaf"/>
+<rect x="442" y="467" width="46" height="46" fill="#ffffff" stroke="#829eaf"/>
+<text x="362" y="408" font-size="16" font-weight="normal">63</text>
+<text x="408" y="408" font-size="16" font-weight="normal">72</text>
+<text x="454" y="408" font-size="16" font-weight="normal">81</text>
+<text x="358" y="454" font-size="16" font-weight="normal">108</text>
+<text x="404" y="454" font-size="16" font-weight="normal">117</text>
+<text x="450" y="454" font-size="16" font-weight="normal">126</text>
+<text x="358" y="500" font-size="16" font-weight="normal">153</text>
+<text x="404" y="500" font-size="16" font-weight="normal">162</text>
+<text x="450" y="500" font-size="16" font-weight="normal">171</text>
+<text x="650" y="315" font-size="19" font-weight="bold">Layer 2 output: 1 x 1</text>
+<rect x="715" y="400" width="74" height="74" fill="#d7eaf6" stroke="#829eaf"/>
+<text x="728" y="444" font-size="18" font-weight="bold">1053</text>
+<line x1="260" y1="440" x2="330" y2="440" stroke="#255872" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="515" y1="440" x2="685" y2="440" stroke="#255872" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="268" y="379" font-size="17" font-weight="normal">3 x 3</text>
+<text x="268" y="402" font-size="16" font-weight="normal">stride 1</text>
+<text x="536" y="379" font-size="17" font-weight="normal">3 x 3</text>
+<text x="536" y="402" font-size="16" font-weight="normal">stride 1</text>
+<text x="350" y="570" font-size="16" font-weight="normal">Layer 2 reads all nine Layer 1 cells.</text>
+<text x="35" y="610" font-size="20" font-weight="bold">Together their input patches cover 5 x 5: 3 + 2 = 5, not 3 x 3 = 9.</text>
+<text x="35" y="640" font-size="15" font-weight="normal">Teaching calculation: both kernels contain ones; bias 0; valid convolution; no dilation or activation.</text>
+</g></svg>

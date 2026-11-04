@@ -10,6 +10,11 @@ TAG="${TAG:-$(git -C "$ROOT" rev-parse --short HEAD)}"
 REGISTRY="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}"
 RENDERED="${TMPDIR:-/tmp}/cosmosai-cloud-run-${TAG}.yaml"
 
+if [[ -n "$(git -C "$ROOT" status --porcelain --untracked-files=normal)" ]]; then
+  echo "Commit the release files first; deployment requires a clean checkout." >&2
+  exit 1
+fi
+
 command -v gcloud >/dev/null || {
   echo "gcloud is required. Run this script from Google Cloud Shell." >&2
   exit 1
@@ -76,7 +81,8 @@ url="$(gcloud run services describe "$SERVICE" --project "$PROJECT_ID" \
   --region "$REGION" --format='value(status.url)')"
 cat <<EOF
 
-Private deployment ready: ${url}
+Deployment ready: ${url}
+Existing service IAM is unchanged; replacing a public service does not make it private.
 
 Verify it before making it public:
   TOKEN=\$(gcloud auth print-identity-token)

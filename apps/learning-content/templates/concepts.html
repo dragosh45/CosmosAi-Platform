@@ -7,11 +7,12 @@
 <p class="source-note">From the project's concepts notes. Examples span earlier milestones; current model results are on the Galaxy Classifier page.</p>
 <div class="reading-layout">
   <aside class="contents"><label for="concept-search">Search concepts</label><input id="concept-search" type="search" placeholder="Gradient, pooling, loss..." autocomplete="off">
+    {% if courses %}<label for="course-filter">Course</label><select id="course-filter"><option value="">All concepts</option>{% for course in courses %}<option value="{{ course.id }}" data-topics='{{ course.topics|tojson }}'>{{ course.id }}</option>{% endfor %}</select>{% endif %}
     <p id="search-status" role="status" class="muted"></p>
     <nav aria-label="Concept topics" id="concept-topics">{%- for h in headings %}
       <a href="#{{ h.id }}" data-topic="{{ h.topic }}" class="level-{{ h.level }}">{{ h.title }}</a>
     {%- endfor %}</nav>
   </aside>
-  <div class="concept-content">{% for topic in topics %}<article data-topic="{{ topic.id }}">{{ topic.html|safe }}</article>{% endfor %}</div>
+  <div class="concept-content"><p id="course-empty" hidden>No concepts are mapped to this course yet. <a href="/learn/courses/">Open Learn per course</a> to find your course materials.</p>{% for topic in topics %}<article data-topic="{{ topic.id }}">{{ topic.html|safe }}{% if topic.examples %}<aside class="formula-result"><strong>Try it with numbers</strong><ul>{% for example in topic.examples %}<li><a href="{{ example.url }}">{{ example.title }}</a></li>{% endfor %}</ul></aside>{% endif %}</article>{% endfor %}</div>
 </div>
 {% endblock %}

@@ -1,5 +1,12 @@
 {
   "concepts": "docs/concepts_explanations.md",
+  "images": [],
+  "course_map": "docs/syllabus/learning_map.yaml",
+  "concept_examples": {
+    "what-a-neuron-does": ["weighted-sum"],
+    "weights": ["weighted-sum", "cnn-replay-weights"],
+    "concept-logits-probabilities-loss": ["cnn-replay-loss"]
+  },
   "diagrams": [
     "neural_network_concepts",
     "galaxy_gradient_backprop_weight_update_flow",

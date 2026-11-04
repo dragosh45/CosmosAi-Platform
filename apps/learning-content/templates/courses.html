@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% set active = 'courses' %}
+{% block title %}Learn per course{% endblock %}{% block page %}courses{% endblock %}
+{% block body %}
+<div class="page-heading"><div><p class="eyebrow">COSMOSAI / LEARNING</p><h1>Learn per course</h1>
+<p>Choose a course, then a lesson, concept or practical example.</p></div></div>
+{% if private_study %}<p class="source-note"><strong>Local study library.</strong> Original materials and unreviewed notes are for your private study.</p>{% endif %}
+<div class="course-grid">{% for course in courses %}<article class="course-card">
+  <p class="eyebrow">{{ course.id }}</p><h2><a href="/learn/courses/{{ course.id }}/">{{ course.title }}</a></h2>
+  <p>{{ course.lectures|length }} lesson{% if course.lectures|length != 1 %}s{% endif %} or readings</p>
+  <a href="/learn/courses/{{ course.id }}/">Open {{ course.id }} →</a>
+</article>{% else %}<p>No courses have been mapped yet.</p>{% endfor %}</div>
+<p><a href="/learn/concepts/">Browse all Concepts Explanations</a> · <a href="/learn/">Open CNN Learning Replay</a></p>
+{% endblock %}

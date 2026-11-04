@@ -13,6 +13,8 @@
     <a href="/">Galaxy Classifier</a>
     <a href="/learn/" aria-current="page">CNN Learning Replay</a>
     <a href="/learn/concepts/">Concepts Explanations</a>
+    <a href="/learn/courses/">Learn per course</a>
+    <a href="/learn/examples/cnn-fundamentals/">CNN exam practice</a>
     <a href="/learn/diagrams/">Diagrams</a>
   </nav>
   <header class="topbar">
@@ -109,6 +111,14 @@
         <div id="network-diagram" class="network-diagram"></div>
         <p class="caption">Green lines are positive weights; brown lines are negative weights. With positive features, positive weights raise a class logit and negative weights lower it. Thickness shows magnitude. The class nodes show the calculated logit and softmax probability.</p>
         <p id="classifier-connection-example" class="formula-note"></p>
+        <p class="caption"><strong>How the two sets of weights relate:</strong> Kernel weights produce the feature maps; pooling turns those maps into <code>a[0]</code>–<code>a[3]</code>. The separate classifier weights W combine these features into class scores. Neither set of weights is calculated directly from the other; both are trained together using the final loss.</p>
+        <details id="classifier-weight-origin" open><summary>Where do the connection weights come from?</summary>
+          <p><code>a[j]</code> is a calculated input feature: the mean of filter j's after-ReLU map. <code>W[i,j]</code> is a different kind of number: a stored classifier parameter connecting feature j to class i. It is not calculated by pooling and is not copied from a convolution kernel.</p>
+          <p>In the bundled seed-7 teaching run, both convolution and Linear classifier weights were randomly initialised reproducibly before the first training update. New input images produce new features using the same current weights. Backpropagation calculates gradients; SGD changes the weights. They are not drawn randomly again for each image.</p>
+          <p id="classifier-weight-timeline" class="formula-note"></p>
+          <button id="inspect-classifier-weight" type="button">Inspect this classifier weight update</button>
+          <p>The matrix here uses real row-by-column multiplication: <code>z = W × a + b</code>. Earlier, a convolution patch used matching-position products followed by summation.</p>
+        </details>
         <label class="inline-label">Class row <select id="class-select"></select></label>
       </div>
       <div class="panel logits-panel">

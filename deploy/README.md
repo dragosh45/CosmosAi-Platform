@@ -70,7 +70,7 @@ The build recipe is [`cloudbuild.yaml`](cloud-run/cloudbuild.yaml).
 5. Create the private Docker repository if it does not exist.
 6. Submit the checkout to Cloud Build and push three tagged images.
 7. Render the Cloud Run YAML with concrete service, region, registry and tag values.
-8. Replace the Cloud Run service privately and reassert min/max scaling limits.
+8. Replace the Cloud Run service and reassert min/max scaling limits. Existing IAM is preserved.
 9. Print the private URL and authenticated smoke-test command.
 
 `SKIP_BUILD=YES` is a recovery option for reusing an existing image tag when
@@ -137,6 +137,38 @@ Stopping removes this project's containers/network, not the checkpoint, source,
 Docker images or unrelated services. Wait for healthy services after a restart
 before running the check. Do not restart the PC to update this application.
 
+## Update an existing service
+
+Commit and push the tested release, then pull that exact commit in Cloud Shell.
+The deploy script refuses a dirty checkout so its image tag identifies the code
+being built. GitHub pushes do not deploy automatically.
+
+For an existing public service, replacement preserves its access policy. To use
+the private → verify → public procedure, run `deploy/cloud-run/make-private.sh`
+first. This deliberately interrupts anonymous access until `make-public.sh` is
+run again. Do not assume a new revision is private merely because it is new.
+
+Keep the previous ready revision name before updating:
+
+```bash
+gcloud run services describe cosmosai-demo --project cosmosai-demo --region europe-west1 \
+  --format='value(status.latestReadyRevisionName)'
+```
+
+After deployment, the release checker verifies the course pages, all example
+assets and the Replay against the checkout using SHA256, then tests inference
+and upload validation. A stale page or missing JavaScript fails the check.
+For rollback, replace `PREVIOUS_REVISION` with the name recorded above:
+
+```bash
+gcloud run services update-traffic cosmosai-demo --project cosmosai-demo \
+  --region europe-west1 --to-revisions PREVIOUS_REVISION=100
+```
+
+`.gcloudignore` excludes private authoring documents, local environments and
+build tooling from the Cloud Build upload. Inspect the upload selection locally
+with `gcloud meta list-files-for-upload` before a release.
+
 ## Deploy Privately to Cloud Run
 
 The checked-in deployment targets project `cosmosai-demo`, region
@@ -152,7 +184,7 @@ deploy/cloud-run/deploy.sh
 
 The script verifies billing, asks for explicit budget confirmation, enables only
 Artifact Registry, Cloud Build, and Cloud Run, builds versioned images remotely,
-and deploys one private multi-container service. It sets minimum instances to 0,
+and deploys one multi-container service (private on first creation). It sets minimum instances to 0,
 maximum instances to 1, request-based CPU throttling, concurrency 1, and startup
 ordering from classifier to router to gateway.
 

@@ -16,6 +16,35 @@ import requests
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def check_learning(session, base):
+    """Compare the served learning release with this checkout, including assets.
+
+    A 200 status alone can hide a stale revision or an HTML fallback for missing
+    JavaScript. Hash checks prove the selected pages and calculations match.
+    """
+    site = ROOT / "apps/learning-content/site"
+    files = {
+        "/learn/": ROOT / "apps/learning-replay/index.html",
+        "/learn/viewer.js": ROOT / "apps/learning-replay/viewer.js",
+        "/assets/learning.js": ROOT / "apps/api-gateway/static/learning.js",
+        "/assets/learning.css": ROOT / "apps/api-gateway/static/learning.css",
+    }
+    for relative in ("concepts/index.html", "concepts/build.json",
+                     "courses/index.html", "diagrams/index.html", "diagrams/catalog.json"):
+        files["/learn/" + relative.removesuffix("index.html")] = site / relative
+    for directory in ("courses", "examples"):
+        for path in sorted((site / directory).rglob("*")):
+            if path.is_file():
+                relative = path.relative_to(site).as_posix()
+                files["/learn/" + relative.removesuffix("index.html")] = path
+    for url, path in files.items():
+        response = session.get(base + url, timeout=90)
+        response.raise_for_status()
+        assert hashlib.sha256(response.content).digest() == hashlib.sha256(path.read_bytes()).digest(), (
+            f"Stale or incorrect learning asset: {url}; check the deployed revision")
+    return len(files)
+
+
 def check(base_url, identity_token=None):
     """Exercise only public gateway endpoints, using a bundled galaxy JPEG."""
     base = base_url.rstrip("/")
@@ -27,8 +56,9 @@ def check(base_url, identity_token=None):
     try:
         for page in ("/", "/learn/", "/learn/concepts/", "/learn/diagrams/",
                      "/assets/learning.js", "/learn/diagrams/svg/neural_network_concepts.svg"):
-            response = session.get(base + page, timeout=15)
+            response = session.get(base + page, timeout=90)
             response.raise_for_status()
+        learning_assets = check_learning(session, base)
         model = session.get(base + "/model", timeout=30)
         model.raise_for_status()
         info = model.json()
@@ -57,7 +87,7 @@ def check(base_url, identity_token=None):
         return {"base_url": base, "status": "passed", "checkpoint_sha256": expected,
                 "predicted_label": result["label"], "prediction_seconds": round(latency, 3),
                 "checks_seconds": round(time.monotonic() - started, 3),
-                "pages": 4, "upload_error_codes": [422, 415, 413]}
+                "learning_assets": learning_assets, "upload_error_codes": [422, 415, 413]}
     finally:
         session.close()
 

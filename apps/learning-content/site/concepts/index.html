@@ -11,6 +11,7 @@
   <header class="site-header"><nav aria-label="Main navigation">
     <a href="/">Galaxy Classifier</a><a href="/learn/">CNN Learning Replay</a>
     <a href="/learn/concepts/" aria-current="page">Concepts Explanations</a>
+    <a href="/learn/courses/" >Learn per course</a>
     <a href="/learn/diagrams/" >Diagrams</a>
   </nav></header>
   <main>
@@ -20,6 +21,7 @@
 <p class="source-note">From the project's concepts notes. Examples span earlier milestones; current model results are on the Galaxy Classifier page.</p>
 <div class="reading-layout">
   <aside class="contents"><label for="concept-search">Search concepts</label><input id="concept-search" type="search" placeholder="Gradient, pooling, loss..." autocomplete="off">
+    <label for="course-filter">Course</label><select id="course-filter"><option value="">All concepts</option><option value="AIA" data-topics='["dataset-labels-teach-the-final-goal", "model", "neural-network", "prediction-flow", "train-validation-test"]'>AIA</option><option value="AIMLA" data-topics='[]'>AIMLA</option><option value="MAL" data-topics='["concept-cnn-filter-weights", "concept-pytorch-training-step", "reading-the-cnn-diagram-from-pixels-to-classes"]'>MAL</option></select>
     <p id="search-status" role="status" class="muted"></p>
     <nav aria-label="Concept topics" id="concept-topics">
       <a href="#model" data-topic="model" class="level-2">Model</a>
@@ -172,7 +174,7 @@
       <a href="#deployment-script-flow" data-topic="concept-cloud-run-deployment" class="level-3">Deployment Script Flow</a>
       <a href="#budget-alert-versus-spending-cap" data-topic="concept-cloud-run-deployment" class="level-3">Budget Alert Versus Spending Cap</a></nav>
   </aside>
-  <div class="concept-content"><article data-topic="model"><h2 id="model">Model</h2>
+  <div class="concept-content"><p id="course-empty" hidden>No concepts are mapped to this course yet. <a href="/learn/courses/">Open Learn per course</a> to find your course materials.</p><article data-topic="model"><h2 id="model">Model</h2>
 <p>A model is the thing that makes predictions.</p>
 <p>In this project, a galaxy model will eventually receive an image and return something like:</p>
 <pre><code class="language-json">{
@@ -266,7 +268,7 @@ input_3 * weight_3
           = neuron output
 </code></pre>
 <p>The weights decide which inputs matter more.</p>
-</article><article data-topic="where-the-neuron-numbers-come-from"><h2 id="where-the-neuron-numbers-come-from">Where The Neuron Numbers Come From</h2>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/weighted-sum/">One neuron: weights, bias and ReLU</a></li></ul></aside></article><article data-topic="where-the-neuron-numbers-come-from"><h2 id="where-the-neuron-numbers-come-from">Where The Neuron Numbers Come From</h2>
 <p>In our galaxy classifier, the input numbers come from the galaxy image.</p>
 <p>A computer does not see this:</p>
 <pre><code class="language-text">&quot;a spiral galaxy&quot;
@@ -968,7 +970,7 @@ trained model = object / instance with learned values
 <pre><code class="language-text">architecture + learned weights = trained model
 </code></pre>
 <p>The architecture is like the structure. The weights are what the model learned from data.</p>
-</article><article data-topic="training"><h2 id="training">Training</h2>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/weighted-sum/">One neuron: weights, bias and ReLU</a></li><li><a href="/learn/#parameter-inventory">CNN Replay: inspect the exact weights</a></li></ul></aside></article><article data-topic="training"><h2 id="training">Training</h2>
 <p>Training means showing the model many examples so it can adjust its weights.</p>
 <p>For galaxy classification:</p>
 <pre><code class="language-text">input image -&gt; model prediction -&gt; compare with real label -&gt; update weights
@@ -1713,7 +1715,7 @@ placeholder_probabilities: [0.2564, 0.2629, 0.2415, 0.2392]
 average placeholder loss: 1.3360
 </code></pre>
 <p>Here <code>label_id = 1</code> means the correct class is the second probability, <code>0.2629</code>.</p>
-</article><article data-topic="pytorch-cnn-forward-pass-proof"><h2 id="pytorch-cnn-forward-pass-proof">PyTorch CNN Forward Pass Proof</h2>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/#loss-walkthrough">CNN Replay: follow the loss calculation</a></li></ul></aside></article><article data-topic="pytorch-cnn-forward-pass-proof"><h2 id="pytorch-cnn-forward-pass-proof">PyTorch CNN Forward Pass Proof</h2>
 <p>Milestone 33 adds the first real PyTorch model path.</p>
 <p>This is the new real part:</p>
 <pre><code class="language-text">GalaxyImageTensor

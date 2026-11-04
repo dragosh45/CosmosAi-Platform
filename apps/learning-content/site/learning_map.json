@@ -1,0 +1,150 @@
+{
+  "courses": [
+    {
+      "id": "AIA",
+      "title": "Artificial Intelligence Applications",
+      "lectures": [
+        {
+          "id": "AIA-L01",
+          "title": "Lecture 1 \u2014 AI and learning foundations",
+          "concepts": [
+            {
+              "id": "model",
+              "title": "Model"
+            },
+            {
+              "id": "neural-network",
+              "title": "Neural Network"
+            },
+            {
+              "id": "dataset-labels-teach-the-final-goal",
+              "title": "Dataset Labels Teach The Final Goal"
+            },
+            {
+              "id": "prediction-flow",
+              "title": "Prediction Flow"
+            },
+            {
+              "id": "train-validation-test",
+              "title": "Train / Validation / Test"
+            }
+          ],
+          "examples": [
+            {
+              "id": "weighted-sum",
+              "title": "One neuron: weights, bias and ReLU",
+              "url": "/learn/examples/weighted-sum/"
+            },
+            {
+              "id": "cnn-replay-weights",
+              "title": "CNN Replay: inspect the exact weights",
+              "url": "/learn/#parameter-inventory"
+            },
+            {
+              "id": "cnn-replay-loss",
+              "title": "CNN Replay: follow the loss calculation",
+              "url": "/learn/#loss-walkthrough"
+            }
+          ]
+        },
+        {
+          "id": "AIA-L02",
+          "title": "Lecture 2",
+          "concepts": [],
+          "examples": []
+        },
+        {
+          "id": "AIA-LAB01",
+          "title": "Laboratory 1 \u2014 MATLAB data preparation and current prediction",
+          "concepts": [
+            {
+              "id": "model",
+              "title": "Model"
+            },
+            {
+              "id": "train-validation-test",
+              "title": "Train / Validation / Test"
+            }
+          ],
+          "examples": [
+            {
+              "id": "lab1-preprocessing",
+              "title": "Lab 1: interpolation and normalisation with numbers",
+              "url": "/learn/examples/lab1-preprocessing/"
+            }
+          ]
+        }
+      ],
+      "topics": [
+        "dataset-labels-teach-the-final-goal",
+        "model",
+        "neural-network",
+        "prediction-flow",
+        "train-validation-test"
+      ]
+    },
+    {
+      "id": "AIMLA",
+      "title": "Machine Learning in Computer Aided Engineering",
+      "lectures": [
+        {
+          "id": "AIMLA-R01",
+          "title": "Reading \u2014 Machine Learning in Computer Aided Engineering",
+          "concepts": [],
+          "examples": []
+        }
+      ],
+      "topics": []
+    },
+    {
+      "id": "MAL",
+      "title": "Multi-Agent Learning",
+      "lectures": [
+        {
+          "id": "MAL-L04",
+          "title": "Lecture 4 \u2014 CNN fundamentals",
+          "concepts": [
+            {
+              "id": "concept-cnn-filter-weights",
+              "title": "CNN Filter Weights And Pixel Importance"
+            },
+            {
+              "id": "kernel-slices-and-the-center-convolution",
+              "title": "Kernel Slices And The Center Convolution"
+            },
+            {
+              "id": "sliding-to-nine-positions-relu-and-pooling",
+              "title": "Sliding To Nine Positions, ReLU, And Pooling"
+            },
+            {
+              "id": "concept-backpropagation",
+              "title": "What Backpropagation Means"
+            }
+          ],
+          "examples": [
+            {
+              "id": "cnn-fundamentals",
+              "title": "CNN: sliding filters, shapes and parameter counts",
+              "url": "/learn/examples/cnn-fundamentals/"
+            },
+            {
+              "id": "cnn-replay-weights",
+              "title": "CNN Replay: inspect the exact weights",
+              "url": "/learn/#parameter-inventory"
+            },
+            {
+              "id": "cnn-replay-loss",
+              "title": "CNN Replay: follow the loss calculation",
+              "url": "/learn/#loss-walkthrough"
+            }
+          ]
+        }
+      ],
+      "topics": [
+        "concept-cnn-filter-weights",
+        "concept-pytorch-training-step",
+        "reading-the-cnn-diagram-from-pixels-to-classes"
+      ]
+    }
+  ]
+}

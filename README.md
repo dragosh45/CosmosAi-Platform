@@ -57,12 +57,20 @@ All pages share the same local web application and navigation.
 | Galaxy Classifier | `/` | Image upload and preview, four sample galaxies, probabilities, model details and JSON results. |
 | CNN Learning Replay | `/learn/` | Step-by-step RGB convolution, ReLU, pooling, matrix multiplication, loss, gradients and SGD weight updates. |
 | Concepts Explanations | `/learn/concepts/` | Searchable topics from the project's Markdown learning notes, with links to individual concepts. |
+| Learn per course | `/learn/courses/` | AIA, AIMLA and MAL lesson navigation with links to concepts and practical examples. |
+| CNN fundamentals | `/learn/examples/cnn-fundamentals/` | Sliding filters, channel sums, parameter counts, stride and receptive-field controls. |
 | Diagrams | `/learn/diagrams/` | 28 Excalidraw diagrams published as zoomable SVGs, with related concepts and source downloads. |
 
 The replay is a **recorded, small teaching run**, not an explanation of the image
 currently uploaded to the classifier. Its controls inspect recorded values;
 they do not train a model. Links connect the calculations to the concept pages
 and preserve the replay selection when returning in the same browser tab.
+
+The current source includes **Learn per course** and three interactive examples:
+a neuron's weighted sum, [Lab 1 interpolation/normalisation](apps/learning-examples/lab1-preprocessing/index.html),
+and [CNN filters, shapes and receptive fields](apps/learning-examples/cnn-fundamentals/index.html).
+The Lab 1 example shows each arithmetic step; it does not rerun MATLAB. These
+additions have not been deployed to the hosted preview.
 
 The learning pages are prebuilt static content served by the gateway, not
 additional prediction services. See the [learning content guide](apps/learning-content/README.md)
@@ -235,3 +243,9 @@ The repository contains only small data needed for tests and the demo (see the
 [model artifact policy](models/README.md)). Full training datasets, training
 outputs, credentials and local caches are not part of the repository. Full-data
 training requires downloading the source dataset and configuring its local path.
+
+
+CNN learning practice is available at `/learn/examples/cnn-fundamentals/` in a
+local learning build: inspect a sliding filter, calculate output sizes and count
+the existing tiny CNN's 132 parameters. It complements the recorded CNN Replay;
+it does not train a new model or require the inference services.

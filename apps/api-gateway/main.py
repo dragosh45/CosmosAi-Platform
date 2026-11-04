@@ -137,6 +137,8 @@ def learning_replay_page() -> FileResponse:
 
 # These specific mounts must precede /learn, which owns the replay's static files.
 app.mount("/learn/concepts", StaticFiles(directory=LEARNING_CONTENT_ROOT / "concepts", html=True, check_dir=False), name="learning-concepts")
+app.mount("/learn/courses", StaticFiles(directory=LEARNING_CONTENT_ROOT / "courses", html=True, check_dir=False), name="learning-courses")
+app.mount("/learn/examples", StaticFiles(directory=LEARNING_CONTENT_ROOT / "examples", html=True, check_dir=False), name="learning-examples")
 app.mount("/learn/diagrams", StaticFiles(directory=LEARNING_CONTENT_ROOT / "diagrams", html=True, check_dir=False), name="learning-diagrams")
 app.mount("/learn", StaticFiles(directory=REPLAY_ROOT, html=True, check_dir=False), name="learning-replay")
 app.mount("/assets", StaticFiles(directory=SERVICE_DIR / "static", check_dir=False), name="assets")

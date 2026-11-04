@@ -266,6 +266,13 @@
     for (let classIndex = 0; classIndex < 4; classIndex += 1) svg += `<circle cx="445" cy="${classY[classIndex]}" r="22" fill="#e7defb" /><text x="445" y="${classY[classIndex] - 3}" text-anchor="middle">${classIndex}</text><text class="small" x="445" y="${classY[classIndex] + 11}" text-anchor="middle">${labels[classIndex]}</text><text class="small" x="480" y="${classY[classIndex] - 3}" text-anchor="start">z=${formatPlain(logits[classIndex], 4)}</text><text class="small" x="480" y="${classY[classIndex] + 11}" text-anchor="start">p=${formatPlain(probabilities[classIndex], 4)}</text>`;
     svg += `<text class="small" x="140" y="292" text-anchor="middle">pooled features a[j]</text><text class="small" x="445" y="292" text-anchor="middle">class logits z[i] -> softmax p[i]</text></svg>`;
     $("network-diagram").innerHTML = svg;
+    const parameter = update.parameters["classifier.weight"];
+    const first = state.trace.updates[0].parameters["classifier.weight"].before[state.classIndex][0];
+    const w = parameter.before[state.classIndex][0];
+    const gradient = parameter.gradient[state.classIndex][0];
+    const next = parameter.after[state.classIndex][0];
+    $("classifier-weight-timeline").textContent = `Selected connection: classifier.weight[${state.classIndex},0] = W[${state.classIndex},0], from a[0] to ${labels[state.classIndex]}. First recorded value: ${formatNumber(first)}. Current saved step: a[0] = ${formatNumber(features[0])} (calculated feature), weight = ${formatNumber(w)} (stored parameter), product = ${formatNumber(features[0] * w)}. SGD: ${formatNumber(w)} - ${formatPlain(state.trace.learning_rate)} × (${formatNumber(gradient)}) = ${formatNumber(next)}. These are recorded before/gradient/after values; changing the selected image does not change the shared weights.`;
+
     $("classifier-meta").textContent = `${String.fromCharCode(65 + state.imageIndex)} / ${update.image_ids[state.imageIndex]}`;
     $("features-list").innerHTML = features.map((value, index) => `<div class="value-chip"><span>a[${index}]</span><strong>${formatNumber(value)}</strong></div>`).join("");
     const matrixRows = weights.map((row) => `<div>[ ${row.map((value) => formatPlain(value)).join("  ")} ]</div>`).join("");
@@ -512,6 +519,11 @@
     $("row-select").addEventListener("change", (event) => { state.outputRow = Number(event.target.value); render(); });
     $("column-select").addEventListener("change", (event) => { state.outputColumn = Number(event.target.value); render(); });
     $("class-select").addEventListener("change", (event) => { state.classIndex = Number(event.target.value); render(); });
+    $("inspect-classifier-weight").addEventListener("click", () => {
+      state.selectedParameter = parameterKey("classifier.weight", [state.classIndex, 0]);
+      render();
+      $("parameter-equation").scrollIntoView({block: "center"});
+    });
     $("parameter-select").addEventListener("change", (event) => { state.selectedParameter = event.target.value; render(); });
     $("trace-file").addEventListener("change", (event) => {
       const file = event.target.files[0];

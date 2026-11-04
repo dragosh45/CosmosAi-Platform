@@ -1,0 +1,39 @@
+{
+  "interpolation": {
+    "left": 2,
+    "right": 5,
+    "missing": 2,
+    "filled": [
+      3.0,
+      4.0
+    ]
+  },
+  "normalization": {
+    "training": [
+      1,
+      2,
+      3
+    ],
+    "readings": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "mean": 2,
+    "std": 1.0,
+    "normalized": [
+      -1.0,
+      0.0,
+      1.0,
+      3.0
+    ]
+  },
+  "lab_display_example": {
+    "current": 3.9725,
+    "mean": 1.7913,
+    "std": 1.4243,
+    "normalized": 1.5314189426384894
+  },
+  "note": "Tiny teaching examples; lab display calculation uses rounded student values."
+}

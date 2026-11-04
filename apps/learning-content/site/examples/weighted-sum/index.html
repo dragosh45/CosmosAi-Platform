@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One neuron: weights, bias and ReLU | CosmosAI</title>
+<link rel="stylesheet" href="/assets/learning.css"><script src="example.js" defer></script></head>
+<body><header class="site-header"><nav aria-label="Main navigation"><a href="/">Galaxy Classifier</a><a href="/learn/">CNN Learning Replay</a><a href="/learn/concepts/">Concepts Explanations</a><a href="/learn/courses/">Learn per course</a><a href="/learn/diagrams/">Diagrams</a></nav></header>
+<main><p class="eyebrow">WORKED EXAMPLE / ONE NEURON</p><h1>Put numbers into the formula</h1>
+<p>A neuron multiplies each input by its weight, adds a bias, then applies an activation.</p>
+<article class="concept-content"><p><strong>Weighted sum:</strong> <code>z = x₁w₁ + x₂w₂ + x₃w₃ + b</code></p>
+<p><strong>ReLU activation:</strong> <code>a = max(0, z)</code></p>
+<form id="neuron-form"><div class="formula-inputs">
+<label>Input x₁<input name="x0" type="number" step="any" required value="2"></label>
+<label>Weight w₁<input name="w0" type="number" step="any" required value="0.4"></label>
+<label>Input x₂<input name="x1" type="number" step="any" required value="-1"></label>
+<label>Weight w₂<input name="w1" type="number" step="any" required value="0.2"></label>
+<label>Input x₃<input name="x2" type="number" step="any" required value="0.5"></label>
+<label>Weight w₃<input name="w2" type="number" step="any" required value="-0.6"></label>
+<label>Bias b<input name="bias" type="number" step="any" required value="0.1"></label>
+</div><p><button type="submit">Calculate</button> <button type="reset">Reset example</button></p></form>
+<div id="calculation" class="formula-result" role="status" aria-live="polite">Loading the reproducible example…</div>
+<p>Change a weight or bias and calculate again. Try a negative bias large enough to make z negative: ReLU then returns zero.</p>
+<p>This calculates a forward pass. It does not train a model or update weights automatically.</p>
+<p><a href="/learn/concepts/#what-a-neuron-does">Read the neuron concept</a> · <a href="/learn/concepts/#weights">Read about weights</a> · <a href="/learn/#classifier-matrix">See the CNN's real saved weight matrix</a> · <a href="trace.json">Download the default numerical trace</a></p>
+<p class="muted">The default trace is reproduced by scripts/examples/weighted_sum.py. Calculations run in this browser without AI or a model service.</p></article></main></body></html>

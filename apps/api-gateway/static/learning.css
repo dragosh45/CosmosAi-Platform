@@ -33,6 +33,22 @@ input[type=search], select { border: 1px solid #b8c8ce; background: white; borde
 .muted { color: var(--muted); font-size: 12px; }
 #search-status { min-height: 18px; margin: 8px 0; }
 .concept-content { min-width: 0; background: #fff; padding: 28px 32px; border-top: 3px solid var(--green); }
+.concept-figure { display: block; margin: 20px 0; }
+.concept-figure img { display: block; max-width: 100%; height: auto; }
+.image-credit { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+.contents select { margin: 6px 0 12px; }
+.contents label:not(:first-child) { margin-top: 12px; }
+.course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 24px; margin: 28px 0; }
+.course-card, .lesson-card, .study-materials { background: white; border: 1px solid var(--line); border-top: 3px solid var(--green); padding: 24px; margin: 24px 0; }
+.course-card h2 { margin-top: 8px; }
+.lesson-card h3 { margin-top: 18px; }
+.concept-figure > a { display: block; }
+.concept-content details { border-top: 1px solid var(--line); padding: 16px 0; margin-top: 24px; }
+.concept-content summary { cursor: pointer; color: var(--green); font-weight: 650; }
+.formula-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
+.formula-inputs label { display: grid; gap: 6px; }
+.formula-inputs input { width: 100%; min-width: 0; padding: 8px; }
+.formula-result { margin: 24px 0; padding: 20px; background: #edf7f1; font-size: 18px; }
 article { font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
 article h2, article h3 { scroll-margin-top: 130px; }
 article pre { max-width: 100%; overflow-x: auto; padding: 16px; background: #f1f5f7; border-left: 3px solid #b6cbd6; font-size: 13px; line-height: 1.6; }

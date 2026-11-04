@@ -45,7 +45,7 @@ def test_generated_navigation_and_anchors_are_resolvable():
     for page in [SITE / "concepts/index.html", SITE / "diagrams/index.html",
                  ROOT / "apps/learning-replay/index.html", ROOT / "apps/api-gateway/static/index.html"]:
         document = Links(page.read_text())
-        for path in ("/", "/learn/", "/learn/concepts/", "/learn/diagrams/"):
+        for path in ("/", "/learn/", "/learn/concepts/", "/learn/courses/", "/learn/diagrams/"):
             assert path in document.hrefs
         for href in document.hrefs:
             parsed = urlsplit(href)
@@ -83,9 +83,19 @@ def test_bundle_has_no_workstation_links_or_private_files():
     for path in SITE.rglob("*"):
         if not path.is_file():
             continue
-        assert path.suffix in {".html", ".json", ".svg", ".excalidraw"}
+        assert path.suffix in {".html", ".json", ".svg", ".excalidraw", ".png", ".js"}
+        if path.suffix == ".png":
+            summary = json.loads((SITE / "concepts/build.json").read_text())
+            records = {item["url"]: item for item in summary.get("images", [])}
+            record = records["/learn/" + str(path.relative_to(SITE))]
+            assert record["license"] in {"own", "cc-by", "public-domain"}
+            manifest = json.loads((ROOT / "apps/learning-content/content.json").read_text())
+            assert any(item["src"] == record["src"] and item["license"] == record["license"]
+                       for item in manifest.get("images", []))
+            assert hashlib.sha256(path.read_bytes()).hexdigest() == record["sha256"]
+            continue
         content = path.read_text()
-        for forbidden in ("vscode://", "obsidian://", "/home/", "/opt/projects/", "file://"):
+        for forbidden in ("vscode://", "obsidian://", "/home/", "/Users/", "/opt/projects/", "file://"):
             assert forbidden not in content, (path, forbidden)
 
 
@@ -132,3 +142,117 @@ def test_scene_export_strips_local_state_and_rewrites_links():
     assert original["elements"][0]["link"].endswith("#^gradient")
     with pytest.raises(ValueError, match="review"):
         module.sanitize_scene(dict(original, files={"image": {}}), {"gradient": "gradient"}, set())
+
+
+@pytest.fixture
+def image_build(tmp_path):
+    from PIL import Image
+    from PIL.PngImagePlugin import PngInfo
+
+    docs = tmp_path / "docs"
+    image_dir = docs / "learning_images"
+    image_dir.mkdir(parents=True)
+    private = PngInfo()
+    private.add_text("Comment", "private authoring metadata")
+    image = Image.new("RGB", (2000, 1000), "green")
+    exif = Image.Exif()
+    exif[0x013B] = "private author"
+    image.save(image_dir / "own.png", pnginfo=private, exif=exif)
+    image.save(image_dir / "unapproved.png")
+    source = docs / "concepts.md"
+    source.write_text('## Example ^example\n\n![A labelled example](learning_images/own.png)\n')
+    entry = {"src": "learning_images/own.png", "license": "own", "concept": "example"}
+    manifest = {"concepts": "docs/concepts.md", "diagrams": [], "images": [entry]}
+    manifest_path = tmp_path / "content.json"
+
+    def run():
+        manifest_path.write_text(json.dumps(manifest))
+        return builder().build(tmp_path / "site", tmp_path, manifest_path)
+
+    return tmp_path, source, manifest, run
+
+
+def test_image_build_strips_metadata_limits_dimensions_and_removes_revoked_images(image_build):
+    from PIL import Image
+
+    root, source, manifest, run = image_build
+    summary = run()
+    files = list((root / "site/concepts/img").glob("*"))
+    assert len(files) == 1
+    with Image.open(files[0]) as image:
+        assert image.size == (1600, 800)
+        assert not image.getexif()
+        assert "Comment" not in image.info
+    html = (root / "site/concepts/index.html").read_text()
+    assert summary["images"][0]["url"] in html
+    assert 'alt="A labelled example"' in html
+    assert "Original diagram (own)" in html
+    assert "unapproved.png" not in html
+    manifest["images"] = []
+    source.write_text("## Example ^example\n\nNo image.\n")
+    run()
+    assert not list((root / "site/concepts/img").glob("*"))
+
+
+@pytest.mark.parametrize("license_name", ["course", "unknown", "copyright", ""])
+def test_image_build_refuses_unapproved_licenses(image_build, license_name):
+    _, _, manifest, run = image_build
+    manifest["images"][0]["license"] = license_name
+    with pytest.raises(ValueError, match="license"):
+        run()
+
+
+def test_image_build_rejects_unlisted_or_wrong_concept_images(image_build):
+    _, source, manifest, run = image_build
+    source.write_text('## Example ^example\n\n![secret](learning_images/unapproved.png)\n')
+    with pytest.raises(ValueError, match="not allowlisted"):
+        run()
+    source.write_text('## Example ^example\n\n## Other ^other\n\n![moved](learning_images/own.png)\n')
+    with pytest.raises(ValueError, match="not allowlisted"):
+        run()
+
+
+@pytest.mark.parametrize("src", ["../private.png", "/tmp/private.png", "learning_images/../private.png",
+                                 "https://example.com/private.png", "learning_images/./own.png"])
+def test_image_build_rejects_unsafe_source_paths(image_build, src):
+    _, _, manifest, run = image_build
+    manifest["images"][0]["src"] = src
+    with pytest.raises(ValueError, match="relative learning_images"):
+        run()
+
+
+def test_cc_by_requires_visible_credit_and_source(image_build):
+    root, _, manifest, run = image_build
+    entry = manifest["images"][0]
+    entry["license"] = "cc-by"
+    with pytest.raises(ValueError, match="attribution"):
+        run()
+    entry.update(attribution="Example Author, CC BY 4.0", source_url="https://example.com/diagram")
+    run()
+    html = (root / "site/concepts/index.html").read_text()
+    assert "Example Author, CC BY 4.0" in html
+    assert 'href="https://example.com/diagram"' in html
+    entry["source_url"] = "javascript:alert(1)"
+    with pytest.raises(ValueError, match="HTTP URL"):
+        run()
+
+
+def test_image_build_rejects_symlinks_outside_image_directory(image_build):
+    root, _, _, run = image_build
+    image = root / "docs/learning_images/own.png"
+    image.rename(root / "private.png")
+    image.symlink_to(root / "private.png")
+    with pytest.raises(ValueError, match="escapes"):
+        run()
+
+
+@pytest.mark.parametrize("limit,expected", [("MAX_IMAGE_BYTES", "size limit"),
+                                         ("MAX_IMAGE_PIXELS", "megapixel"),
+                                         ("MAX_PUBLIC_IMAGE_BYTES", "Public image")])
+def test_image_resource_limits_fail_before_publication(image_build, monkeypatch, limit, expected):
+    root, _, manifest, _ = image_build
+    module = builder()
+    monkeypatch.setattr(module, limit, 1)
+    with pytest.raises(ValueError, match=expected):
+        module.prepare_images(manifest["images"], root, {"example": "example"})
+    assert not (root / "site").exists()

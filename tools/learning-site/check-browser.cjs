@@ -9,7 +9,7 @@ const base = process.argv[2] || 'http://127.0.0.1:8080';
 const root = path.resolve(__dirname, '../..');
 
 (async () => {
-  const browser = await chromium.launch({headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage']});
+  const browser = await chromium.launch({executablePath: process.env.COSMOSAI_CHROME || undefined, headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage']});
   try {
     const page = await browser.newPage({viewport: {width: 1440, height: 1000}});
     const errors = [], external = [], modelCalls = [];
@@ -66,6 +66,42 @@ const root = path.resolve(__dirname, '../..');
       }, url);
       assert.ok(pixels > 1000, `${item.id} is blank: ${pixels}`);
     }
+    // Check editable examples in the packaged release, not a local study overlay.
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({width, height: 1000});
+      await page.goto(base + '/learn/courses/');
+      for (const course of ['AIA', 'AIMLA', 'MAL']) {
+        assert.ok(await page.locator(`a[href="/learn/courses/${course}/"]`).count() >= 1);
+      }
+      await page.goto(base + '/learn/courses/MAL/');
+      await page.locator('a[href="/learn/examples/cnn-fundamentals/"]').click();
+      assert.match(await page.locator('#products').innerText(), /24/);
+      await page.getByRole('button', {name: 'Output (1,1): 48', exact: true}).click();
+      await page.locator('#bias').fill('2');
+      await page.getByRole('button', {name: 'Calculate', exact: true}).click();
+      assert.match(await page.locator('#products').innerText(), /= 50/);
+      await page.locator('#rf-depth').selectOption('3');
+      assert.match(await page.locator('#rf-result').innerText(), /7×7/);
+      await page.locator('#rf-stride').selectOption('2');
+      assert.match(await page.locator('#rf-result').innerText(), /15×15/);
+      await page.locator('img[src="receptive-fields.svg"]').evaluate(el => el.decode());
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      await page.goto(base + '/learn/examples/weighted-sum/');
+      await page.locator('[name="bias"]').fill('-10');
+      await page.getByRole('button', {name: 'Calculate', exact: true}).click();
+      assert.match(await page.locator('#calculation').innerText(), /0/);
+      await page.goto(base + '/learn/examples/lab1-preprocessing/');
+      assert.match(await page.locator('#gap-result').innerText(), /3/);
+      await page.locator('[name="reading"]').fill('-100');
+      await page.getByRole('button', {name: 'Show the calculation', exact: true}).click();
+      assert.match(await page.locator('#norm-result').innerText(), /-102/);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      await page.goto(base + '/learn/');
+      assert.match(await page.locator('#classifier-weight-timeline').innerText(), /0.119161/);
+      await page.locator('#inspect-classifier-weight').click();
+      assert.equal(await page.locator('#parameter-select').inputValue(), 'classifier.weight|0,0');
+      assert.match(await page.locator('#parameter-equation').innerText(), /0.118419/);
+    }
     assert.equal(modelCalls.length, 0, 'Learning pages must not run inference');
     const screenshotDir = process.env.COSMOSAI_SCREENSHOTS || '/tmp/cosmosai-learning-check';
     fs.mkdirSync(screenshotDir, {recursive: true});
@@ -89,6 +125,6 @@ const root = path.resolve(__dirname, '../..');
     assert.match(await page.locator('#trace-status').innerText(), /Trace loaded/);
     assert.deepEqual(external, []);
     assert.deepEqual(errors, []);
-    console.log(`PASS: replay return (custom trace), concepts search, ${catalog.length} SVG pixel checks, four pages at four widths, standalone replay. Screenshots: ${screenshotDir}`);
+    console.log(`PASS: replay return (custom trace), concepts search, ${catalog.length} SVG pixel checks, four pages at four widths, course navigation and three editable examples at two widths, classifier weight origin, standalone replay. Screenshots: ${screenshotDir}`);
   } finally { await browser.close(); }
 })().catch(error => {console.error(error); process.exitCode = 1;});

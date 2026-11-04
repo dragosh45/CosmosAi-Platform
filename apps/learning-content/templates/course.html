@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% set active = 'courses' %}
+{% block title %}{{ course.id }} — {{ course.title }}{% endblock %}{% block page %}course{% endblock %}
+{% block body %}
+<p><a href="/learn/courses/">← Learn per course</a></p>
+<div class="page-heading"><div><p class="eyebrow">{{ course.id }}</p><h1>{{ course.title }}</h1>
+<p>Study one lesson at a time, connecting explanations with examples.</p></div></div>
+{% if private_study %}<p class="source-note"><strong>Local study library.</strong> Selected course materials and results are available below. New explanations are shown locally for review.</p>{% endif %}
+{% if course.study_materials %}<section class="study-materials"><h2>Your materials</h2><ul>{% for item in course.study_materials %}
+<li><a href="{{ item.url }}">{{ item.title }}</a>{% if item.note %} <span class="muted">— {{ item.note }}</span>{% endif %}</li>{% endfor %}</ul></section>{% endif %}
+{% for lecture in course.lectures %}<article class="lesson-card" id="{{ lecture.id }}">
+  <p class="eyebrow">{{ lecture.id }}</p><h2>{{ lecture.title }}</h2>
+  <h3>Concepts</h3>{% if lecture.concepts %}<ul>{% for concept in lecture.concepts %}<li><a href="/learn/concepts/?course={{ course.id }}#{{ concept.id }}">{{ concept.title }}</a></li>{% endfor %}</ul>
+{% else %}<p>No concepts mapped yet. Add your notes when you study this material.</p>{% endif %}
+{% if lecture.examples %}<h3>Practical examples</h3><ul>{% for example in lecture.examples %}<li><a href="{{ example.url }}">{{ example.title }}</a></li>{% endfor %}</ul>{% endif %}
+</article>{% endfor %}
+<p><a href="/learn/concepts/?course={{ course.id }}">Filter Concepts by {{ course.id }}</a></p>
+{% endblock %}

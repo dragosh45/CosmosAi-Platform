@@ -54,7 +54,8 @@ def test_cross_machine_context_entry_points_exist():
 
 def test_relative_markdown_links_resolve_in_a_fresh_clone():
     documents = [ROOT / "README.md", ROOT / "AGENTS.md", ROOT / "deploy/README.md"]
-    documents.extend((ROOT / "docs").rglob("*.md"))
+    # The independent private docs repo may link to other local projects.
+    # A public checkout/container must not require those private dependencies.
     documents.extend((ROOT / "data").rglob("*.md"))
     documents.extend((ROOT / "models").rglob("*.md"))
 

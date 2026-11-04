@@ -1,0 +1,17 @@
+# Cloud Build receives application sources, never the private authoring tree.
+.gcloudignore
+.git
+.git/**
+#!include:.gitignore
+docs/
+.venv/
+.env
+.env.*
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+assignment-property-dashboard/
+models/
+datasets/
+mlruns/
+.DS_Store
