@@ -73,6 +73,10 @@ const root = path.resolve(__dirname, '../..');
       for (const course of ['AIA', 'AIMLA', 'MAL']) {
         assert.ok(await page.locator(`a[href="/learn/courses/${course}/"]`).count() >= 1);
       }
+      await page.goto(base + '/learn/concepts/?course=MAL#mal-cnn-weight-origin');
+      assert.equal(await page.locator('#course-filter').inputValue(), 'MAL');
+      assert.equal(await page.locator('#concept-topics a:visible').count(), 9);
+      assert.equal(await page.locator('#mal-cnn-weight-origin').isVisible(), true);
       await page.goto(base + '/learn/courses/MAL/');
       await page.locator('a[href="/learn/examples/cnn-fundamentals/"]').click();
       assert.match(await page.locator('#products').innerText(), /24/);

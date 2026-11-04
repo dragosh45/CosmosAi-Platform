@@ -23,6 +23,9 @@ def test_course_pages_link_to_existing_anchors_and_worked_examples():
     concepts = Links((SITE / "concepts/index.html").read_text())
     courses = json.loads((SITE / "learning_map.json").read_text())["courses"]
     assert {course["id"] for course in courses} == {"AIA", "AIMLA", "MAL"}
+    mal = next(course for course in courses if course["id"] == "MAL")
+    assert len(mal["lectures"][0]["concepts"]) == 9
+    assert all(concept["id"].startswith("mal-cnn-") for concept in mal["lectures"][0]["concepts"])
     for course in courses:
         page = SITE / "courses" / course["id"] / "index.html"
         assert page.is_file()

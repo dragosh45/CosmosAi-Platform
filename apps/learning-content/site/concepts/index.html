@@ -21,7 +21,7 @@
 <p class="source-note">From the project's concepts notes. Examples span earlier milestones; current model results are on the Galaxy Classifier page.</p>
 <div class="reading-layout">
   <aside class="contents"><label for="concept-search">Search concepts</label><input id="concept-search" type="search" placeholder="Gradient, pooling, loss..." autocomplete="off">
-    <label for="course-filter">Course</label><select id="course-filter"><option value="">All concepts</option><option value="AIA" data-topics='["dataset-labels-teach-the-final-goal", "model", "neural-network", "prediction-flow", "train-validation-test"]'>AIA</option><option value="AIMLA" data-topics='[]'>AIMLA</option><option value="MAL" data-topics='["concept-cnn-filter-weights", "concept-pytorch-training-step", "reading-the-cnn-diagram-from-pixels-to-classes"]'>MAL</option></select>
+    <label for="course-filter">Course</label><select id="course-filter"><option value="">All concepts</option><option value="AIA" data-topics='["dataset-labels-teach-the-final-goal", "model", "neural-network", "prediction-flow", "train-validation-test"]'>AIA</option><option value="AIMLA" data-topics='[]'>AIMLA</option><option value="MAL" data-topics='["mal-cnn-blocks", "mal-cnn-channels", "mal-cnn-equivariance", "mal-cnn-locality", "mal-cnn-output-size", "mal-cnn-pointwise-pooling", "mal-cnn-reading-visualizations", "mal-cnn-receptive-field", "mal-cnn-weight-origin"]'>MAL</option></select>
     <p id="search-status" role="status" class="muted"></p>
     <nav aria-label="Concept topics" id="concept-topics">
       <a href="#model" data-topic="model" class="level-2">Model</a>
@@ -172,7 +172,16 @@
       <a href="#concurrency-cpu-and-scale-to-zero" data-topic="concept-cloud-run-deployment" class="level-3">Concurrency, CPU, And Scale-To-Zero</a>
       <a href="#private-first-and-public-iam" data-topic="concept-cloud-run-deployment" class="level-3">Private First And Public IAM</a>
       <a href="#deployment-script-flow" data-topic="concept-cloud-run-deployment" class="level-3">Deployment Script Flow</a>
-      <a href="#budget-alert-versus-spending-cap" data-topic="concept-cloud-run-deployment" class="level-3">Budget Alert Versus Spending Cap</a></nav>
+      <a href="#budget-alert-versus-spending-cap" data-topic="concept-cloud-run-deployment" class="level-3">Budget Alert Versus Spending Cap</a>
+      <a href="#mal-cnn-locality" data-topic="mal-cnn-locality" class="level-2">CNN Locality And Shared Parameters</a>
+      <a href="#mal-cnn-output-size" data-topic="mal-cnn-output-size" class="level-2">CNN Output Size With Padding And Stride</a>
+      <a href="#mal-cnn-channels" data-topic="mal-cnn-channels" class="level-2">CNN Input Channels And Output Feature Maps</a>
+      <a href="#mal-cnn-receptive-field" data-topic="mal-cnn-receptive-field" class="level-2">CNN Receptive Fields And Stacked Kernels</a>
+      <a href="#mal-cnn-equivariance" data-topic="mal-cnn-equivariance" class="level-2">CNN Equivariance And Invariance</a>
+      <a href="#mal-cnn-pointwise-pooling" data-topic="mal-cnn-pointwise-pooling" class="level-2">CNN Pointwise Convolution And Pooling</a>
+      <a href="#mal-cnn-blocks" data-topic="mal-cnn-blocks" class="level-2">CNN Blocks And Representation Learning</a>
+      <a href="#mal-cnn-weight-origin" data-topic="mal-cnn-weight-origin" class="level-2">CNN Stored Weights Versus Calculated Features</a>
+      <a href="#mal-cnn-reading-visualizations" data-topic="mal-cnn-reading-visualizations" class="level-2">Reading CNN Visualisations And Colour Scales</a></nav>
   </aside>
   <div class="concept-content"><p id="course-empty" hidden>No concepts are mapped to this course yet. <a href="/learn/courses/">Open Learn per course</a> to find your course materials.</p><article data-topic="model"><h2 id="model">Model</h2>
 <p>A model is the thing that makes predictions.</p>
@@ -4316,7 +4325,73 @@ and deploys a new tag.</p>
 Cloud Run or Artifact Registry automatically. Cost control therefore combines
 alerts with scale-to-zero, maximum one instance, bounded concurrency, periodic
 billing review and the ability to make the service private or delete it.</p>
-</article></div>
+</article><article data-topic="mal-cnn-locality"><h2 id="mal-cnn-locality">CNN Locality And Shared Parameters</h2>
+<p><strong>In plain English:</strong> use a small detector on a local patch, then reuse that same detector everywhere. A dense layer has separate weights for all its input connections; a convolution shares its filter across positions.</p>
+<p><strong>Our example:</strong> each of our four RGB filters uses 27 weights plus one bias. Those weights are reused over all positions; a larger image creates more responses, not more convolution weights.</p>
+<p><strong>Try it:</strong> <span class="source-reference">inspect a sliding filter</span>. Compare with <span class="source-reference">our saved parameters</span>.</p>
+<p>Lecture connection: MAL Lecture 4, pages 2–3 and 7–9; transcript 19:00–22:49. Additional study wording, not a quotation.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li></ul></aside></article><article data-topic="mal-cnn-output-size"><h2 id="mal-cnn-output-size">CNN Output Size With Padding And Stride</h2>
+<p><strong>Meaning:</strong> padding extends the border; stride controls the distance between successive window positions. Valid convolution means no padding.</p>
+<p><strong>Formula:</strong> <code>Hout = floor((H + 2P - K)/S) + 1</code>, likewise for width. Assumes dilation one, symmetric padding and a square kernel.</p>
+<p><strong>Worked example:</strong> H=7, K=3, P=1, S=2 gives floor((7+2-3)/2)+1=4. H=8, K=3, P=0, S=2 gives 3, not 4.</p>
+<p><strong>Our CNN:</strong> K3/P1/S1 preserves spatial size. <span class="source-reference">Change the settings</span>.</p>
+<p>The lecturer explicitly identifies these calculations as written-exam preparation at 31:34. Even kernels can preserve size using asymmetric padding; the odd-kernel rule assumes symmetric padding and stride one.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li></ul></aside></article><article data-topic="mal-cnn-channels"><h2 id="mal-cnn-channels">CNN Input Channels And Output Feature Maps</h2>
+<p>For a convolution cell, multiply matching patch/kernel positions element by element and add the products; this is not ordinary row-by-column matrix multiplication between the 2D arrays. One output filter has a separate kernel slice for every input channel. Multiply within each channel, sum all contributions, then add one output bias. Each output filter creates one map; map channels are not automatically classes.</p>
+<p><strong>Formula:</strong> <code>parameters = Cout * (Kh * Kw * Cin + 1)</code> for groups=1 with bias.</p>
+<p><strong>Our CNN:</strong> RGB means Cin=3. Four K3 filters have 4*(9*3+1)=112 parameters. Linear 4→4 adds 20, giving 132 overall.</p>
+<p><strong>Try it:</strong> <span class="source-reference">two-channel sum</span>, <span class="source-reference">the saved model's weight inventory</span>.</p>
+<p>Lecture pages 13–15, transcript 32:31–35:29. The page-14 bottom-right channel contributions 14 and 34 sum to 48, although the combined slide entry shows 45.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li></ul></aside></article><article data-topic="mal-cnn-receptive-field"><h2 id="mal-cnn-receptive-field">CNN Receptive Fields And Stacked Kernels</h2>
+<p>A receptive field is the region of the original input that can affect a selected output. More layers can combine information from a larger region.</p>
+<p><strong>Stride 1</strong> means move the window one cell per step on the current layer's input. Stride 2 moves two cells per step. <strong>Stacking</strong> means feed one convolution layer's output maps into another convolution layer, with separate weights in each layer.</p>
+<p>A second 3×3 layer reads nine neighbouring first-layer responses. Their overlapping original-input patches together cover 5×5. For stride-one K3 layers without dilation: one layer covers 3×3, two cover 5×5, three cover 7×7. These are original-input coverage sizes, not output-map sizes. Earlier strides also change the spacing between receptive-field locations.</p>
+<p><span class="source-reference">See the diagram and depth/stride controls</span>.</p>
+<p>With c channels throughout, two K3 layers have 18c² weights, versus 25c² for one K5. Biases excluded. The same nominal receptive-field size does not mean the same function, especially with nonlinear activations between layers.</p>
+<p><strong>Our example:</strong> the convolution sees 3×3; subsequent global pooling aggregates all map positions. Our model has one convolution, so it does not demonstrate a deep feature hierarchy.</p>
+<p>Lecture pages 9, 27–29; transcript 24:00–26:11. <span class="source-reference">Practise the distinction</span>.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li></ul></aside></article><article data-topic="mal-cnn-equivariance"><h2 id="mal-cnn-equivariance">CNN Equivariance And Invariance</h2>
+<p><strong>Equivariance:</strong> shift the input, and the response map shifts correspondingly. <strong>Invariance:</strong> shift the input, and the output stays the same. These are different properties.</p>
+<p>Shared convolution filters support translation equivariance under suitable assumptions. Stride, padding and finite boundaries can limit the simple relationship. Pooling can reduce sensitivity to position, but does not guarantee identical results for every possible shift.</p>
+<p><strong>Our CNN:</strong> global average pooling compresses each response map to a mean, discarding its explicit position layout. That alone is not proof of complete translation invariance.</p>
+<p>Lecture pages 3 and 17; transcript 4:34–5:34 and 39:50–42:24. <span class="source-reference">Compare definitions beside the example</span>.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li></ul></aside></article><article data-topic="mal-cnn-pointwise-pooling"><h2 id="mal-cnn-pointwise-pooling">CNN Pointwise Convolution And Pooling</h2>
+<p><strong>Pointwise 1×1 convolution:</strong> learn a mixture of the input channels independently at each position. With eight input and sixteen output channels, there are 16*(8+1)=144 parameters including bias. With stride one it preserves height/width.</p>
+<p><strong>Pooling:</strong> summarise a region without learned weights. Max over [1,3,2,8] is 8; average is 3.5. Global average pooling gives one value per entire map. Window/stride are settings, not trained parameters.</p>
+<p><strong>Our CNN:</strong> uses global average pooling, not a 1×1 convolution or local max pooling. Flatten rearranges the four pooled numbers for Linear; it learns no parameters.</p>
+<p>Lecture pages 16–20; transcript 35:29–44:19. <span class="source-reference">Compare pooling outputs</span>.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li></ul></aside></article><article data-topic="mal-cnn-blocks"><h2 id="mal-cnn-blocks">CNN Blocks And Representation Learning</h2>
+<p>Representation learning means learning useful feature detectors for the task, rather than supplying all descriptors by hand. Deeper CNNs compose simpler responses into more complex representations. Not every learned filter has an obvious human-readable meaning.</p>
+<p>A block groups operations into a reusable component. LeNet illustrates convolution/pooling/dense classification; AlexNet uses a deeper architecture; VGG stacks small convolutions with nonlinearities before pooling. These are comparison architectures, not the architecture of our tiny CNN.</p>
+<p><strong>Our project:</strong> one Conv2d → ReLU → global average pooling → Flatten → Linear. Four features feed four logits. <span class="source-reference">Trace these shapes</span>, then <span class="source-reference">follow the loss</span>.</p>
+<p>Lecture pages 21–31; transcript 45:16–59:49. Later slides extend beyond the supplied recording. AlexNet's common eight learned layers comprise five convolutional plus three fully connected layers.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li></ul></aside></article><article data-topic="mal-cnn-weight-origin"><h2 id="mal-cnn-weight-origin">CNN Stored Weights Versus Calculated Features</h2>
+<p>Kernel slices are weights, one slice per input channel of a filter. Convolution filters and the final Linear classifier have separate parameter tensors. They are usually randomly initialised before training, then adjusted using loss gradients. Seed 7 makes our initialisation reproducible; weights are not redrawn for every image.</p>
+<p>A response and a pooled feature are calculated from an input using the current parameters. In our first saved step, filter 0's selected response +0.037116 is one of nine after-ReLU values averaged to produce a[0] ≈ 0.020664. That feature then enters the classifier.</p>
+<p>The line labelled +0.119161 is classifier.weight[0,0], not a pooled value or a convolution weight. In the bundled first step it is an initial parameter: a[0] × W[0,0] ≈ 0.002462 is one contribution to the elliptical logit. The full logit also uses three other feature weights and a class bias.</p>
+<p>After the first batch's gradient +0.007420219 and learning rate 0.1, SGD changes this weight to approximately +0.118419409. This next value is calculated by an optimizer update; the starting value was random initialisation. <span class="source-reference">Inspect its recorded origin and update</span>.</p>
+<p>The small integer weights in the two-channel arithmetic example were chosen manually. Keep those teaching values distinct from the saved model parameters.</p>
+<p>Both kernel and classifier parameters receive gradients from backpropagation, and plain SGD applies the same update rule separately to each one: <code>new = old - learning_rate * gradient</code>. Classifier gradients depend on pooled features and loss signals; kernel gradients include all spatial uses of shared weights and batch contributions. Backpropagation calculates; the optimizer changes parameters. Adam uses gradients too, with a different update rule.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li><li><a href="/learn/#parameter-inventory">CNN Replay: inspect the exact weights</a></li></ul></aside></article><article data-topic="mal-cnn-reading-visualizations"><h2 id="mal-cnn-reading-visualizations">Reading CNN Visualisations And Colour Scales</h2>
+<p>A small square can display an entire feature map, not a single scalar. Select
+one location to inspect its response. Kernel weights are shared across positions;
+output-map count, map-cell count and parameter count are different quantities.</p>
+<p>CNN Explainer's first layer has ten RGB output filters, containing thirty 2D
+channel slices: ten filters × three input channels. This is 280 parameters,
+including ten biases, rather than thirty output feature maps. Our four RGB
+filters contain twelve channel slices and 112 parameters.</p>
+<p>Read the legend before interpreting a colour: it might encode an activation,
+a signed weight, a logit or a probability. Separately normalised maps may use
+the same colour for different numeric magnitudes. A bright region is not itself
+proof that the model recognises a particular object or class.</p>
+<p>Pooling has no learned parameters, but reducing the map area can shorten a
+subsequent flattened vector and reduce the size of a following dense weight
+matrix. Our global average pooling already gives exactly four input features to
+its classifier, independently of spatial size.</p>
+<p><a href="https://poloclub.github.io/cnn-explainer/" rel="noopener noreferrer">Guided external example</a> ·
+<span class="source-reference">Our exact maps and weights</span>.
+The local MAL course materials include a comparison and a guided visit.</p>
+<aside class="formula-result"><strong>Try it with numbers</strong><ul><li><a href="/learn/examples/cnn-fundamentals/">CNN: sliding filters, shapes and parameter counts</a></li></ul></aside></article></div>
 </div>
 </main>
   <footer>CosmosAI / Learning notes <a class="return-replay" href="/learn/?resume=1" hidden>Return to selected replay calculation</a></footer>

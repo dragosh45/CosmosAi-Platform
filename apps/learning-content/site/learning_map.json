@@ -105,20 +105,40 @@
           "title": "Lecture 4 \u2014 CNN fundamentals",
           "concepts": [
             {
-              "id": "concept-cnn-filter-weights",
-              "title": "CNN Filter Weights And Pixel Importance"
+              "id": "mal-cnn-locality",
+              "title": "CNN Locality And Shared Parameters"
             },
             {
-              "id": "kernel-slices-and-the-center-convolution",
-              "title": "Kernel Slices And The Center Convolution"
+              "id": "mal-cnn-output-size",
+              "title": "CNN Output Size With Padding And Stride"
             },
             {
-              "id": "sliding-to-nine-positions-relu-and-pooling",
-              "title": "Sliding To Nine Positions, ReLU, And Pooling"
+              "id": "mal-cnn-channels",
+              "title": "CNN Input Channels And Output Feature Maps"
             },
             {
-              "id": "concept-backpropagation",
-              "title": "What Backpropagation Means"
+              "id": "mal-cnn-receptive-field",
+              "title": "CNN Receptive Fields And Stacked Kernels"
+            },
+            {
+              "id": "mal-cnn-equivariance",
+              "title": "CNN Equivariance And Invariance"
+            },
+            {
+              "id": "mal-cnn-pointwise-pooling",
+              "title": "CNN Pointwise Convolution And Pooling"
+            },
+            {
+              "id": "mal-cnn-blocks",
+              "title": "CNN Blocks And Representation Learning"
+            },
+            {
+              "id": "mal-cnn-weight-origin",
+              "title": "CNN Stored Weights Versus Calculated Features"
+            },
+            {
+              "id": "mal-cnn-reading-visualizations",
+              "title": "Reading CNN Visualisations And Colour Scales"
             }
           ],
           "examples": [
@@ -141,9 +161,15 @@
         }
       ],
       "topics": [
-        "concept-cnn-filter-weights",
-        "concept-pytorch-training-step",
-        "reading-the-cnn-diagram-from-pixels-to-classes"
+        "mal-cnn-blocks",
+        "mal-cnn-channels",
+        "mal-cnn-equivariance",
+        "mal-cnn-locality",
+        "mal-cnn-output-size",
+        "mal-cnn-pointwise-pooling",
+        "mal-cnn-reading-visualizations",
+        "mal-cnn-receptive-field",
+        "mal-cnn-weight-origin"
       ]
     }
   ]

@@ -3,9 +3,44 @@
   "images": [],
   "course_map": "docs/syllabus/learning_map.yaml",
   "concept_examples": {
-    "what-a-neuron-does": ["weighted-sum"],
-    "weights": ["weighted-sum", "cnn-replay-weights"],
-    "concept-logits-probabilities-loss": ["cnn-replay-loss"]
+    "what-a-neuron-does": [
+      "weighted-sum"
+    ],
+    "weights": [
+      "weighted-sum",
+      "cnn-replay-weights"
+    ],
+    "concept-logits-probabilities-loss": [
+      "cnn-replay-loss"
+    ],
+    "mal-cnn-locality": [
+      "cnn-fundamentals"
+    ],
+    "mal-cnn-output-size": [
+      "cnn-fundamentals"
+    ],
+    "mal-cnn-channels": [
+      "cnn-fundamentals"
+    ],
+    "mal-cnn-receptive-field": [
+      "cnn-fundamentals"
+    ],
+    "mal-cnn-equivariance": [
+      "cnn-fundamentals"
+    ],
+    "mal-cnn-pointwise-pooling": [
+      "cnn-fundamentals"
+    ],
+    "mal-cnn-blocks": [
+      "cnn-fundamentals"
+    ],
+    "mal-cnn-weight-origin": [
+      "cnn-fundamentals",
+      "cnn-replay-weights"
+    ],
+    "mal-cnn-reading-visualizations": [
+      "cnn-fundamentals"
+    ]
   },
   "diagrams": [
     "neural_network_concepts",
