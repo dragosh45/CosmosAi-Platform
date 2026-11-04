@@ -11,11 +11,10 @@ read -r -p "Type PUBLIC to allow anyone to invoke ${SERVICE}: " confirmation
   exit 1
 }
 
-gcloud run services add-iam-policy-binding "$SERVICE" \
+gcloud run services update "$SERVICE" \
   --project "$PROJECT_ID" \
   --region "$REGION" \
-  --member allUsers \
-  --role roles/run.invoker
+  --no-invoker-iam-check
 
 gcloud run services describe "$SERVICE" --project "$PROJECT_ID" \
   --region "$REGION" --format='value(status.url)'

@@ -51,10 +51,13 @@ def test_cloud_build_publishes_all_three_release_images():
 def test_public_access_requires_a_separate_confirmed_action():
     deploy = read("deploy/cloud-run/deploy.sh")
     publish = read("deploy/cloud-run/make-public.sh")
-    assert "add-iam-policy-binding" not in deploy
+    make_private = read("deploy/cloud-run/make-private.sh")
+    assert "--no-invoker-iam-check" not in deploy
     assert "roles/run.invoker" not in deploy
     assert 'confirmation" == "PUBLIC"' in publish
-    assert "roles/run.invoker" in publish
+    assert "--no-invoker-iam-check" in publish
+    assert "--invoker-iam-check" in make_private
+    assert "remove-iam-policy-binding" in make_private
 
 
 def test_deployment_can_reuse_an_existing_image_tag_after_config_failure():

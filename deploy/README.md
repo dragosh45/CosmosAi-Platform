@@ -52,7 +52,7 @@ persist a new model.
 | Scaling | Minimum `0`, maximum `1` | Scales to zero while idle and bounds demo cost/exposure. The first request can be slower. |
 | Concurrency | `1` request per instance | Bounds simultaneous work for the small CPU model; it is not per-client rate limiting. |
 | CPU | Request-based throttling with startup boost | CPU is primarily allocated while requests run; startup boost helps load PyTorch. |
-| IAM | Private first, then `allUsers` gets `roles/run.invoker` | Separates deployment verification from the deliberate decision to publish. |
+| Access | Private first with the Invoker IAM check enabled; public only after verification | Separates deployment verification from the deliberate decision to publish. |
 | Budget | USD 5 monthly alert | Sends warnings; it is not a hard spending cap. |
 | Image tag | Git commit SHA | Connects a deployed image to a reviewable source version. |
 
@@ -76,9 +76,15 @@ The build recipe is [`cloudbuild.yaml`](cloud-run/cloudbuild.yaml).
 `SKIP_BUILD=YES` is a recovery option for reusing an existing image tag when
 only the service configuration failed. It must be paired with the known existing
 `TAG`; otherwise a template could reference images that were never published.
-Public/private IAM remains in separate, explicit scripts:
+Public/private access remains in separate, explicit scripts:
 [`make-public.sh`](cloud-run/make-public.sh) and
 [`make-private.sh`](cloud-run/make-private.sh).
+
+Cloud Run supports both a legacy `allUsers` Invoker binding and the newer
+Invoker-IAM-check setting. The scripts use Google's current recommended check
+setting; `make-private.sh` also removes a legacy `allUsers` binding when one is
+present. An unauthenticated `curl` must return HTTP 403 before private smoke
+testing and HTTP 200 only after deliberate publication.
 
 ## Start Locally
 
